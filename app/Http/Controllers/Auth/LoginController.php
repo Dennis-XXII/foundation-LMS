@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LogInController extends Controller
+class LoginController extends Controller
 {
     public function showLoginForm()
     {
@@ -20,27 +20,26 @@ class LogInController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:8',
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8'],
         ]);
 
-
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+            $request->session()->regenerate(); // prevent session fixation
 
-            // Redirect based on role
-            if ($user->role === 'student') {
-                return redirect()->route('student.dashboard');
-            } elseif ($user->role === 'lecturer') {
-                return redirect()->route('lecturer.dashboard');
-            } else {
-                return redirect()->route('admin.dashboard');
-            }
+            $user = Auth::user(); // ensures no "undefined user()" error
+
+            return match ($user->role) {
+                'student'  => to_route('student.dashboard'),
+                'lecturer' => to_route('lecturer.dashboard'),
+                'admin'    => to_route('admin.dashboard'),
+                default    => to_route('welcome'),
+            };
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->withInput($request->except('password'));
+        return back()
+            ->withErrors(['email' => 'The provided credentials do not match our records.'])
+            ->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -50,7 +49,6 @@ class LogInController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return to_route('welcome');
     }
-
 }

@@ -4,27 +4,32 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+
+// Models
 use App\Models\User;
 use App\Models\Student;
 
-class SignUpController extends Controller
+class SignupController extends Controller
 {
     public function showStudentRegistrationForm()
     {
-        return view('auth.register-student'); // Create this Blade view
+        return view('auth.register-student');
     }
 
-    /**
-     * Show the mentor registration form.
-     */
-    public function showMentorRegistrationForm()
+    // NOTE: your routes use "lecturer", not "mentor".
+    // Either rename this method OR change your routes.
+    public function showLecturerRegistrationForm()
     {
-        return view('auth.register-mentor'); // Create this Blade view
+        return view('auth.register-lecturer');
     }
 
     public function showAdminRegistrationForm()
     {
-        return view('auth.register-admin'); // Create this Blade view
+        return view('auth.register-admin');
     }
 
     /**
@@ -32,38 +37,48 @@ class SignUpController extends Controller
      */
     public function registerStudent(Request $request)
     {
+        // 1) Validate input
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'nickname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'line_id' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'student_id' => 'required|string|unique:students,student_id',
-            'faculty' => 'required|string|max:255',
-            'language' => 'required|string|max:255',
-            'level' => 'required|string|max:255',
+            'name'         => ['required','string','max:255'],
+            'nickname'     => ['required','string','max:255'],
+            'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
+            'password'     => ['required','string','min:8','confirmed'],
+            'line_id'      => ['nullable','string','max:255'],
+            'phone_number' => ['nullable','string','max:255'],
+            'student_id'   => ['required','string','max:64', Rule::unique('students','student_id')],
+            'faculty'      => ['required','string','max:255'],
+            'language'     => ['required','string','max:255'],
+            'level'        => ['required','string','max:255'],
         ]);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'nickname' => $data['nickname'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']), // Use bcrypt for hashing
-            'role' => 'student',
-            'line_id' => $data['line_id'],
-            'phone_number' => $data['phone_number'],
-            'faculty' => $data['faculty'],
-            'language' => $data['language'],
-            'level' => $data['level'],
-        ]);
+        // 2) Normalize a couple of fields (helps avoid duplicate emails differing by case/space)
+        $data['email'] = Str::lower(trim($data['email']));
 
-        Student::create([
-            'user_id' => $user->id,
-            'student_id' => $data['student_id'],
-        ]);
+        // 3) Create user + student atomically
+        DB::transaction(function () use (&$data) {
+            /** @var \App\Models\User $user */
+            $user = User::query()->create([
+                'name'         => $data['name'],
+                'nickname'     => $data['nickname'],
+                'email'        => $data['email'],
+                'password'     => Hash::make($data['password']),
+                'role'         => 'student',
 
-        return redirect()->route('login')->with('success', 'Student account created successfully!');
+                // if these columns exist on your users table:
+                'line_id'      => $data['line_id']      ?? null,
+                'phone_number' => $data['phone_number'] ?? null,
+                'faculty'      => $data['faculty'],
+                'language'     => $data['language'],
+                'level'        => $data['level'],
+            ]);
+
+            Student::query()->create([
+                'user_id'    => $user->id,
+                'student_id' => $data['student_id'],
+            ]);
+        });
+
+        // 4) Keep your current UX: send them to login page with a flash
+        return to_route('login')->with('success', 'Student account created successfully! Please log in.');
     }
-
 }

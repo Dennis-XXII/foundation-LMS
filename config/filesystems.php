@@ -47,6 +47,29 @@ return [
             'report' => false,
         ],
 
+
+        // Public reading is fine for course materials (PDFs/links)
+        'materials' => [
+            'driver' => env('MATERIALS_DRIVER', 'local'),
+            'root'   => storage_path('app/public/materials'),
+            'url'    => env('APP_URL').'/storage/materials',
+            'visibility' => 'public',
+        ],
+
+        // Only lecturers/admins should see raw assignment files until published
+        'assignments' => [
+            'driver' => env('ASSIGNMENTS_DRIVER', 'local'),
+            'root'   => storage_path('app/secure/assignments'),
+            'visibility' => 'private', // no public URL
+        ],
+
+        // Student uploads must be private and downloaded through policy checks
+        'submissions' => [
+            'driver' => env('SUBMISSIONS_DRIVER', 'local'),
+            'root'   => storage_path('app/secure/submissions'),
+            'visibility' => 'private', // no public URL
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
