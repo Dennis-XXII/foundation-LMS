@@ -100,7 +100,7 @@ Route::middleware(['auth','student'])
             ->scoped(); // {assignment}/{submission}
 
         Route::get('/materials/{material}/download', [StudentMaterials::class, 'download'])
-            ->name('student.materials.download');
+            ->name('materials.download');
     });
 
 // ─────────────────────────────────────────────────────────────────────────────
