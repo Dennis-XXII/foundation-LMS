@@ -12,32 +12,34 @@ use Illuminate\Support\Str;
 // Models
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Lecturer; // <-- add this model
 
 class SignupController extends Controller
 {
+    /** STUDENT: show form */
     public function showStudentRegistrationForm()
     {
         return view('auth.register-student');
     }
 
-    // NOTE: your routes use "lecturer", not "mentor".
-    // Either rename this method OR change your routes.
+    /** LECTURER: show form */
+    // NOTE: use this exact name in routes (avoid the earlier "mentor" typo).
     public function showLecturerRegistrationForm()
     {
         return view('auth.register-lecturer');
     }
 
+    /** ADMIN: show form */
     public function showAdminRegistrationForm()
     {
         return view('auth.register-admin');
     }
 
     /**
-     * Handle student registration.
+     * STUDENT: handle registration.
      */
     public function registerStudent(Request $request)
     {
-        // 1) Validate input
         $data = $request->validate([
             'name'         => ['required','string','max:255'],
             'nickname'     => ['required','string','max:255'],
@@ -51,20 +53,15 @@ class SignupController extends Controller
             'level'        => ['required','string','max:255'],
         ]);
 
-        // 2) Normalize a couple of fields (helps avoid duplicate emails differing by case/space)
         $data['email'] = Str::lower(trim($data['email']));
 
-        // 3) Create user + student atomically
         DB::transaction(function () use (&$data) {
-            /** @var \App\Models\User $user */
             $user = User::query()->create([
                 'name'         => $data['name'],
                 'nickname'     => $data['nickname'],
                 'email'        => $data['email'],
                 'password'     => Hash::make($data['password']),
                 'role'         => 'student',
-
-                // if these columns exist on your users table:
                 'line_id'      => $data['line_id']      ?? null,
                 'phone_number' => $data['phone_number'] ?? null,
                 'faculty'      => $data['faculty'],
@@ -78,7 +75,89 @@ class SignupController extends Controller
             ]);
         });
 
-        // 4) Keep your current UX: send them to login page with a flash
         return to_route('login')->with('success', 'Student account created successfully! Please log in.');
+    }
+
+    /**
+     * LECTURER: handle registration.
+     * Adjust column names to your actual lecturers table schema.
+     * Common columns: employee_id / staff_id / lecturer_code, department, faculty.
+     */
+    public function registerLecturer(Request $request)
+    {
+        $data = $request->validate([
+            'name'         => ['required','string','max:255'],
+            'nickname'     => ['required','string','max:255'],
+            'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
+            'password'     => ['required','string','min:8','confirmed'],
+            'line_id'      => ['nullable','string','max:255'],
+            'phone_number' => ['nullable','string','max:255'],
+
+            // Lecturer profile (customize as per your migration)
+            'employee_id'  => ['nullable','string','max:64', Rule::unique('lecturers','employee_id')], // if column exists
+            'faculty'      => ['nullable','string','max:255'],
+            'department'   => ['nullable','string','max:255'],
+            'language'     => ['nullable','string','max:255'],
+        ]);
+
+        $data['email'] = Str::lower(trim($data['email']));
+
+        DB::transaction(function () use (&$data) {
+            $user = User::query()->create([
+                'name'         => $data['name'],
+                'nickname'     => $data['nickname'],
+                'email'        => $data['email'],
+                'password'     => Hash::make($data['password']),
+                'role'         => 'lecturer',
+                'line_id'      => $data['line_id']      ?? null,
+                'phone_number' => $data['phone_number'] ?? null,
+
+                // Optional, if you store these on users:
+                'faculty'      => $data['faculty']    ?? null,
+                'language'     => $data['language']   ?? null,
+            ]);
+
+            $lecturer = Lecturer::query()->create([
+                'user_id'     => $user->id,
+                'employee_id' => $data['employee_id'] ?? null, // or 'staff_id' / 'lecturer_code'
+                'faculty'     => $data['faculty']     ?? null,
+                'department'  => $data['department']  ?? null,
+            ]);
+
+            // Auto-enrol to Course #1 (id = 1) without breaking existing links
+            $lecturer->courses()->syncWithoutDetaching([1]);
+        });
+
+        return to_route('login')->with('success', 'Lecturer account created successfully! You can now log in.');
+    }
+
+    /**
+     * ADMIN: handle registration.
+     * Usually no separate Admin model — just set role='admin'.
+     */
+    public function registerAdmin(Request $request)
+    {
+        $data = $request->validate([
+            'name'         => ['required','string','max:255'],
+            'nickname'     => ['required','string','max:255'],
+            'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
+            'password'     => ['required','string','min:8','confirmed'],
+            'line_id'      => ['nullable','string','max:255'],
+            'phone_number' => ['nullable','string','max:255'],
+        ]);
+
+        $data['email'] = Str::lower(trim($data['email']));
+
+        User::query()->create([
+            'name'         => $data['name'],
+            'nickname'     => $data['nickname'],
+            'email'        => $data['email'],
+            'password'     => Hash::make($data['password']),
+            'role'         => 'admin',
+            'line_id'      => $data['line_id']      ?? null,
+            'phone_number' => $data['phone_number'] ?? null,
+        ]);
+
+        return to_route('login')->with('success', 'Admin account created successfully! You can now log in.');
     }
 }

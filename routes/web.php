@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\SignupController;
 // Student
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
+use App\Http\Controllers\Student\MaterialController as StudentMaterials;
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
@@ -97,6 +98,9 @@ Route::middleware(['auth','student'])
         Route::resource('assignments.submissions', StudentSubmissions::class)
             ->only(['create','store','edit','update','show'])
             ->scoped(); // {assignment}/{submission}
+
+        Route::get('/materials/{material}/download', [StudentMaterials::class, 'download'])
+            ->name('materials.download');
     });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -136,6 +140,10 @@ Route::middleware(['auth','lecturer'])
             ->only(['create','store','edit','update'])
             ->parameters(['assessments' => 'assessment'])
             ->scoped();
+
+        Route::get('/submissions/{submission}/assessments', [LecturerAssessments::class, 'create'])
+            ->name('submissions.assessments.create.alias');
+
 
         // Announcements authored by lecturer (course‑scoped or global if your policy allows)
         Route::resource('announcements', LecturerAnnouncements::class)

@@ -28,6 +28,10 @@ class DashboardController extends Controller
             ->latest()
             ->first()?->course;
 
+        // Get all enrollments for the student
+        $enrollments = $student->enrollments()->with('course')->get();
+        $activeCourse = optional($enrollments->first())->course;
+
         if (! $course) {
             return view('student.dashboard', [
                 'student'       => $student,
@@ -56,7 +60,7 @@ class DashboardController extends Controller
             ->get();
 
         return view('student.dashboard', compact(
-            'student', 'course', 'announcements', 'assignments', 'materials'
+            'student', 'course', 'announcements', 'assignments', 'materials', 'activeCourse', 'enrollments'
         ));
     }
 

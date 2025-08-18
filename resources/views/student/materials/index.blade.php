@@ -50,7 +50,7 @@
                         @if($m->url)
                             <a href="{{ $m->url }}" target="_blank" class="text-blue-600 hover:underline text-sm">Open Link</a>
                         @elseif($m->file_path)
-                            <a href="{{ route('file.download', $m) }}" class="text-blue-600 hover:underline text-sm">Download</a>
+                            <a href="{{ route('student.materials.download', $m) }}" class="text-blue-600 hover:underline text-sm">Download</a>
                         @endif
                     </div>
                 </li>
