@@ -1,9 +1,31 @@
 {{-- resources/views/lecturer/materials/create.blade.php --}}
 <x-layout>
+  <!--breadcrumbs-->
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
+        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li>
+        <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline">
+            {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+        </a>
+        <span class="mx-2">/</span>
+      </li>
+      <li class="text-black font-semibold">
+        Add Material
+      </li>
+    </ol>
+  </nav>
+  <!--breadcrumbs end-->
+
+  {{-- Course header --}}
   <div class="max-w-4xl mx-auto p-6">
     <h1 class="text-2xl font-semibold">
-      Add Materials — {{ $course->code }} {{ $course->name }}
+      Add Materials — {{ $course->code }} {{ $course->name }} 
     </h1>
+    <h1 class="text-xl text-gray-500 font-thin pt-3">Level - {{ request('level') ?? ($level ?? '—') }} {{ request ('type') ? str(request('type'))->replace('_', ' ')->title() : '' }}</h1>
 
     {{-- Validation errors --}}
     @if($errors->any())
@@ -34,7 +56,7 @@
         <textarea name="descriptions"
                   rows="4"
                   placeholder="You can provide links to external videos and resources here."
-                  class="mt-1 w-full border rounded px-3 py-2">{{ old('descriptions') }}</textarea>
+                  class="mt-1 w-full border rounded px-3 py-2 min-h-[100px]">{{ old('descriptions') }}</textarea>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

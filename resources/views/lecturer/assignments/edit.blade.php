@@ -1,5 +1,24 @@
 {{-- resources/views/lecturer/assignments/edit.blade.php --}}
 <x-layout> {{-- or your app layout --}}
+
+<!--breadcrumbs-->
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
+        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li class="text-black">
+        <a href="{{ route('lecturer.courses.assignments.index', $assignment->course)}}" class="hover:underline">Upload Links</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li class="text-black font-semibold">
+        Edit Assignment
+      </li>
+    </ol>
+  </nav>
+  <!--breadcrumbs end-->
+  
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-semibold">Edit Assignment</h1>
         <p class="text-sm text-gray-600 mt-1">

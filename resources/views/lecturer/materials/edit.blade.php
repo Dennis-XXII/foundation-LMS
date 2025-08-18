@@ -1,5 +1,25 @@
 {{-- resources/views/lecturer/materials/edit.blade.php --}}
 <x-layout>
+  <!--breadcrumbs-->
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
+        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li>
+        <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline">
+           {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+        </a>
+        <span class="mx-2">/</span>
+      </li>
+      <li class="text-black font-semibold">
+        Edit Material
+      </li>
+    </ol>
+  </nav>
+  <!--breadcrumbs end-->
+
   <div class="max-w-3xl mx-auto p-6">
     <h1 class="text-2xl font-semibold">Edit Material</h1>
     <p class="text-sm text-gray-600">Course: {{ $material->course->code }} — {{ $material->course->name }}</p>

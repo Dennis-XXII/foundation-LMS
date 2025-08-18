@@ -3,17 +3,23 @@
         $level = (int) request('level');
         $tab   = request('tab'); // null | 'assess'
         $isAssess = $tab === 'assess';
+        $type = request('type') ?? 'lesson'; // default to lesson
         $levelLabel = $level ? ('LEVEL '.$level) : null;
     @endphp
 
-    {{-- Header / Breadcrumb --}}
-    <div class="mb-6">
-        <div class="text-sm text-gray-600">
-            {{ $course->name ?? 'Course' }}
-            @if($levelLabel) > <span class="font-semibold">{{ $levelLabel }}</span> @endif
-            > <span class="font-semibold">Upload Links</span>
-        </div>
-    </div>
+      <!--breadcrumbs-->
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
+        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li class="text-black font-semibold">
+        Upload Links
+      </li>
+    </ol>
+  </nav>
+  <!--breadcrumbs end-->
 
     {{-- Top options: Post / Assess (active highlight) --}}
     <div class="flex items-center justify-center gap-6 mb-8">
@@ -83,8 +89,8 @@
                 </div>
 
                 <div class="md:col-span-4">
-                    <label class="block text-sm text-gray-700 mb-1">Instruction</label>
-                    <textarea name="instruction" rows="2" class="w-full border rounded px-3 py-2"
+                    <label class="block text-sm text-gray-700 mb-1 ">Instruction</label>
+                    <textarea name="instruction" rows="2" class="w-full border rounded px-3 py-2 min-h-[100px]"
                               placeholder="Give instructions here..."></textarea>
                 </div>
 
@@ -103,10 +109,10 @@
             <table class="w-full text-left">
                 <thead class="bg-gray-100">
                     <tr class="text-sm text-gray-600">
-                        <th class="px-6 py-3">Assignment</th>
+                        <th class="px-6 py-3">Assignment title</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3">Due Date</th>
-                        <th class="px-6 py-3"></th>
+                        <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -115,7 +121,7 @@
                         <td class="px-6 py-3">{{ $a->title }}</td>
                         <td class="px-6 py-3">
                             @php $active = (bool) $a->is_published; @endphp
-                            <span class="px-2 py-1 text-xs rounded {{ $active ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700' }}">
+                            <span class="px-2 py-1 text-xs rounded {{ $active ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600' }}">
                                 {{ $active ? 'Active' : 'Due' }}
                             </span>
                         </td>
@@ -123,7 +129,7 @@
                             @if($a->due_at)
                                 {{ \Illuminate\Support\Carbon::parse($a->due_at)->timezone(config('app.timezone'))->format('d M Y') }}
                             @else
-                                —
+                                <span class="text-red-400">Overdue</span>
                             @endif
                         </td>
                         <td class="px-6 py-3">
@@ -132,6 +138,8 @@
                                     <a class="text-blue-700 underline"
                                        href="{{ route('lecturer.assignments.show', $a) }}">Download</a>
                                 @endif
+                                <button class="text-blue-600 hover:underline"
+                                        onclick="location.href='{{ route('lecturer.assignments.edit', $a) }}'">Edit</button>
                                 <form method="POST" action="{{ route('lecturer.assignments.destroy', $a) }}"
                                       onsubmit="return confirm('Delete this upload link?');">
                                     @csrf @method('DELETE')

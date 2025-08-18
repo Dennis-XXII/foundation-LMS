@@ -1,5 +1,21 @@
 {{-- resources/views/lecturer/materials/index.blade.php --}}
 <x-layout>
+  <!--breadcrumbs !important to add--> 
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
+        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+        <span class="mx-2">/</span>
+      </li>
+      <li>
+        <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline font-semibold">
+          {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+        </a>
+      </li>
+    </ol>
+  </nav>
+  <!--breadcrumbs end-->
+  
   <div class="max-w-8xl mx-auto p-3">
     <!-- material upload header --> 
     @php
