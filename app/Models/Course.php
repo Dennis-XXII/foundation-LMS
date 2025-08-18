@@ -17,5 +17,12 @@ class Course extends Model
     public function materials()   { return $this->hasMany(Material::class); }
     public function assignments() { return $this->hasMany(Assignment::class); }
     public function announcements(){ return $this->belongsToMany(Announcement::class, 'announcement_courses'); }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'enrollments')
+                    ->withPivot('level','status')
+                    ->withTimestamps();
+    }
 }
 
