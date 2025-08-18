@@ -41,8 +41,7 @@ class UserSeeder extends Seeder
             ->each(function (User $user, $i) {
                 Student::create([
                     'user_id'    => $user->id,
-                    'student_id' => '8' . str_pad($i + 1, 6, '0', STR_PAD_LEFT),
-                    'line_id'   => 'line_id_' . ($i + 1),
+                    'student_id' => '8' . str_pad($i + 1, 6, '0', STR_PAD_LEFT)
                 ]);
             });
     
