@@ -1,10 +1,7 @@
 <x-layout>
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-        <form method="POST" action="{{ route('logout') }}">@csrf
-            <button class="px-4 py-2 bg-purple-900 text-white rounded">Log Out</button>
-        </form>
+        <h1 class="text-3xl font-bold pl-2 font-thin">Admin Dashboard</h1>
     </div>
 
     {{-- Flashes / Errors --}}
@@ -27,7 +24,7 @@
 
         <div class="p-6">
             @php
-                // Normalize inputs so the view works whether you pass $course or $courses
+                //Normalize inputs so the view works whether you pass $course or $courses
                 $hasCollection = isset($courses) && $courses instanceof \Illuminate\Support\Collection && $courses->isNotEmpty();
                 $hasSingle     = !$hasCollection && isset($course) && $course;
             @endphp

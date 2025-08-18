@@ -27,7 +27,7 @@
                             ['Emergency Contact', '#'],
                             ['Maps', '#'],
                             ['Useful links', '#'],
-                            ['Profile', route('student.courses.show', $course)],
+                            ['Profile', '#'],
                         ] as [$label,$href])
                             <a href="{{ $href }}" class="block text-center text-xs bg-gray-100 hover:bg-gray-200 border rounded-lg p-3">
                                 {{ $label }}

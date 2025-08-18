@@ -3,11 +3,11 @@
         <!-- Main Content Container -->
         <div class="w-full max-w-3xl">
             <!-- Title -->
-            <h1 class="text-2xl font-bold text-center text-gray-900 mb-8">Create Mentor Account</h1>
+            <h1 class="text-2xl font-bold text-center text-gray-900 mb-8">Create Lecturer Account</h1>
 
             <!-- Form Card with Purple Border -->
             <div class="w-full bg-gray-50 border border-[#7D3C98] rounded-xl p-6 md:p-8">
-                <form method="POST" action="{{ route('register.mentor') }}" class="space-y-6">
+                <form method="POST" action="{{ route('register.lecturer') }}" class="space-y-6">
                     @csrf
 
                     <!-- Validation Errors -->
