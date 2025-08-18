@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@test.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
+            'line_id' => 'admin_line_id',
         ]);
         Admin::create(['user_id' => $admin->id]);
 
@@ -29,6 +30,7 @@ class UserSeeder extends Seeder
             'email' => 'lecturer@test.com',
             'password' => bcrypt('password'),
             'role' => 'lecturer',
+            'line_id' => 'lecturer_line_id',
         ]);
         Lecturer::create(['user_id' => $lecturerUser->id]);
 
@@ -40,8 +42,10 @@ class UserSeeder extends Seeder
                 Student::create([
                     'user_id'    => $user->id,
                     'student_id' => '8' . str_pad($i + 1, 6, '0', STR_PAD_LEFT),
+                    'line_id'   => 'line_id_' . ($i + 1),
                 ]);
             });
+    
     }
 }
 
