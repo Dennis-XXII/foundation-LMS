@@ -15,11 +15,17 @@
         <h1 class="text-2xl font-semibold "> {{ ucfirst(str_replace('_', ' ', $type ?? 'All Materials')) }} </h1>
         <h1 class="text-xl font-thin">{{ $course->code }} {{ $course->name }} level {{ $level ?? '—' }}</h1>
       </div>
-      <a href="{{ route('lecturer.courses.materials.create', [
-        'course' => $course
-        'type' => request('type'),
-        'level' => request('level')
-        ]) }}" class="px-3 py-2 rounded bg-black text-white">Add Material</a>
+      <a
+        href="{{ route('lecturer.courses.materials.create', [
+            'course' => $course,
+            // query params:
+            'type'   => $type,
+            'level'  => $level,
+        ]) }}"
+        class="px-3 py-2 rounded bg-black text-white"
+      >
+        Add Material
+      </a>
     </div>
 
     {{-- Filters --}}

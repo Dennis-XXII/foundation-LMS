@@ -54,6 +54,8 @@ class MaterialController extends Controller
     public function store(Request $request, Course $course)
     {
         $this->authorize('update', $course);
+        $lockedLevel = $request->query('level'); // from ?level=
+        $lockedType  = $request->query('type');  // from ?type=
 
         $data = $request->validate([
             'title'        => ['required','string','max:255'],
@@ -65,6 +67,9 @@ class MaterialController extends Controller
             'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
             'uploaded_at'  => ['nullable','date'],
         ]);
+
+        if ($lockedLevel) $data['level'] = (int) $lockedLevel;
+        if ($lockedType)  $data['type']  = $lockedType;
 
         // Require at least a file or a URL (allow both)
         if (!$request->hasFile('file') && empty($data['url'])) {
