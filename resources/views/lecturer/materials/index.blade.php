@@ -1,35 +1,46 @@
 {{-- resources/views/lecturer/materials/index.blade.php --}}
 <x-layout>
-  <div class="max-w-6xl mx-auto p-6">
-    <div class="flex items-center justify-between">
+  <div class="max-w-8xl mx-auto p-3">
+    <!-- material upload header --> 
+    @php
+      $levelColors = [
+      3 => 'bg-cyan-300',
+      2 => 'bg-green-200',
+      1 => 'bg-rose-200',
+      ];
+      $headerColor = $levelColors[$level ?? null] ?? 'bg-gray-100';
+    @endphp
+    <div class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}">
       <div>
-        <h1 class="text-2xl font-semibold">Materials — {{ $course->code }} {{ $course->name }}</h1>
-        <p class="text-sm text-gray-600">Filter by type/level; click a title to edit.</p>
+        <h1 class="text-2xl font-semibold "> {{ ucfirst(str_replace('_', ' ', $type ?? 'All Materials')) }} </h1>
+        <h1 class="text-xl font-thin">{{ $course->code }} {{ $course->name }} level {{ $level ?? '—' }}</h1>
       </div>
-      <a href="{{ route('lecturer.courses.materials.create', $course) }}" class="px-3 py-2 rounded bg-black text-white">Add Material</a>
+      <a href="{{ route('lecturer.courses.materials.create', [
+        'course' => $course
+        'type' => request('type'),
+        'level' => request('level')
+        ]) }}" class="px-3 py-2 rounded bg-black text-white">Add Material</a>
     </div>
 
     {{-- Filters --}}
     <form method="GET" class="mt-4 flex gap-3 items-end">
       <div>
         <label class="block text-xs text-gray-600">Type</label>
-        <select name="type" class="border rounded px-3 py-2">
-          <option value="">All</option>
-          @foreach (['lesson' => 'Lesson', 'worksheet' => 'Worksheet', 'self_study' => 'Self‑study'] as $val => $label)
+        <select name="type" class=" border rounded py-2">
+          @foreach (['lesson' => 'Lesson Materials', 'worksheet' => 'Worksheet', 'self_study' => 'Self‑study'] as $val => $label)
             <option value="{{ $val }}" @selected($type === $val)>{{ $label }}</option>
           @endforeach
         </select>
       </div>
       <div>
         <label class="block text-xs text-gray-600">Level</label>
-        <select name="level" class="border rounded px-3 py-2">
-          <option value="">All</option>
+        <select name="level" class="border rounded py-2">
           @foreach ([1,2,3] as $lv)
             <option value="{{ $lv }}" @selected($level == $lv)>{{ $lv }}</option>
           @endforeach
         </select>
       </div>
-      <button class="px-3 py-2 rounded border">Apply</button>
+      <button class="px-3 py-2 rounded bg-red-600 text-white">Apply</button>
     </form>
 
     {{-- Flash --}}

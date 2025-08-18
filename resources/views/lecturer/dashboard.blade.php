@@ -1,11 +1,11 @@
 <x-layout>
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold">FOUNDATION PROGRAM MOODLE</h1>
-        <form method="POST" action="{{ route('logout') }}">
+        <h1 class="text-2xl font-bold pl-2 ">Created Courses</h1>
+        <!-- <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button class="px-4 py-2 bg-purple-900 text-white rounded">Log Out</button>
-        </form>
+        </form> -->
     </div>
 
     {{-- Flashes / Errors --}}
@@ -24,8 +24,8 @@
     @endif
 
     {{-- Course header card --}}
-    <section class="bg-white rounded-lg shadow border">
-        <div class="flex items-center justify-between bg-purple-900 text-white rounded-t-lg px-6 py-4">
+    <section class="bg-white rounded-lg shadow-lg">
+        <div class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4">
             <h2 class="text-lg font-semibold">
                 {{ $course->code ?? 'COURSE' }} {{ $course->name ?? '' }}
             </h2>
@@ -46,7 +46,7 @@
         <div class="p-6 flex gap-6">
             <aside class="w-40 space-y-4">
                 @foreach (['Emergency Contact','Maps','Useful links','Profile'] as $leftNav)
-                    <button class="w-full bg-gray-100 border rounded p-4 text-sm hover:bg-gray-50">{{ $leftNav }}</button>
+                    <button class="w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50">{{ $leftNav }}</button>
                 @endforeach
             </aside>
 
@@ -56,9 +56,9 @@
                     $tile = fn($label,$type,$level,$color) => ['label'=>$label,'type'=>$type,'level'=>$level,'color'=>$color];
                     $tiles = [
                         // L3
-                        $tile('Lesson Materials','lesson',3,'bg-cyan-200'),
+                        $tile('Lesson Materials','lesson',3,'bg-cyan-300'),
                         $tile('Worksheets','worksheet',3,'bg-cyan-300'),
-                        $tile('Self-study','self_study',3,'bg-cyan-200'),
+                        $tile('Self-study','self_study',3,'bg-cyan-300'),
                         $tile('Upload Links','upload',3,'bg-cyan-300'),
                         // L2
                         $tile('Lesson Materials','lesson',2,'bg-green-200'),
@@ -87,26 +87,25 @@
 
                     @if($t['type'] !== 'upload')
                         <a href="{{ $materialsHref }}"
-                           class="block rounded-lg p-5 border hover:shadow {{ $t['color'] }}">
+                           class="block rounded-lg p-5 border border-gray-300 hover:shadow {{ $t['color'] }}">
                             <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
                             <div class="text-lg font-semibold">{{ $t['label'] }}</div>
                         </a>
                 @else
                     {{-- Single tile → go to Assignments index; lecturer chooses inside --}}
                     <a href="{{ route('lecturer.courses.assignments.index', $course) }}?level={{ $t['level'] }}"
-                    class="block rounded-lg p-5 border hover:shadow {{ $t['color'] }}">
+                    class="block rounded-lg p-5 border border-gray-300 {{ $t['color'] }}">
                         <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
                         <div class="text-lg font-semibold">{{ $t['label'] }}</div>
-                        <p class="mt-2 text-sm text-gray-600">Create links and assess submissions</p>
+                        <p class="mt-2 text-sm text-gray-600">Create Upload links and assess submissions</p>
                     </a>
-                @endif
-
+                @endif 
                 @endforeach
             </div>
         </div>
     </section>
 
-    {{-- Announcements --}}
+    <!-- {{-- Announcements --}}
     <section class="mt-10 bg-white rounded-lg shadow border">
         <div class="bg-purple-900 text-white rounded-t-lg px-6 py-4 text-lg font-semibold">
             Make Announcement
@@ -149,4 +148,5 @@
             </ul>
         </div>
     </section>
+                -->
 </x-layout>

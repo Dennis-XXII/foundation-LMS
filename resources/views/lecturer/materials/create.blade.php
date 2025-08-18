@@ -1,7 +1,7 @@
 {{-- resources/views/lecturer/materials/create.blade.php --}}
 <x-layout>
-  <div class="max-w-3xl mx-auto p-6">
-    <h1 class="text-2xl font-semibold">Add Material — {{ $course->code }} {{ $course->name }}</h1>
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-semibold">Add Materials - {{ $course->code }} {{ $course->name }}</h1>
 
     @if($errors->any())
       <div class="mt-4 p-3 rounded bg-red-50 text-red-700">
@@ -16,33 +16,32 @@
 
       <div>
         <label class="block text-sm font-medium">Title</label>
-        <input name="title" class="mt-1 w-full border rounded px-3 py-2" value="{{ old('title') }}" required>
+        <input name="title" class="mt-1 w-full border rounded px-3 py-2" placeholder="Title of your material" value="{{ old('title') }}" required>
       </div>
 
       <div>
         <label class="block text-sm font-medium">Descriptions</label>
-        <textarea name="descriptions" rows="4" class="mt-1 w-full border rounded px-3 py-2">{{ old('descriptions') }}</textarea>
+        <textarea name="descriptions" rows="4"placeholder="You can provide links to external videos and resources here."class="mt-1 w-full border rounded px-3 py-2">{{ old('descriptions') }}</textarea>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-sm font-medium">Type</label>
-          <select name="type" class="mt-1 w-full border rounded px-3 py-2" required>
-            @foreach(['lesson'=>'Lesson','worksheet'=>'Worksheet','self_study'=>'Self‑study'] as $v=>$label)
-              <option value="{{ $v }}" @selected(old('type')===$v)>{{ $label }}</option>
+          <select name="type" class="mt-1 w-full border rounded py-2" required>
+            @foreach(['lesson'=>'Lesson Materials','worksheet'=>'Worksheets','self_study'=>'Self‑study'] as $v=>$label)
+              <option value="{{ $v }}" @selected(old('type', request('type'))===$v)>{{ $label }}</option>
             @endforeach
           </select>
         </div>
         <div>
           <label class="block text-sm font-medium">Level</label>
           <select name="level" class="mt-1 w-full border rounded px-3 py-2">
-            <option value="">—</option>
             @foreach([1,2,3] as $lv)
-              <option value="{{ $lv }}" @selected(old('level')==$lv)>{{ $lv }}</option>
+              <option value="{{ $lv }}" @selected(old('level', request('level'))==$lv)>{{ $lv }}</option>
             @endforeach
           </select>
         </div>
-        <div class="flex items-end gap-2">
+        <div class="flex items-center gap-2">
           <input id="is_published" name="is_published" type="checkbox" value="1" @checked(old('is_published',1))>
           <label for="is_published" class="text-sm">Published</label>
         </div>
