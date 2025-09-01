@@ -1,35 +1,68 @@
 <x-layout title="Materials">
 <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
     {{-- Breadcrumbs --}}
-    <nav class="text-sm text-gray-500">
+  <!--breadcrumbs !important to add--> 
+  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <ol class="list-reset flex">
+      <li>
         <a href="{{ route('student.dashboard') }}" class="hover:underline">Dashboard</a>
         <span class="mx-2">/</span>
-        <a href="{{ route('student.courses.show', $course) }}" class="hover:underline">{{ $course->title }}</a>
-        <span class="mx-2">/</span>
-        <span class="text-gray-700 font-medium">Materials</span>
-    </nav>
+      </li>
+      <li>
+        <a href="{{ route('student.courses.show', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline font-semibold">
+          {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+        </a>
+      </li>
+    </ol>
+  </nav>
 
-    {{-- Filters --}}
-    <form method="GET" class="bg-white rounded-xl shadow p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
-        <div>
-            <label class="block text-sm text-gray-700 mb-1">Type</label>
-            <select name="type" class="w-full rounded border-gray-300">
-                <option value="">All</option>
-                @foreach (['lesson'=>'Lesson','worksheet'=>'Worksheet','self-study'=>'Self‑study'] as $val => $label)
-                    <option value="{{ $val }}" @selected(($filters['type'] ?? '') === $val)>{{ $label }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm text-gray-700 mb-1">Level</label>
-            <input type="number" name="level" min="1" class="w-full rounded border-gray-300"
-                   value="{{ $filters['level'] ?? '' }}" placeholder="e.g., 1">
-        </div>
-        <div class="sm:col-span-2 flex items-end gap-3">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
-            <a href="{{ route('student.materials.index', $course) }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Reset</a>
-        </div>
-    </form>
+@php
+  // Use request first (like your breadcrumb), fall back to controller vars
+  $rawType = request('type', $type ?? '');
+  // Normalize "self-study" (UI) to "self_study" (DB) so selected option matches
+  $currentType = $rawType === 'self-study' ? 'self_study' : $rawType;
+  $currentLevel = (string) request('level', (string) ($level ?? ''));
+
+  $headerMap = ['lesson' => 'Lesson Materials', 'worksheet' => 'Worksheet', 'self_study' => 'Self-study'];
+  $headerType = $headerMap[$currentType] ?? 'All Materials';
+@endphp
+
+<div class="flex items-center justify-between p-3 rounded bg-gray-50 border">
+  <div class="text-sm">
+    <span class="font-semibold">{{ $headerType }}</span>
+    <span class="text-gray-600">{{ $currentLevel !== '' ? ' • Level '.$currentLevel : '' }}</span>
+  </div>
+</div>
+
+{{-- Filters --}}
+<form method="GET" class="bg-white rounded-xl shadow p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+  <div>
+    <label class="block text-sm text-gray-700 mb-1">Type</label>
+    <select name="type" class="w-full rounded border-gray-300">
+      <option value="">All</option>
+      @foreach (['lesson'=>'Lesson Materials','worksheet'=>'Worksheet','self_study'=>'Self-study'] as $val => $label)
+        <option value="{{ $val }}" @selected($currentType === $val)>{{ $label }}</option>
+      @endforeach
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-700 mb-1">Level</label>
+    <select name="level" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
+      <option value="">All</option>
+      @foreach ([1,2,3] as $lv)
+        <option value="{{ $lv }}" @selected((string)$currentLevel === (string)$lv)>{{ $lv }}</option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="sm:col-span-2 flex items-end gap-3">
+    <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
+    <a href="{{ route('student.materials.index', $course) }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Reset</a>
+  </div>
+</form>
+
+<!-- Right until here -->
 
     {{-- List --}}
     <div class="bg-white rounded-xl shadow">
@@ -39,7 +72,7 @@
                     <div class="min-w-0">
                         <p class="font-medium truncate">{{ $m->title }}</p>
                         <p class="text-sm text-gray-500">
-                            {{ ucfirst($m->type) }} @if($m->level) • Level {{ $m->level }} @endif
+                            {{ \Illuminate\Support\Str::of($m->type)->replace('_',' ')->title() }} @if($m->level) • Level {{ $m->level }} @endif
                             @if($m->uploaded_at) • {{ $m->uploaded_at->format('M d, Y') }} @endif
                         </p>
                         @if($m->descriptions)
@@ -59,7 +92,7 @@
             @endforelse
         </ul>
         <div class="px-4 py-3 border-t">
-            {{ $materials->links() }}
+            {{ $materials->appends(request()->only('type','level'))->links() }}
         </div>
     </div>
 </div>

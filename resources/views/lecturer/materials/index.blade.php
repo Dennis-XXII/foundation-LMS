@@ -47,16 +47,16 @@
     {{-- Filters --}}
     <form method="GET" class="mt-4 flex gap-3 items-end">
       <div>
-        <label class="block text-xs text-gray-600">Type</label>
-        <select name="type" class=" border rounded py-2">
+        <label class="block text-sm text-gray-600">Type</label>
+        <select name="type" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
           @foreach (['lesson' => 'Lesson Materials', 'worksheet' => 'Worksheet', 'self_study' => 'Self‑study'] as $val => $label)
             <option value="{{ $val }}" @selected($type === $val)>{{ $label }}</option>
           @endforeach
         </select>
       </div>
       <div>
-        <label class="block text-xs text-gray-600">Level</label>
-        <select name="level" class="border rounded py-2">
+        <label class="block text-sm text-gray-600">Level</label>
+        <select name="level" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
           @foreach ([1,2,3] as $lv)
             <option value="{{ $lv }}" @selected($level == $lv)>{{ $lv }}</option>
           @endforeach

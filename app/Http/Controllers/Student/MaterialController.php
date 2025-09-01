@@ -15,27 +15,34 @@ class MaterialController extends Controller
     /**
      * Show all published materials for a course (with optional type/level filter).
      */
-    public function index(Course $course)
+    public function index(Request $request, Course $course)
     {
-        // Ensure student is enrolled in this course
         $this->authorize('view', $course);
 
-        // Filter materials by type only
-        $materials = $course->materials()
-            ->where('is_published', true);
+        $type  = $this->normalizeType($request->query('type'));
+        $level = $request->filled('level') ? (int)$request->query('level') : null;
 
-        if (request()->has('type') && request('type') !== '') {
-            $materials = $materials->where('type', request('type'));
-        }
+        $validTypes = ['lesson','worksheet','self_study'];
+        if ($type && !in_array($type, $validTypes, true)) { $type = null; }
+        if ($level && !in_array($level, [1,2,3], true))   { $level = null; }
 
-        $materials = $materials->latest('uploaded_at')->paginate(10);
-        
+        $materials = Material::query()
+            ->where('course_id', $course->id)
+            ->where('is_published', true)
+            ->when($type,  fn($q) => $q->where('type', $type))
+            ->when($level, fn($q) => $q->where('level', $level))
+            ->latest('uploaded_at')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('student.materials.index', [
-            'course' => $course,
+            'course'    => $course,
             'materials' => $materials,
-            'filters' => request()->only(['type'])
+            'type'      => $type,
+            'level'     => $level,
         ]);
     }
+
 
     /**
      * Download a material file securely.

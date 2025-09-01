@@ -1,140 +1,78 @@
 {{-- resources/views/student/dashboard.blade.php --}}
 <x-layout title="Student Dashboard">
 @php
-    // Levels rendered from high to low
-    $levels = [3,2,1];
+    // Levels from high to low to match lecturer dashboard
+    $levels = [3, 2, 1];
 
-    // Use route-friendly keys (self_study instead of self-study) to avoid normalization bugs
-    $tiles = [
-        ['key'=>'lesson',      'label'=>'Lesson Materials', 'bg'=>'bg-sky-300'],
-        ['key'=>'worksheet',   'label'=>'Worksheets',       'bg'=>'bg-cyan-300'],
-        ['key'=>'self_study',  'label'=>'Self-study',       'bg'=>'bg-cyan-400'],
-        ['key'=>'upload',      'label'=>'Upload Links',     'bg'=>'bg-cyan-300'],
+    // Map level → header/tile background color (mirror lecturer)
+    $levelColors = [
+        3 => 'bg-cyan-300',
+        2 => 'bg-green-200',
+        1 => 'bg-rose-200',
     ];
 
-    // Is there a selected/active course?
+    // Define tiles like lecturer (label + type key)
+    $tile = fn($label, $type, $level, $color) => ['label' => $label, 'type' => $type, 'level' => $level, 'color' => $color];
+    $tiles = [];
+    foreach ($levels as $lv) {
+        $tiles[] = $tile('Lesson Materials', 'lesson', $lv, $levelColors[$lv]);
+        $tiles[] = $tile('Worksheets', 'worksheet', $lv, $levelColors[$lv]);
+        $tiles[] = $tile('Self-study', 'self_study', $lv, $levelColors[$lv]);
+        $tiles[] = $tile('Upload Links', 'upload', $lv, $levelColors[$lv]);
+    }
+
     $hasCourse = isset($course) && $course;
 @endphp
 
 <div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
-    {{-- My Courses --}}
-    <section class="space-y-4">
-        <h2 class="text-lg font-semibold">My Courses</h2>
-
-        <div class="bg-white rounded-xl shadow">
-            <div class="rounded-t-xl px-6 py-4 bg-purple-900 text-white font-semibold text-lg">
-            {{ strtoupper(
-                $hasCourse
-                    ? ($course->title ?? $course->code ?? 'Course')
-                    : 'FOUNDATION AUGUST 2025'
-            ) }}
-            </div>
-            <div class="p-4 md:p-6">
-                <div class="grid grid-cols-12 gap-4">
-                    {{-- Left shortcuts --}}
-                    <aside class="col-span-12 sm:col-span-2 space-y-4">
-                        @foreach ([
-                            ['Emergency Contact', null],
-                            ['Maps', null],
-                            ['Useful links', null],
-                            ['Profile', null],
-                        ] as [$label,$href])
-                            @php
-                                // Disable shortcuts that you haven't wired yet
-                                $isDisabled = is_null($href);
-                            @endphp
-                            @if($isDisabled)
-                                <span class="block text-center text-xs bg-gray-100 border rounded-lg p-3 text-gray-400 cursor-not-allowed" aria-disabled="true" title="Coming soon">{{ $label }}</span>
-                            @else
-                                <a href="{{ $href }}" class="block text-center text-xs bg-gray-100 hover:bg-gray-200 border rounded-lg p-3">{{ $label }}</a>
-                            @endif
-                        @endforeach
-                        <div class="hidden sm:block h-full w-px bg-gray-300 mx-auto"></div>
-                    </aside>
-
-                    {{-- Level rows + tiles --}}
-                    <div class="col-span-12 sm:col-span-10 space-y-6">
-                        {{-- Empty state when no course --}}
-                        @unless($hasCourse)
-                            <div class="rounded border p-6 bg-gray-50">
-                                <h3 class="font-semibold">No course yet</h3>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    You’re not enrolled in any course. Please contact your lecturer or admin to be enrolled.
-                                </p>
-                            </div>
-                        @endunless
-
-                        @foreach($levels as $lv)
-                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                                @foreach($tiles as $t)
-                                    @php
-                                        $isUpload = $t['key'] === 'upload';
-
-                                        // Build hrefs ONLY if we have a course; otherwise keep disabled
-                                        if ($hasCourse) {
-                                            if ($isUpload) {
-                                                // student.assignments.index likely needs {course}
-                                                $href = route('student.assignments.index', $course) . '?level=' . $lv;
-                                            } else {
-                                                // student.materials.byTypeLevel expects {course}, {type}, {level?}
-                                                $href = route('student.materials.byTypeLevel', ['course' => $course, 'type' => $t['key'], 'level' => $lv]);
-                                            }
-                                        } else {
-                                            $href = null; // disabled tile
-                                        }
-                                    @endphp
-
-                                    @if($href)
-                                        <a href="{{ $href }}" class="rounded-xl shadow hover:shadow-md transition p-4 {{ $t['bg'] }}">
-                                            <p class="text-xs font-semibold text-gray-800">LEVEL {{ $lv }}</p>
-                                            <p class="mt-1 font-semibold text-gray-900">{{ $t['label'] }}</p>
-                                        </a>
-                                    @else
-                                        <div class="rounded-xl shadow p-4 {{ $t['bg'] }} opacity-60 cursor-not-allowed" aria-disabled="true" title="Enroll in a course to access this">
-                                            <p class="text-xs font-semibold text-gray-800">LEVEL {{ $lv }}</p>
-                                            <p class="mt-1 font-semibold text-gray-900">{{ $t['label'] }}</p>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
+    <section class="bg-white rounded-lg shadow-lg">
+        <div class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4">
+            <h2 class="text-lg font-semibold">
+                {{ ($course->code ?? 'COURSE') . ' ' . ($course->name ?? ($course->title ?? '')) }}
+            </h2>
+            {{-- Right side intentionally empty for students (no edit/add buttons) --}}
+            <div class="flex gap-3"></div>
         </div>
-    </section>
 
-    {{-- Announcements --}}
-    <section class="space-y-4">
-        <h2 class="text-lg font-semibold">Announcements</h2>
-        <div class="bg-white rounded-xl shadow overflow-hidden">
-            <div class="px-6 py-4 bg-purple-900 text-white font-semibold text-lg">
-            {{ strtoupper(
-                $hasCourse
-                    ? ($course->title ?? $course->code ?? 'Course')
-                    : 'FOUNDATION AUGUST 2025'
-            ) }}
+        <div class="p-6 flex gap-6">
+            {{-- Left shortcuts (mirror lecturer) --}}
+            <aside class="w-40 space-y-4">
+                @foreach (['Emergency Contact','Maps','Useful links','Profile'] as $leftNav)
+                    <button class="w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50" disabled>{{ $leftNav }}</button>
+                @endforeach
+            </aside>
+
+            {{-- Tiles grid (mirrors lecturer visual structure) --}}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 flex-1">
+                @foreach ($tiles as $t)
+                    @php
+                        // Build hrefs only if we have a course. For materials, student controller supports TYPE filter only.
+                        if ($hasCourse) {
+                            if ($t['type'] !== 'upload') {
+                                // Students see published materials filtered by type; include level in QS (harmless for controller)
+                                $href = route('student.materials.index', $course) . '?type=' . $t['type'] . '&level=' . $t['level'];
+                            } else {
+                                // Upload links go to assignments list for that level
+                                $href = route('student.assignments.index', $course) . '?level=' . $t['level'];
+                            }
+                        } else {
+                            $href = null;
+                        }
+                    @endphp
+
+                    @if($href)
+                        <a href="{{ $href }}" class="block rounded-lg p-5 border border-gray-300 hover:shadow {{ $t['color'] }}">
+                            <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
+                            <div class="text-lg font-semibold">{{ $t['label'] }}</div>
+                        </a>
+                    @else
+                        <div class="block rounded-lg p-5 border border-gray-300 opacity-60 cursor-not-allowed {{ $t['color'] }}" aria-disabled="true" title="Enroll in a course to access this">
+                            <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
+                            <div class="text-lg font-semibold">{{ $t['label'] }}</div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
-
-            @if(!$hasCourse)
-                <div class="px-6 py-4 text-sm text-gray-600">Enroll in a course to see announcements.</div>
-            @else
-                <ul class="divide-y divide-gray-200">
-                    @forelse(($announcements ?? []) as $a)
-                        <li class="px-6 py-4 flex items-center justify-between">
-                            {{-- Only build route if we have a course; we do because $hasCourse is true here --}}
-                            <a href="{{ route('student.courses.show', $course) }}#ann-{{ $a->id }}" class="text-blue-700 hover:underline">
-                                {{ $a->title }}
-                            </a>
-                            <span class="text-sm text-gray-600">
-                                {{ optional($a->published_at ?? $a->created_at)->format('jS F Y') }}
-                            </span>
-                        </li>
-                    @empty
-                        <li class="px-6 py-4 flex items-center justify-between"><span>No announcements yet.</span></li>
-                    @endforelse
-                </ul>
-            @endif
         </div>
     </section>
 </div>
