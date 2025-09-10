@@ -1,7 +1,6 @@
-<x-layout title="Materials">
-<div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
-    {{-- Breadcrumbs --}}
-  <!--breadcrumbs !important to add--> 
+{{-- resources/views/student/materials/index.blade.php --}}
+<x-layout>
+  {{-- Breadcrumbs --}}
   <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
     <ol class="list-reset flex">
       <li>
@@ -9,91 +8,88 @@
         <span class="mx-2">/</span>
       </li>
       <li>
-        <a href="{{ route('student.courses.show', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline font-semibold">
-          {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+        <a href="{{ route('student.materials.index', $course) }}" class="font-semibold hover:underline">
+          Materials for {{ $course->code }}
         </a>
       </li>
     </ol>
   </nav>
 
-@php
-  // Use request first (like your breadcrumb), fall back to controller vars
-  $rawType = request('type', $type ?? '');
-  // Normalize "self-study" (UI) to "self_study" (DB) so selected option matches
-  $currentType = $rawType === 'self-study' ? 'self_study' : $rawType;
-  $currentLevel = (string) request('level', (string) ($level ?? ''));
-
-  $headerMap = ['lesson' => 'Lesson Materials', 'worksheet' => 'Worksheet', 'self_study' => 'Self-study'];
-  $headerType = $headerMap[$currentType] ?? 'All Materials';
-@endphp
-
-<div class="flex items-center justify-between p-3 rounded bg-gray-50 border">
-  <div class="text-sm">
-    <span class="font-semibold">{{ $headerType }}</span>
-    <span class="text-gray-600">{{ $currentLevel !== '' ? ' • Level '.$currentLevel : '' }}</span>
-  </div>
-</div>
-
-{{-- Filters --}}
-<form method="GET" class="bg-white rounded-xl shadow p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
-  <div>
-    <label class="block text-sm text-gray-700 mb-1">Type</label>
-    <select name="type" class="w-full rounded border-gray-300">
-      <option value="">All</option>
-      @foreach (['lesson'=>'Lesson Materials','worksheet'=>'Worksheet','self_study'=>'Self-study'] as $val => $label)
-        <option value="{{ $val }}" @selected($currentType === $val)>{{ $label }}</option>
-      @endforeach
-    </select>
-  </div>
-
-  <div>
-    <label class="block text-sm text-gray-700 mb-1">Level</label>
-    <select name="level" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
-      <option value="">All</option>
-      @foreach ([1,2,3] as $lv)
-        <option value="{{ $lv }}" @selected((string)$currentLevel === (string)$lv)>{{ $lv }}</option>
-      @endforeach
-    </select>
-  </div>
-
-  <div class="sm:col-span-2 flex items-end gap-3">
-    <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
-    <a href="{{ route('student.materials.index', $course) }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Reset</a>
-  </div>
-</form>
-
-<!-- Right until here -->
-
-    {{-- List --}}
-    <div class="bg-white rounded-xl shadow">
-        <ul class="divide-y divide-gray-100">
-            @forelse ($materials as $m)
-                <li class="p-4 flex items-start justify-between gap-4">
-                    <div class="min-w-0">
-                        <p class="font-medium truncate">{{ $m->title }}</p>
-                        <p class="text-sm text-gray-500">
-                            {{ \Illuminate\Support\Str::of($m->type)->replace('_',' ')->title() }} @if($m->level) • Level {{ $m->level }} @endif
-                            @if($m->uploaded_at) • {{ $m->uploaded_at->format('M d, Y') }} @endif
-                        </p>
-                        @if($m->descriptions)
-                            <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ $m->descriptions }}</p>
-                        @endif
-                    </div>
-                    <div class="shrink-0 flex items-center gap-3">
-                        @if($m->url)
-                            <a href="{{ $m->url }}" target="_blank" class="text-blue-600 hover:underline text-sm">Open Link</a>
-                        @elseif($m->file_path)
-                            <a href="{{ route('student.materials.download', $m) }}" class="text-blue-600 hover:underline text-sm">Download</a>
-                        @endif
-                    </div>
-                </li>
-            @empty
-                <li class="p-8 text-center text-gray-500 text-sm">No materials found.</li>
-            @endforelse
-        </ul>
-        <div class="px-4 py-3 border-t">
-            {{ $materials->appends(request()->only('type','level'))->links() }}
-        </div>
+  <div class="max-w-8xl mx-auto p-3">
+    {{-- Header --}}
+    @php
+      $levelColors = [
+          3 => 'bg-cyan-100 text-cyan-800',
+          2 => 'bg-green-100 text-green-800',
+          1 => 'bg-rose-100 text-rose-800',
+      ];
+    @endphp
+    <div class="flex items-center justify-between p-4 rounded-lg bg-gray-100">
+      <div>
+        <h1 class="text-2xl font-semibold">Course Materials</h1>
+        <h2 class="text-xl font-thin">{{ $course->code }} {{ $course->name }}</h2>
+        {{-- Show the student's enrolled level for this course --}}
+        @if ($student_level)
+            <p class="mt-2 text-sm">Your enrolled level: 
+                <span class="font-bold px-2 py-1 text-xs rounded-full {{ $levelColors[$student_level] ?? 'bg-gray-200' }}">
+                    Level {{ $student_level }}
+                </span>
+            </p>
+        @endif
+      </div>
+      {{-- "Add Material" button is removed for students --}}
     </div>
-</div>
+
+    {{-- Flash Messages (optional, but good practice to keep) --}}
+    @if (session('success'))
+      <div class="mt-4 p-3 rounded bg-green-50 text-green-700">{{ session('success') }}</div>
+    @endif
+
+    {{-- Materials Table --}}
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-sm border">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Title</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Level</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Uploaded Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($materials as $material)
+            {{-- Highlight the row if material level matches the student's enrolled level --}}
+            <tr class="border-t hover:bg-gray-50 {{ $material->level == $student_level ? 'bg-blue-50' : '' }}">
+              <td class="px-4 py-3">
+                {{-- The title is now the download link --}}
+                @if ($material->file_path)
+                  <a class="text-blue-600 hover:underline font-semibold" href="{{ route('student.materials.download', $material) }}">
+                    {{ $material->title }}
+                  </a>
+                @else
+                  <span class="text-gray-600">{{ $material->title }}</span> 
+                  <span class="text-gray-400 text-xs">(No file)</span>
+                @endif
+              </td>
+              <td class="px-4 py-3 text-gray-700">{{ str($material->type)->replace('_', ' ')->title() }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ $material->level ?? '—' }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ optional($material->uploaded_at)->format('M d, Y') }}</td>
+            </tr>
+          @empty
+            {{-- Updated colspan to 4 since columns were removed --}}
+            <tr>
+              <td class="px-4 py-4 text-center text-gray-500" colspan="4">No materials have been uploaded for this course yet.</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+
+    {{-- Pagination --}}
+    @if ($materials->hasPages())
+        <div class="mt-4">
+            {{ $materials->links() }}
+        </div>
+    @endif
+  </div>
 </x-layout>

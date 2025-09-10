@@ -13,12 +13,12 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::with('user')->latest()->paginate(20);
-        return view('admin/students/index', compact('students'));
+        return view('admin.students.index', compact('students'));
     }
 
     public function create()
     {
-        return view('admin/students/create');
+        return view('admin.students.create');
     }
 
     public function store(Request $request)
@@ -27,7 +27,7 @@ class StudentController extends Controller
             'name'       => ['required','string','max:255'],
             'email'      => ['required','email','max:255','unique:users,email'],
             'student_id' => ['required','string','max:8','unique:students,student_id'],
-            'password'   => ['required','string','min:6'],
+            'password'   => ['required','string','min:8'],
         ]);
 
         $user = User::create([
@@ -35,6 +35,7 @@ class StudentController extends Controller
             'email'    => $data['email'],
             'role'     => 'student',
             'password' => Hash::make($data['password']),
+            'nickname' => 'Test Student',
         ]);
 
         Student::create([
@@ -48,7 +49,7 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         $student->load('user');
-        return view('admin/students/edit', compact('student'));
+        return view('admin.students.edit', compact('student'));
     }
 
     public function update(Request $request, Student $student)

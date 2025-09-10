@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\CourseController as AdminCourses;
 use App\Http\Controllers\Admin\StudentController as AdminStudents;
 use App\Http\Controllers\Admin\LecturerController as AdminLecturers;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncements;
+use App\Models\Student;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public / Guest
@@ -78,16 +79,9 @@ Route::middleware(['auth','student'])
             ->name('courses.show');
 
         // Materials (three tiles: lesson / worksheet / self‑study) + optional level filter
-        Route::get('/courses/{course}/materials', [StudentDashboard::class, 'materials'])
+        Route::get('/courses/{course}/materials', [StudentMaterials::class, 'index'])
             ->middleware('can:view,course')
             ->name('materials.index');
-
-        // Tile → “type + level” view: e.g. /materials/worksheet/1
-        Route::get('/courses/{course}/materials/{type}/{level?}', [StudentDashboard::class, 'materialsByTypeLevel'])
-            ->whereIn('type', ['lesson','worksheet','self-study'])
-            ->whereNumber('level')
-            ->middleware('can:view,course')
-            ->name('materials.byTypeLevel');
 
         // Assignments (aka “Upload links”)
         Route::get('/courses/{course}/assignments', [StudentDashboard::class, 'assignments'])

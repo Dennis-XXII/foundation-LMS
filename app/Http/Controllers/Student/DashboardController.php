@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -42,6 +43,8 @@ class DashboardController extends Controller
             ]);
         }
 
+
+
         $announcements = $course->announcements()
             ->orderByDesc('posted_at') // exists in schema
             ->orderByDesc('created_at')
@@ -59,14 +62,17 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $student_level = $enrollments->firstWhere('course_id', $course->id)?->level;
+
+
         return view('student.dashboard', compact(
-            'student', 'course', 'announcements', 'assignments', 'materials', 'activeCourse', 'enrollments'
+            'student', 'course', 'announcements', 'assignments', 'materials', 'activeCourse', 'enrollments', 'student_level'
         ));
     }
 
-    /**
+    /***
      * View a single course details
-     */
+
     public function course(Course $course)
     {
         $this->authorize('view', $course);
@@ -75,58 +81,47 @@ class DashboardController extends Controller
 
         return view('student.courses.show', compact('course'));
     }
+    */
 
-    /**
-     * View all materials in a course (with optional filters)
-     */
-    public function materials(Course $course)
-    {
-        $this->authorize('view', $course);
-
-        $materials = $course->materials()
-            ->where('is_published', true)
-            ->orderByDesc('uploaded_at')
-            ->paginate(20);
-
-        return view('student.materials.index', compact('course', 'materials'));
-    }
-
-    /**
-     * View materials by type and level
-     */
-    public function materialsByTypeLevel(Course $course, string $type, ?int $level = null)
-    {
-        $this->authorize('view', $course);
-
-        $dbType = $this->normalizeType($type);
-
-        abort_unless(in_array($dbType, self::TYPES, true), 404);
-
-        $materials = $course->materials()
-            ->where('is_published', true)
-            ->where('type', $dbType)
-            ->when($level, fn($q) => $q->where('level', $level))
-            ->orderByDesc('uploaded_at')
-            ->paginate(20);
-
-        return view('student.materials.index', compact('course', 'materials', 'dbType', 'level'));
-    }
 
     /**
      * View assignments in a course
      */
     public function assignments(Course $course)
     {
+        // 1. Authorize that the student can view the course
         $this->authorize('view', $course);
 
-    $assignments = $course->assignments()
-        ->latest('due_at')
-        ->with(['submissions' => function ($q) {
-            $q->where('student_id', Auth::user()->student->id);
-        }])
-       ->paginate(20)
-       ->withQueryString();
+        // 2. Get the student's enrolled level for this course *before* the main query
+        $student_level = Enrollment::where('student_id', Auth::id()) // Recommended to use user_id to match Auth::id()
+            ->where('course_id', $course->id)
+            ->value('level');
 
-        return view('student.assignments.index', compact('course', 'assignments'));
+        // 3. Build the query, filtering assignments by the student's level
+        $assignments = $course->assignments()
+            // ✅ THIS IS THE KEY IMPROVEMENT:
+            // Securely filter the assignments at the database level.
+            ->when($student_level, function ($query) use ($student_level) {
+                $query->where(function ($subQuery) use ($student_level) {
+                    $subQuery->where('level', '<=', $student_level)
+                            ->orWhereNull('level'); // Also include assignments without a level
+                });
+            })
+            // Eager load this student's submissions for the filtered assignments
+            ->with(['submissions' => function ($q) {
+                $q->where('student_id', Auth::id()); // Using Auth::id() for consistency
+            }])
+            ->latest('due_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        // 4. Return the view with the securely filtered data.
+        // The old, unsafe if/else block is no longer needed.
+        return view('student.assignments.index', compact(
+            'course',
+            'assignments',
+            'student_level'
+        ));
     }
+    
 }
