@@ -3,137 +3,248 @@
 namespace App\Http\Controllers\Lecturer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assignment;
 use App\Models\Course;
 use App\Models\Submission;
+use App\Models\Assessment; // Ensure Assessment model is imported
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule; // Import Rule
 
-class AssessmentController extends Controller
+class AssessmentController extends Controller // Ensure class name matches file/routes (e.g., LecturerAssessmentsController)
 {
     /**
-     * List all submissions for a course (for review/assessment).
-     * Shows latest first, with student & assignment eager-loaded.
+     * Display the assessment overview page for a course.
+     * Fetches assignments and their submissions for assessment.
+     * Route: lecturer.courses.assessments.index
      */
-    public function index(Course $course)
+    public function index(Request $request, Course $course)
     {
-        // Ensure this lecturer can see this course
-        $this->authorize('view', $course);
+        $this->authorize('update', $course);
 
-        $submissions = Submission::with(['student.user', 'assignment'])
-            ->whereHas('assignment', fn ($q) => $q->where('course_id', $course->id))
-            ->latest('submitted_at')
-            ->paginate(20);
+        $level = (int) $request->query('level');
+        if (!$level) $level = null;
 
-        return view('lecturer.assessments.index', compact('course', 'submissions'));
+        // Fetch assignments, maybe only those with submissions or published ones
+        $assignmentsQuery = Assignment::query()
+            ->where('course_id', $course->id)
+            ->when($level, fn ($query) => $query->where('level', $level))
+            // Optionally add ->where('is_published', true)
+            // Optionally add ->whereHas('submissions')
+            ->withCount('submissions') // Get count of submissions for display
+            ->latest('due_at');
+
+        // Paginate the list of assignments
+        $assignments = $assignmentsQuery->paginate(20)->withQueryString(); // Adjust pagination size
+
+        return view('lecturer.assessments.index', compact( // Note: New view path
+            'course',
+            'assignments',
+            'level'
+        ));
     }
 
     /**
-     * Show single submission detail page with assess form (score/comment).
+     * Show the form for creating a new assessment resource.
+     * Typically handled inline, but included for resource controller completeness.
+     * Route: GET lecturer/submissions/{submission}/assessments/create
+     * Note: Your route alias 'submissions.assessments.create.alias' might point here too.
      */
-    public function show(Course $course, Submission $submission)
+    public function create(Submission $submission)
     {
-        $this->authorize('view', $course);
-        $this->authorize('view', $submission); // Ensure lecturer is tied to the course of this submission
-
-        // Defensive: submission must belong to this course
-        abort_unless(
-            optional($submission->assignment)->course_id === $course->id,
-            404,
-            'Submission not found for this course.'
-        );
-
-        $submission->load(['student.user', 'assignment']);
-
-        return view('lecturer.assessments.show', compact('course', 'submission'));
+        $this->authorize('update', $submission->assignment->course);
+        // Usually, the form is part of the index. Redirect back there.
+        // If you had a dedicated create view: return view('lecturer.assessments.create', compact('submission'));
+        return redirect()->route('lecturer.courses.assessments.index', $submission->assignment->course)
+               ->withFragment('assess-' . $submission->id); // Attempt to jump to the submission form
     }
 
     /**
-     * Download the student's uploaded file.
-     * Uses response()->download(...) per your note.
+     * Store a newly created assessment resource in storage.
+     * Route: POST lecturer/submissions/{submission}/assessments
      */
-    public function download(Course $course, Submission $submission)
+    public function store(Request $request, Submission $submission)
     {
-        $this->authorize('view', $course);
-        $this->authorize('view', $submission);
+        $this->authorize('update', $submission); // Authorize the action
+        abort_unless($submission->submitted_at, 403, 'Cannot assess an assignment that has not been submitted.');
 
-        abort_unless(
-            optional($submission->assignment)->course_id === $course->id,
-            404
-        );
-
-        if (!$submission->file_path) {
-            abort(404, 'No file attached.');
-        }
-
-        $fullPath = storage_path('app/public/' . ltrim($submission->file_path, '/'));
-        if (!is_file($fullPath)) {
-            abort(404, 'File not found on server.');
-        }
-
-        // Optionally set a nice download name:
-        $downloadName = sprintf(
-            '%s-%s-%s',
-            $submission->assignment?->title ?? 'assignment',
-            $submission->student?->user?->name ?? 'student',
-            basename($fullPath)
-        );
-
-        return response()->download($fullPath, $downloadName);
-    }
-
-    /**
-     * Store/update the assessment (score, comment, feedback file).
-     * Idempotent: if already assessed, update it.
-     */
-    public function store(Request $request, Course $course, Submission $submission)
-    {
-        $this->authorize('update', $submission); // “assess” ability can be mapped to update
-        abort_unless(optional($submission->assignment)->course_id === $course->id, 404);
-
-        // Validate inputs. Score is 0–100 by default; change as needed.
         $validated = $request->validate([
-            'score'               => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'comment'             => ['nullable', 'string', 'max:2000'],
-            'feedback_file'       => ['nullable', 'file', 'max:10240'], // 10MB
+            'score'         => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'comment'       => ['nullable', 'string', 'max:2000'],
+            'feedback_file' => ['nullable', 'file', 'max:10240'],
+            // Add clear_feedback_file to validation if the checkbox exists in the form
             'clear_feedback_file' => ['nullable', 'boolean'],
         ]);
 
-        // Handle optional feedback file upload
-        if ($request->boolean('clear_feedback_file')) {
-            $submission->feedback_file_path = null;
+        // Find existing assessment or create a new instance (without saving yet)
+        $assessment = Assessment::firstOrNew(['submission_id' => $submission->id]);
+
+        // Prepare data
+        $assessmentData = [
+            'score'       => $validated['score'] ?? null,
+            'comment'     => $validated['comment'] ?? null,
+            'lecturer_id' => Auth::user()->lecturer->id,
+            'assessed_by' => Auth::id(),
+            'assessed_at' => now(),
+            // Keep existing feedback_file_path unless cleared or replaced
+            'feedback_file_path' => $assessment->feedback_file_path,
+        ];
+
+        $diskName = 'public'; // Change if needed
+        $disk = Storage::disk($diskName);
+
+        // Handle feedback file update/clear logic (moved from update method)
+        if ($request->boolean('clear_feedback_file') && $assessment->feedback_file_path) {
+            $disk->delete($assessment->feedback_file_path);
+            $assessmentData['feedback_file_path'] = null; // Mark for update
         }
-        if ($request->hasFile('feedback_file')) {
-            $submission->feedback_file_path = $request->file('feedback_file')->store('assessments', 'public');
+        // Check for new file *after* checking clear, use elseif
+        elseif ($request->hasFile('feedback_file')) {
+            // Delete old file if it exists before storing new one
+            if ($assessment->feedback_file_path) {
+                $disk->delete($assessment->feedback_file_path);
+            }
+            $feedbackPath = $request->file('feedback_file')->store('feedback/'.$submission->id, $diskName);
+            $assessmentData['feedback_file_path'] = $feedbackPath; // Mark for update
         }
 
-        // Save score/comment & audit fields (assessor + assessed_at)
-        $submission->score        = array_key_exists('score', $validated) ? $validated['score'] : $submission->score;
-        $submission->comment      = array_key_exists('comment', $validated) ? $validated['comment'] : $submission->comment;
-        $submission->assessed_by  = Auth::id();
-        $submission->assessed_at  = now();
-        $submission->save();
+        // Update or Create the assessment record
+        Assessment::updateOrCreate(
+            ['submission_id' => $submission->id], // Find condition
+            $assessmentData // Data to insert or update with
+        );
 
-        return back()->with('success', 'Assessment saved 👍');
+        return redirect()->route('lecturer.assignments.submissions.index', $submission->assignment)
+                    ->with('success', 'Assessment saved successfully.')
+                    ->withFragment('sub-' . $submission->id);
+    }
+
+    public function showSubmissions(Request $request, Assignment $assignment)
+    {
+        // Authorize viewing/updating the course this assignment belongs to
+        $this->authorize('update', $assignment->course);
+
+        // Eager load submissions with necessary related data
+        $assignment->load([
+            'course', // Load course for breadcrumbs/header
+            'submissions' => function ($query) {
+                // Order submissions as needed
+                $query->orderBy('student_id');
+            },
+            'submissions.student.user', // Student details
+            'submissions.assessment'    // Existing assessment data
+        ]);
+
+        // Pass the single assignment (with loaded submissions) to the new view
+        return view('lecturer.assessments.edit', compact( // Note: New view path
+            'assignment'
+            // 'course' is available via $assignment->course
+        ));
     }
 
     /**
-     * Download the lecturer’s feedback file (if any).
+     * Display the specified assessment resource.
+     * Often not needed as details are shown inline. Included for completeness.
+     * Route: GET lecturer/submissions/{submission}/assessments/{assessment}
      */
-    public function downloadFeedback(Course $course, Submission $submission)
+    public function show(Submission $submission, Assessment $assessment)
     {
-        $this->authorize('view', $course);
-        $this->authorize('view', $submission);
-        abort_unless(optional($submission->assignment)->course_id === $course->id, 404);
+        $this->authorize('update', $submission->assignment->course);
+        // Ensure assessment belongs to submission
+        abort_unless($assessment->submission_id === $submission->id, 404);
 
-        if (!$submission->feedback_file_path) {
-            abort(404, 'No feedback file found.');
-        }
+        // Load relationships if needed for a dedicated view
+        // $assessment->load(['lecturer.user', 'submission.student.user']);
+        // If you had a dedicated show view: return view('lecturer.assessments.show', compact('submission', 'assessment'));
 
-        $fullPath = storage_path('app/public/' . ltrim($submission->feedback_file_path, '/'));
-        if (!is_file($fullPath)) {
-            abort(404, 'Feedback file not found on server.');
-        }
-
-        return response()->download($fullPath, basename($fullPath));
+        // Redirect back to the main assess page, potentially highlighting the row
+         return redirect()->route('lecturer.courses.assessments.index', $submission->assignment->course)
+               ->withFragment('assess-' . $submission->id);
     }
+
+/**
+     * Show the form for editing the specified assessment resource.
+     * Route: GET lecturer/submissions/{submission}/assessments/{assessment}/edit
+     */
+    public function edit(Submission $submission, ? Assessment $assessment = null) // Make assessment optional for create case? Or handle via store
+    {
+        abort_unless($assessment->submission_id === $submission->id, 404);
+
+        $this->authorize('update', $submission->assignment->course); // Authorize
+
+        // Eager load necessary data for the view
+        $submission->load(['student.user', 'assignment.course']);
+        // $assessment might be null if creating via edit route, or already loaded
+
+        // Return the dedicated edit view
+        return view('lecturer.assessments.edit', compact('submission', 'assessment'));
+    }
+
+    /**
+     * Update the specified assessment resource in storage.
+     * Route: PUT/PATCH lecturer/submissions/{submission}/assessments/{assessment}
+     */
+    public function update(Request $request, Submission $submission, Assessment $assessment)
+    {   
+        $this->authorize('update', $submission->assignment->course);
+        abort_unless($assessment->submission_id === $submission->id, 404, 'Assessment mismatch.');
+
+        $validated = $request->validate([
+            'score'               => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'comment'             => ['nullable', 'string', 'max:2000'],
+            'feedback_file'       => ['nullable', 'file', 'max:10240'],
+            'clear_feedback_file' => ['nullable', 'boolean'],
+        ]);
+
+        $assessmentData = [
+            'score'       => $validated['score'] ?? null,
+            'comment'     => $validated['comment'] ?? null,
+            'lecturer_id' => Auth::user()->lecturer->id, // Update lecturer if needed
+            'assessed_by' => Auth::id(),
+            'assessed_at' => now(),
+        ];
+
+        $diskName = 'public'; // Change if needed
+        $disk = Storage::disk($diskName);
+
+        // Handle feedback file update/clear
+        if ($request->boolean('clear_feedback_file') && $assessment->feedback_file_path) {
+            $disk->delete($assessment->feedback_file_path);
+            $assessmentData['feedback_file_path'] = null;
+        }
+        if ($request->hasFile('feedback_file')) {
+            if ($assessment->feedback_file_path) {
+                $disk->delete($assessment->feedback_file_path);
+            }
+            $feedbackPath = $request->file('feedback_file')->store('feedback/'.$submission->id, $diskName);
+            $assessmentData['feedback_file_path'] = $feedbackPath;
+        }
+
+        $assessment->update($assessmentData);
+
+        return back()->with('success', 'Assessment updated successfully.')
+                     ->withFragment('assess-' . $submission->id);
+    }
+
+    /**
+     * Remove the specified assessment resource from storage.
+     * Route: DELETE lecturer/submissions/{submission}/assessments/{assessment}
+     */
+    public function destroy(Submission $submission, Assessment $assessment)
+    {
+        $this->authorize('delete', $submission->assignment->course); // Or a more specific policy
+        abort_unless($assessment->submission_id === $submission->id, 404);
+
+        // Delete feedback file if it exists
+        if ($assessment->feedback_file_path) {
+            Storage::disk('public')->delete($assessment->feedback_file_path); // Use your feedback disk
+        }
+
+        $assessment->delete(); // Use forceDelete() if using SoftDeletes and want permanent removal
+
+        return back()->with('success', 'Assessment removed successfully.')
+                     ->withFragment('assess-' . $submission->id);
+    }
+
 }

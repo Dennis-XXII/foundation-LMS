@@ -11,7 +11,16 @@ class Assignment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'course_id','is_published','title','instruction','file_path','url','due_at'
+        'course_id',
+        'is_published',
+        'title',
+        'instruction',
+        'level',
+        'day',
+        'week',
+        'file_path',
+        'url',
+        'due_at'
     ];
 
     protected $casts = [

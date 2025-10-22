@@ -16,7 +16,17 @@ class Material extends Model
     public const TYPE_SELF_STUDY = 'self-study';
 
     protected $fillable = [
-        'course_id','is_published','type','level','title','descriptions','file_path','url','uploaded_at',
+        'course_id',
+        'is_published',
+        'type',
+        'level',
+        'day',
+        'week',
+        'title',
+        'descriptions',
+        'file_path',
+        'url',
+        'uploaded_at',
     ];
 
     protected $casts = [

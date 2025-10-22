@@ -1,6 +1,5 @@
 {{-- resources/views/lecturer/materials/create.blade.php --}}
 <x-layout>
-  <!--breadcrumbs-->
   <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
     <ol class="list-reset flex">
       <li>
@@ -18,8 +17,6 @@
       </li>
     </ol>
   </nav>
-  <!--breadcrumbs end-->
-
   {{-- Course header --}}
   <div class="max-w-4xl mx-auto p-6">
     <h1 class="text-2xl font-semibold">
@@ -91,14 +88,37 @@
           @else
             <label class="block text-sm font-medium">Level</label>
             <select name="level" class="mt-1 w-full border rounded px-3 py-2">
+              <option value="">Select level (optional)</option>
               @foreach([1,2,3] as $lv)
-                <option value="{{ $lv }}" @selected(old('level', request('level'))==$lv)>{{ $lv }}</option>
+                <option value="{{ $lv }}" @selected(old('level', request('level'))==$lv)>Level {{ $lv }}</option>
               @endforeach
             </select>
           @endif
         </div>
 
-        <div class="flex items-center gap-2">
+        {{-- NEW: Week --}}
+        <div>
+          <label class="block text-sm font-medium">Week</label>
+          <select name="week" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="">Select week (optional)</option>
+            @foreach(range(1, 8) as $w)
+              <option value="{{ $w }}" @selected(old('week') == $w)>Week {{ $w }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        {{-- NEW: Day --}}
+        <div>
+          <label class="block text-sm font-medium">Day</label>
+          <select name="day" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="">Select day (optional)</option>
+            @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
+              <option value="{{ $day }}" @selected(old('day') == $day)>{{ $day }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 md:col-start-1"> {{-- Moved to new line for grid flow --}}
           <input id="is_published" name="is_published" type="checkbox" value="1" @checked(old('is_published',1))>
           <label for="is_published" class="text-sm">Published</label>
         </div>

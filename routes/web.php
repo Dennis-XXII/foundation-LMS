@@ -21,6 +21,7 @@ use App\Http\Controllers\Lecturer\AssessmentController as LecturerAssessments;
 use App\Http\Controllers\Lecturer\AnnouncementController as LecturerAnnouncements;
 use App\Http\Controllers\Lecturer\EnrollmentController as LecturerEnrollments;
 use App\Http\Controllers\Lecturer\CourseController as LecturerCourses;
+use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissions;
 
 // Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -111,8 +112,7 @@ Route::middleware(['auth','lecturer'])
         // Materials (files or links; types: lesson/worksheet/self‑study)
         Route::resource('courses.materials', LecturerMaterials::class)
             ->parameters(['materials' => 'material'])
-            ->shallow() // /materials/{material}
-            ->only(['index','create','store','edit','update','destroy']);
+            ->shallow();
 
 
         Route::get('/materials/{material}/download', [LecturerMaterials::class, 'download'])
@@ -125,19 +125,32 @@ Route::middleware(['auth','lecturer'])
         Route::resource('courses.assignments', LecturerAssignments::class)
             ->parameters(['assignments' => 'assignment'])
             ->shallow();
+
         Route::get('/assignments/{assignment}/download', [LecturerAssignments::class, 'download'])
             ->name('assignments.download');
 
 
         // Assessments (grade + comment on submissions)
+
+        // --- Assessment Overview Page (NEW) ---
+        Route::get('courses/{course}/assessments', [LecturerAssessments::class, 'index'])
+            ->name('courses.assessments.index');
+
         Route::resource('submissions.assessments', LecturerAssessments::class)
-            ->only(['create','store','edit','update'])
-            ->parameters(['assessments' => 'assessment'])
-            ->scoped();
+            ->parameters(['assessments' => 'assessment']);
 
         Route::get('/submissions/{submission}/assessments', [LecturerAssessments::class, 'create'])
             ->name('submissions.assessments.create.alias');
 
+        // --- Show Submissions for a Single Assignment ---
+        Route::get('/assignments/{assignment}/submissions', [LecturerSubmissions::class, 'index'])
+         ->name('assignments.submissions.index');
+
+        Route::get('/submissions/{submission}/download', [LecturerSubmissions::class, 'download']) // Example
+        ->name('submissions.download');
+
+        Route::post('/submissions/{submission}/score', [LecturerSubmissions::class, 'updateScore'])
+            ->name('submissions.updateScore');
 
         // Announcements authored by lecturer (course‑scoped or global if your policy allows)
         Route::resource('announcements', LecturerAnnouncements::class)

@@ -1,43 +1,42 @@
+{{-- resources/views/lecturer/assignments/index.blade.php --}}
 <x-layout>
     @php
         $level = (int) request('level');
-        $tab   = request('tab'); // null | 'assess'
-        $isAssess = $tab === 'assess';
-        $type = request('type') ?? 'lesson'; // default to lesson
+        // $tab and $isAssess REMOVED
         $levelLabel = $level ? ('LEVEL '.$level) : null;
+        $week = (int) request('week');
+        $day = request('day');
     @endphp
 
-      <!--breadcrumbs-->
-  <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
-    <ol class="list-reset flex">
-      <li>
-        <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
-        <span class="mx-2">/</span>
-      </li>
-      <li class="text-black font-semibold">
-        Upload Links
-      </li>
-    </ol>
-  </nav>
-  <!--breadcrumbs end-->
-
-    {{-- Top options: Post / Assess (active highlight) --}}
+    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+      <ol class="list-reset flex">
+        <li>
+          <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
+          <span class="mx-2">/</span>
+        </li>
+        <li class="text-black font-semibold">
+          Upload Links
+        </li>
+      </ol>
+    </nav>
+    {{-- Top options: Post / Assess --}}
     <div class="flex items-center justify-center gap-6 mb-8">
+        {{-- Current Page (Active style) --}}
         <a href="{{ route('lecturer.courses.assignments.index', $course) }}?level={{ $level }}"
-           class="px-6 py-2.5 rounded-lg shadow {{ $isAssess ? 'bg-rose-200 text-rose-800' : 'bg-rose-500 text-white hover:bg-rose-600' }}">
+           class="px-6 py-2.5 rounded-lg shadow bg-rose-500 text-white"> {{-- Always active style for this page --}}
             Post Upload Links
         </a>
-        <a href="{{ route('lecturer.courses.assignments.index', $course) }}?level={{ $level }}&tab=assess"
-           class="px-6 py-2.5 rounded-lg shadow {{ $isAssess ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-800 hover:bg-blue-300' }}">
+        {{-- Link to NEW Assessment Page --}}
+        <a href="{{ route('lecturer.courses.assessments.index', $course) }}?level={{ $level }}" {{-- UPDATED Route --}}
+           class="px-6 py-2.5 rounded-lg shadow bg-blue-200 text-blue-800 hover:bg-blue-300"> {{-- Always inactive style for this page --}}
             Assess Student Uploads
         </a>
     </div>
 
     {{-- If no level provided, guide the lecturer --}}
-    @if(!$level)
+    @if(!$level) {{-- Removed !$isAssess check --}}
         <div class="rounded border bg-yellow-50 text-yellow-800 px-4 py-3 mb-6">
-            Please select a level from the dashboard. Example:
-            <code class="px-1 py-0.5 bg-yellow-100 rounded">?level=1</code>
+            Please select a level from the dashboard to see assignments.
         </div>
     @endif
 
@@ -55,62 +54,129 @@
         </div>
     @endif
 
-    @if(!$isAssess)
-        {{-- ===================== POST UPLOAD LINKS (CREATE + LIST) ===================== --}}
-        <div class="bg-white rounded-lg shadow border p-6 mb-8">
-            {{-- Upload form (inline, per UI) --}}
-            <form method="POST"
-                  action="{{ route('lecturer.courses.assignments.store', $course) }}"
-                  enctype="multipart/form-data"
-                  class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                @csrf
-                <input type="hidden" name="level" value="{{ $level }}">
+    {{-- ===================== POST UPLOAD LINKS (NEW DESIGN) ===================== --}}
+    {{-- @if(!$isAssess) REMOVED --}}
 
-                <div class="md:col-span-1">
-                    <label class="block text-sm text-gray-700 mb-1">File name</label>
-                    <input name="title" placeholder="Assignment 1"
-                           class="w-full border rounded px-3 py-2" required>
-                </div>
-
-                <div class="md:col-span-1">
-                    <label class="block text-sm text-gray-700 mb-1">Due Date</label>
-                    <input type="date" name="due_at" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="md:col-span-1">
-                    <label class="block text-sm text-gray-700 mb-1">Attachment (optional)</label>
-                    <input type="file" name="file" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="md:col-span-1">
-                    <button class="w-full md:w-auto px-5 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
-                        Upload
-                    </button>
-                </div>
-
-                <div class="md:col-span-4">
-                    <label class="block text-sm text-gray-700 mb-1 ">Instruction</label>
-                    <textarea name="instruction" rows="2" class="w-full border rounded px-3 py-2 min-h-[100px]"
-                              placeholder="Give instructions here..."></textarea>
-                </div>
-
-                <div class="md:col-span-4">
-                    <label class="inline-flex items-center gap-2">
-                        <input type="checkbox" name="is_published" value="1" checked>
-                        <span class="text-sm text-gray-700">Active</span>
-                    </label>
-                </div>
-            </form>
+        @php
+          $levelColors = [
+            3 => 'bg-cyan-300',
+            2 => 'bg-green-200',
+            1 => 'bg-rose-200',
+          ];
+          $headerColor = $levelColors[$level ?? null] ?? 'bg-gray-100';
+        @endphp
+        <div class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}">
+          <div>
+            <h1 class="text-2xl font-semibold ">Upload Links</h1>
+            <h1 class="text-xl font-thin">{{ $course->code }} {{ $course->name }}</h1>
+          </div>
+          {{-- This is the main "Add" button --}}
+          <a
+            href="{{ route('lecturer.courses.assignments.create', [
+                'course' => $course,
+                'level'  => $level, // Pass current level filter
+            ]) }}"
+            class="px-3 py-2 rounded bg-black text-white"
+          >
+            Add Upload Link
+          </a>
         </div>
 
-        {{-- Uploaded Links table (only current level) --}}
-        <div class="bg-white rounded-lg shadow border overflow-hidden">
-            <div class="bg-rose-300 px-6 py-3 font-semibold">Uploaded Links</div>
-            <table class="w-full text-left">
-                <thead class="bg-gray-100">
+        {{-- Filters --}}
+        <form method="GET" class="mt-4 flex flex-wrap gap-3 items-end">
+          {{-- Level Filter --}}
+          <div>
+            <label class="block text-sm text-gray-600">Level</label>
+            <select name="level" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
+              <option value="">All Levels</option>
+              @foreach ([1,2,3] as $lv)
+                <option value="{{ $lv }}" @selected($level == $lv)>Level {{ $lv }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          {{-- Submit button clears week/day --}}
+          <button class="px-3 py-2 rounded bg-red-600 text-white">Apply Level</button>
+
+          {{-- Link to view all for the current level (clears week/day) --}}
+          @if ($level || $week || $day)
+            <a href="{{ route('lecturer.courses.assignments.index',[
+                    'course' => $course,
+                    'level' => $level,
+                    ]) }}" class="text-sm text-blue-600 hover:underline">View All Assignments for Level {{ $level }}</a>
+          @endif
+        </form>
+
+        {{-- Week/Day Navigation Grid --}}
+        @php
+            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW'];
+        @endphp
+        <div class="mt-6 overflow-x-auto">
+          <table class="min-w-full text-lg">
+            <tbody class="bg-white">
+              @for ($w = 1; $w <= 8; $w++)
+                <tr class="border-b border-gray-200">
+                  <td class="px-3 py-2">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <span class="font-bold text-blue-700">Week {{ $w }}:</span>
+                      @foreach ($days as $dayName)
+                        {{-- This link preserves the $level filter --}}
+                        <a href="{{ request()->fullUrlWithQuery(['week' => $w, 'day' => $dayName, 'level' => $level]) }}"
+                           @class([
+                                'font-bold',
+                                'underline' => ($week == $w && $day == $dayName),
+                                'hover:underline' => !($week == $w && $day == $dayName),
+                                'text-purple-700' => $dayName === 'REVIEW',
+                                'text-red-800' => $dayName !== 'REVIEW',
+                           ])>
+                          {{ $dayName }}
+                        </a>
+                      @endforeach
+                    </div>
+                  </td>
+                </tr>
+              @endfor
+            </tbody>
+          </table>
+        </div>
+
+        {{-- Uploaded Links table (now filtered) --}}
+        <div class="mt-8">
+            {{-- Flex container for title and contextual button --}}
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold">
+                  @if ($week && $day)
+                      Assignments for: Week {{ $week }}, {{ $day }}
+                  @elseif ($level)
+                      Assignments for Level {{ $level }}
+                  @else
+                      All Assignments
+                  @endif
+              </h2>
+
+              {{-- Contextual "Add" button --}}
+              @if ($week && $day && $level)
+                <a href="{{ route('lecturer.courses.assignments.create', [
+                        'course' => $course,
+                        'level'  => $level, // Pass the level filter
+                        'week'   => $week,  // Pass the selected week
+                        'day'    => $day,   // Pass the selected day
+                    ]) }}"
+                   class="px-3 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
+                    + Add to Week {{ $week }}, {{ $day }}
+                </a>
+              @endif
+            </div>
+
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full text-sm border">
+                <thead class="bg-gray-50">
                     <tr class="text-sm text-gray-600">
                         <th class="px-6 py-3">Assignment title</th>
                         <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Level</th>
+                        <th class="px-6 py-3">Week</th>
+                        <th class="px-6 py-3">Day</th>
                         <th class="px-6 py-3">Due Date</th>
                         <th class="px-6 py-3">Actions</th>
                     </tr>
@@ -118,25 +184,32 @@
                 <tbody class="divide-y">
                 @forelse($assignments as $a)
                     <tr>
-                        <td class="px-6 py-3">{{ $a->title }}</td>
+                        <td class="px-6 py-3">
+                            <a href="{{ route('lecturer.assignments.show', $a) }}" class="text-blue-600 hover:underline font-medium">
+                                {{ $a->title }}
+                            </a>
+                        </td>
                         <td class="px-6 py-3">
                             @php $active = (bool) $a->is_published; @endphp
-                            <span class="px-2 py-1 text-xs rounded {{ $active ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-600' }}">
-                                {{ $active ? 'Active' : 'Due' }}
+                            <span class="px-2 py-1 text-xs rounded {{ $active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $active ? 'Active' : 'Draft' }}
                             </span>
                         </td>
+                        <td class="px-6 py-3">{{ $a->level ?? '—' }}</td>
+                        <td class="px-6 py-3">{{ $a->week ?? '—' }}</td>
+                        <td class="px-6 py-3">{{ $a->day ?? '—' }}</td>
                         <td class="px-6 py-3">
                             @if($a->due_at)
                                 {{ \Illuminate\Support\Carbon::parse($a->due_at)->timezone(config('app.timezone'))->format('d M Y') }}
                             @else
-                                <span class="text-red-400">Overdue</span>
+                                <span class="text-gray-400">—</span>
                             @endif
                         </td>
                         <td class="px-6 py-3">
                             <div class="flex items-center gap-3">
                                 @if(!empty($a->file_path))
                                     <a class="text-blue-700 underline"
-                                       href="{{ route('lecturer.assignments.show', $a) }}">Download</a>
+                                       href="{{ route('lecturer.assignments.download', $a) }}">Download</a>
                                 @endif
                                 <button class="text-blue-600 hover:underline"
                                         onclick="location.href='{{ route('lecturer.assignments.edit', $a) }}'">Edit</button>
@@ -150,107 +223,24 @@
                     </tr>
                 @empty
                     <tr>
-                        <td class="px-6 py-6 text-gray-500" colspan="4">
-                            No upload links for this level yet.
+                        <td class="px-6 py-6 text-gray-500" colspan="7">
+                            No upload links found matching these filters.
                         </td>
                     </tr>
                 @endforelse
                 </tbody>
-            </table>
+              </table>
+            </div>
 
-            {{-- Paginator (if you passed a paginator) --}}
+            {{-- Paginator --}}
             @if(method_exists($assignments, 'links'))
-                <div class="px-6 py-3">{{ $assignments->withQueryString()->links() }}</div>
+                <div class="mt-4 px-6 py-3">{{ $assignments->withQueryString()->links() }}</div>
             @endif
         </div>
-    @else
-        {{-- ===================== ASSESS TAB (GROUPED BY ASSIGNMENT) ===================== --}}
-        @forelse($assignments as $assignment)
-            <div class="mb-8 bg-white rounded-lg shadow border overflow-hidden">
-                <div class="bg-rose-300 px-6 py-3 font-semibold">
-                    {{ $assignment->title }}
-                </div>
 
-                <table class="w-full text-left">
-                    <thead class="bg-gray-100">
-                        <tr class="text-sm text-gray-600">
-                            <th class="px-6 py-3">Student Name</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3">Turn in Date</th>
-                            <th class="px-6 py-3">Score</th>
-                            <th class="px-6 py-3">Comment</th>
-                            <th class="px-6 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        @php $subs = $assignment->submissions ?? collect(); @endphp
+    {{-- @else block REMOVED --}}
 
-                        @forelse($subs as $s)
-                            @php $done = !empty($s->submitted_at); @endphp
-                            <tr>
-                                <td class="px-6 py-3">{{ $s->student->user->name ?? '—' }}</td>
-                                <td class="px-6 py-3">
-                                    <span class="px-2 py-1 text-xs rounded {{ $done ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700' }}">
-                                        {{ $done ? 'Finish' : 'Miss' }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                    @if($s->submitted_at)
-                                        {{ \Illuminate\Support\Carbon::parse($s->submitted_at)->format('d M Y') }}
-                                    @else
-                                        N/A
-                                    @endif
-                                </td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <input type="number" name="score" min="0" max="10"
-                                               form="assess-{{ $s->id }}"
-                                               value="{{ old('score', $s->score) }}"
-                                               class="w-16 border rounded px-2 py-1 text-sm">
-                                        <span class="text-sm text-gray-600">/ 10</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <input type="text" name="comment"
-                                           form="assess-{{ $s->id }}"
-                                           value="{{ old('comment', $s->comment) }}"
-                                           class="w-64 border rounded px-2 py-1 text-sm">
-                                </td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-3">
-                                        @if(!empty($s->file_path))
-                                            <a class="text-blue-700 underline"
-                                               href="{{ route('lecturer.submissions.assessments.edit', [$s, $s->assessment ?? null]) }}">
-                                                Download
-                                            </a>
-                                        @endif
-
-                                        {{-- Mark (POST to create/update assessment) --}}
-                                        <form id="assess-{{ $s->id }}" method="POST"
-                                              action="{{ route('lecturer.submissions.assessments.store', $s) }}"
-                                              enctype="multipart/form-data"
-                                              class="flex items-center gap-2">
-                                            @csrf
-                                            <input type="file" name="feedback_file" class="text-xs">
-                                            <button class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm">Mark</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="px-6 py-6 text-gray-500" colspan="6">
-                                    No turned in assignments yet.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        @empty
-            <div class="rounded border bg-gray-50 text-gray-700 px-4 py-6">
-                No assignments for this level yet.
-            </div>
-        @endforelse
-    @endif
 </x-layout>
+
+
+

@@ -1,6 +1,5 @@
 {{-- resources/views/lecturer/materials/edit.blade.php --}}
 <x-layout>
-  <!--breadcrumbs-->
   <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
     <ol class="list-reset flex">
       <li>
@@ -8,18 +7,17 @@
         <span class="mx-2">/</span>
       </li>
       <li>
-        <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline">
-           {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+         {{-- Link back to the show page --}}
+        <a href="{{ route('lecturer.materials.show', $material) }}" class="hover:underline">
+           {{ $material->title }}
         </a>
         <span class="mx-2">/</span>
       </li>
       <li class="text-black font-semibold">
-        Edit Material
+        Edit
       </li>
     </ol>
   </nav>
-  <!--breadcrumbs end-->
-
   <div class="max-w-3xl mx-auto p-6">
     <h1 class="text-2xl font-semibold">Edit Material</h1>
     <p class="text-sm text-gray-600">Course: {{ $material->course->code }} — {{ $material->course->name }}</p>
@@ -61,12 +59,33 @@
         <div>
           <label class="block text-sm font-medium">Level</label>
           <select name="level" class="mt-1 w-full border rounded px-3 py-2">
-            <option value="">—</option>
+            <option value="">Select level (optional)</option>
             @foreach([1,2,3] as $lv)
-              <option value="{{ $lv }}" @selected(old('level',$material->level)==$lv)>{{ $lv }}</option>
+              <option value="{{ $lv }}" @selected(old('level',$material->level)==$lv)>Level {{ $lv }}</option>
             @endforeach
           </select>
         </div>
+        
+        <div>
+          <label class="block text-sm font-medium">Week</label>
+          <select name="week" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="">Select week (optional)</option>
+            @foreach(range(1, 8) as $w)
+              <option value="{{ $w }}" @selected(old('week', $material->week) == $w)>Week {{ $w }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Day</label>
+          <select name="day" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="">Select day (optional)</option>
+            @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW'] as $day)
+              <option value="{{ $day }}" @selected(old('day', $material->day) == $day)>{{ $day }}</option>
+            @endforeach
+          </select>
+        </div>
+
         <div class="flex items-end gap-2">
           <input id="is_published" name="is_published" type="checkbox" value="1" @checked(old('is_published', $material->is_published))>
           <label for="is_published" class="text-sm">Published</label>
@@ -99,14 +118,12 @@
 
       <div class="flex gap-3">
         <button class="px-4 py-2 rounded bg-black text-white">Save</button>
-        <a href="{{ route('lecturer.courses.materials.index', $material->course) }}" class="px-4 py-2 rounded border">Back</a>
+        {{-- ### UPDATED "Back" LINK HERE ### --}}
+        <a href="{{ route('lecturer.materials.show', $material) }}" class="px-4 py-2 rounded border">Back</a>
       </div>
     </form>
+    
+    {{-- Delete button is now on the 'show' page, so it's removed from here --}}
 
-    {{-- quick delete --}}
-    <form class="mt-6" method="POST" action="{{ route('lecturer.materials.destroy', $material) }}">
-      @csrf @method('DELETE')
-      <button class="text-red-600 underline" onclick="return confirm('Delete this material?')">Delete material</button>
-    </form>
   </div>
 </x-layout>

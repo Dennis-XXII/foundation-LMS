@@ -11,33 +11,59 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class MaterialController extends Controller
-{
-    /**
+{   
+    
+    public function show(Material $material)
+    {
+        $this->authorize('view', $material); // Or 'view', $material->course
+        $material->load('course'); // Eager load the course relationship
+
+        return view('lecturer.materials.show', compact('material'));
+    }
+     /**
      * List materials for a course with optional type & level filters.
      * Route: lecturer.courses.materials.index
      * Query: ?type=lesson|worksheet|self_study&level=1|2|3
+     * NEW: Query: ?view=list|grid
      */
     public function index(Request $request, Course $course)
     {
         $this->authorize('view', $course);
 
-        // Normalize & soft-validate filters (don’t 422 for minor typos)
+        // Normalize & soft-validate all filters
         $type  = $this->normalizeType($request->query('type'));
         $level = $request->integer('level');
+        $week  = $request->integer('week');
+        $day   = $request->query('day'); // 'Monday', 'Review', etc.
 
+        // Validation for 'type' and 'level'
         $validTypes = ['lesson','worksheet','self_study'];
         if ($type && !in_array($type, $validTypes, true))   $type = null;
         if ($level && !in_array($level, [1,2,3], true))     $level = null;
+        // Basic validation for 'week' and 'day'
+        if ($week && !in_array($week, range(1, 8), true))   $week = null;
+        $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW']; // Use your exact day names
+        if ($day && !in_array($day, $validDays, true))      $day = null;
+
 
         $materials = Material::query()
             ->where('course_id', $course->id)
             ->when($type,  fn($q) => $q->where('type', $type))
             ->when($level, fn($q) => $q->where('level', $level))
+            ->when($week,  fn($q) => $q->where('week', $week))
+            ->when($day,   fn($q) => $q->where('day', $day))
             ->latest('uploaded_at')
             ->paginate(20)
-            ->withQueryString();
+            ->withQueryString(); // This is key to keep filters on pagination links
 
-        return view('lecturer.materials.index', compact('course','materials','type','level'));
+        return view('lecturer.materials.index', compact(
+            'course',
+            'materials',
+            'type',
+            'level',
+            'week',
+            'day'
+        ));
     }
 
     /** Show create form (nested) */
@@ -62,6 +88,8 @@ class MaterialController extends Controller
             'descriptions' => ['nullable','string','max:2000'],
             'type'         => ['required','in:lesson,worksheet,self_study'],
             'level'        => ['nullable','integer','min:1','max:3'],
+            'day'          => ['nullable','in:Monday,Tuesday,Wednesday,Thursday,Friday,Review'],
+            'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
             'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
@@ -103,7 +131,11 @@ class MaterialController extends Controller
     {
         $this->authorize('update', $material);
         $material->load('course');
-        return view('lecturer.materials.edit', compact('material'));
+
+        $course = $material->course;
+        $type   = $this->normalizeType(request('type'));
+        $level  = request('level');
+        return view('lecturer.materials.edit', compact('course','material','type','level'));
     }
 
     /**
@@ -119,6 +151,8 @@ class MaterialController extends Controller
             'descriptions' => ['nullable','string','max:2000'],
             'type'         => ['required','in:lesson,worksheet,self_study'],
             'level'        => ['nullable','integer','min:1','max:3'],
+            'day'          => ['nullable','in:Monday,Tuesday,Wednesday,Thursday,Friday,Review'],
+            'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
             'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'],
