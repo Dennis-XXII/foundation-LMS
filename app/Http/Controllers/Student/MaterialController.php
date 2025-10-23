@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Material;
 use App\Models\Enrollment;
+use App\Models\Assignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -93,8 +94,27 @@ class MaterialController extends Controller
             ->value('level');
         $type = $this->normalizeType($material->type);
 
+        $relatedAssignment = null;
+        // Only look for assignment if material has week AND day defined
+        if ($material->week && $material->day && $material->level) {
+             $relatedAssignment = Assignment::query()
+                ->where('course_id', $course->id)
+                ->where('week', $material->week)
+                ->where('day', $material->day)
+                ->where('level', $material->level)
+                ->where('is_published', true) // Only published assignments
+                // Ensure assignment is accessible by student's level
+                ->when($level !== null, function ($query) use ($level) {
+                    $query->where(function ($subQuery) use ($level) {
+                        $subQuery->where('level', '<=', $level)
+                                ->orWhereNull('level');
+                    });
+                })
+                ->first(); // Get the first matching assignment
+        }
+
         // 3. Show the view
-        return view('student.materials.show', compact('material','course','level','type'));
+        return view('student.materials.show', compact('material','course','level','type', 'relatedAssignment'));
     }
 
 

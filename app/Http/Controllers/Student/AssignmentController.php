@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage; // Needed for download
@@ -74,6 +75,48 @@ class AssignmentController extends Controller
             'level', // Pass filter value
             'week',  // Pass filter value
             'day'    // Pass filter value
+        ));
+    }
+
+    public function show(Assignment $assignment)
+    {
+        // 1. Authorize: Use AssignmentPolicy view check (handles published status and level)
+        $this->authorize('view', $assignment);
+
+        // 2. Load necessary relationships
+        $assignment->load('course');
+        $course = $assignment->course;
+        $student_id = Auth::user()->student->id;
+
+        // 3. Find the student's submission for *this* assignment
+        $submission = Submission::query()
+            ->where('assignment_id', $assignment->id)
+            ->where('student_id', $student_id)
+            ->with('assessment') // Eager load assessment if it exists
+            ->first();
+
+        // 4. Determine status and available actions (similar logic to index view)
+        $hasAssessment = $submission?->assessment;
+        $status = 'Open';
+        if ($submission) {
+            $status = $hasAssessment ? 'Graded' : 'Submitted';
+        } elseif ($assignment->due_at && $assignment->due_at->isPast()) {
+            $status = 'Closed';
+        }
+
+        $canSubmit = !$submission && (!$assignment->due_at || $assignment->due_at->isFuture());
+        $canEdit = $submission && !$hasAssessment && (!$assignment->due_at || $assignment->due_at->isFuture());
+        $canViewFeedback = $submission && $hasAssessment;
+
+        // 5. Pass data to the new view
+        return view('student.assignments.show', compact(
+            'assignment',
+            'course',
+            'submission', // Pass submission (or null)
+            'status',
+            'canSubmit',
+            'canEdit',
+            'canViewFeedback'
         ));
     }
 

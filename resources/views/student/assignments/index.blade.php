@@ -170,8 +170,12 @@
                 @endphp
                 <tr>
                     <td class="px-6 py-3 align-top">
-                        <span class="font-medium">{{ $a->title }}</span>
+                        {{-- Wrap the title in a link --}}
+                        <a href="{{ route('student.assignments.show', $a) }}" class="font-medium text-blue-600 hover:underline">
+                            {{ $a->title }}
+                        </a>
                          @if($a->instruction)
+                            {{-- Keep the instruction snippet below the link --}}
                             <p class="text-xs text-gray-500 mt-1 whitespace-pre-wrap">{{ $a->instruction }}</p>
                          @endif
                     </td>

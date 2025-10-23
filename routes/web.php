@@ -94,6 +94,9 @@ Route::middleware(['auth','student'])
         Route::get('/courses/{course}/assignments', [StudentAssignments::class, 'index']) // <-- UPDATED CONTROLLER
             ->middleware('can:view,course')
             ->name('assignments.index');
+        Route::get('/assignments/{assignment}', [StudentAssignments::class, 'show']) // <-- NEW ROUTE
+            ->middleware('can:view,assignment') // Assuming AssignmentPolicy exists
+            ->name('assignments.show');
         Route::get('/assignments/{assignment}/download', [StudentAssignments::class, 'download']) // <-- NEW ROUTE
             ->middleware('can:view,assignment') // Assuming AssignmentPolicy exists
             ->name('assignments.download');
