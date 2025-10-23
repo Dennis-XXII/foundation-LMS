@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
 use App\Http\Controllers\Student\MaterialController as StudentMaterials;
+use App\Http\Controllers\Student\AssignmentController as StudentAssignments; // <-- NEW CONTROLLER IMPORT
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
@@ -65,8 +66,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STUDENT AREA  (UI: “Home page for students”, tiles: Materials / Worksheets / Self‑study / Upload Links / Scores)
-// Students only see their ONE enrolled course on dashboard
+// STUDENT AREA
 // ─────────────────────────────────────────────────────────────────────────────
 Route::middleware(['auth','student'])
     ->prefix('student')->as('student.')
@@ -74,35 +74,44 @@ Route::middleware(['auth','student'])
         // Landing: show the single course shortcut + quick tiles
         Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
 
-        // Course home (detail page)
-        Route::get('/courses/{course}', [StudentDashboard::class, 'course'])
-            ->middleware('can:view,course')
-            ->name('courses.show');
+        // Course home (detail page) - Optional, currently handled by DashboardController?
+        // Route::get('/courses/{course}', [StudentDashboard::class, 'course'])
+        //     ->middleware('can:view,course')
+        //     ->name('courses.show');
 
-        // Materials (three tiles: lesson / worksheet / self‑study) + optional level filter
+        // Materials routes
         Route::get('/courses/{course}/materials', [StudentMaterials::class, 'index'])
             ->middleware('can:view,course')
             ->name('materials.index');
-            
         Route::get('materials/{material}', [StudentMaterials::class, 'show'])
+             ->middleware('can:view,material') // Assuming MaterialPolicy exists
             ->name('materials.show');
+        Route::get('/materials/{material}/download', [StudentMaterials::class, 'download'])
+            ->middleware('can:view,material') // Assuming MaterialPolicy exists
+            ->name('materials.download');
 
-        // Assignments (aka “Upload links”)
-        Route::get('/courses/{course}/assignments', [StudentDashboard::class, 'assignments'])
+        // --- Assignments routes (Now use StudentAssignments controller) ---
+        Route::get('/courses/{course}/assignments', [StudentAssignments::class, 'index']) // <-- UPDATED CONTROLLER
             ->middleware('can:view,course')
             ->name('assignments.index');
+        Route::get('/assignments/{assignment}/download', [StudentAssignments::class, 'download']) // <-- NEW ROUTE
+            ->middleware('can:view,assignment') // Assuming AssignmentPolicy exists
+            ->name('assignments.download');
 
-        // Submissions (student creates/updates their own submission to an assignment)
+        // --- Submissions routes (Still handled by StudentSubmissions controller) ---
         Route::resource('assignments.submissions', StudentSubmissions::class)
             ->only(['create','store','edit','update','show'])
             ->scoped(); // {assignment}/{submission}
 
-        Route::get('/materials/{material}/download', [StudentMaterials::class, 'download'])
-            ->name('materials.download');
+         // Need a download route for student submissions too
+        Route::get('/submissions/{submission}/download', [StudentSubmissions::class, 'download']) // <-- ADDED (assuming download method exists)
+            ->middleware('can:view,submission') // Assuming SubmissionPolicy exists
+            ->name('submissions.download'); // Make sure name is unique if needed
+
     });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LECTURER AREA (UI: manage Lesson Materials / Worksheets / Self‑study; create Upload Links; Assess; Announcements)
+// LECTURER AREA
 // ─────────────────────────────────────────────────────────────────────────────
 Route::middleware(['auth','lecturer'])
     ->prefix('lecturer')->as('lecturer.')
@@ -110,100 +119,87 @@ Route::middleware(['auth','lecturer'])
         Route::get('/dashboard', [LecturerDashboard::class, 'index'])->name('dashboard');
 
         Route::resource('courses', LecturerCourses::class)
-        ->only(['index', 'show', 'edit', 'update']);
+            ->only(['index', 'show', 'edit', 'update']);
 
         // Materials (files or links; types: lesson/worksheet/self‑study)
         Route::resource('courses.materials', LecturerMaterials::class)
             ->parameters(['materials' => 'material'])
             ->shallow();
-
-
         Route::get('/materials/{material}/download', [LecturerMaterials::class, 'download'])
             ->name('materials.download');
-
         Route::delete('/materials/{material}/file', [LecturerMaterials::class, 'clearFile'])
-            ->name('lecturer.materials.clear-file');
+            ->name('materials.clear-file'); // Corrected name mismatch
 
         // Assignments (“upload links” w/ title, instructions, due_at, attachment)
         Route::resource('courses.assignments', LecturerAssignments::class)
             ->parameters(['assignments' => 'assignment'])
             ->shallow();
-
         Route::get('/assignments/{assignment}/download', [LecturerAssignments::class, 'download'])
             ->name('assignments.download');
 
-
         // Assessments (grade + comment on submissions)
-
-        // --- Assessment Overview Page (NEW) ---
         Route::get('courses/{course}/assessments', [LecturerAssessments::class, 'index'])
             ->name('courses.assessments.index');
-
-        // --- Create / Edit Assessments for a Submission ---
-
         Route::get('/submissions/{submission}/assessments/create', [LecturerAssessments::class, 'create'])
             ->name('submissions.assessments.create');
-
         Route::get('/submissions/{submission}/assessments/{assessment}/edit', [LecturerAssessments::class, 'edit'])
             ->name('submissions.assessments.edit');
 
         Route::post('/assessments/save', [LecturerAssessments::class, 'save'])
             ->name('submissions.assessments.save');
-
         Route::delete('/submissions/{submission}/assessments/{assessment}', [LecturerAssessments::class, 'destroy'])
             ->name('submissions.assessments.destroy');
 
-        // --- Show Submissions for a Single Assignment ---
+        // Show Submissions for a Single Assignment (Lecturer view)
         Route::get('/assignments/{assignment}/submissions', [LecturerSubmissions::class, 'index'])
-         ->name('assignments.submissions.index');
+            ->name('assignments.submissions.index');
+        Route::get('/submissions/{submission}/download', [LecturerSubmissions::class, 'download'])
+            ->name('submissions.download');
 
-        Route::get('/submissions/{submission}/download', [LecturerSubmissions::class, 'download']) // Example
-        ->name('submissions.download');
-
-        // Announcements authored by lecturer (course‑scoped or global if your policy allows)
+        // Announcements
         Route::resource('announcements', LecturerAnnouncements::class)
             ->except(['show']);
 
-        // Enrollments: manage students in the lecturer's courses
+        // Enrollments
         Route::prefix('courses/{course}')->name('courses.')->group(function () {
-        Route::get('students', [LecturerEnrollments::class, 'index'])
-            ->name('students.index');
-        Route::get('students/create', [LecturerEnrollments::class, 'create'])
-            ->name('students.create');
-        Route::post('students', [LecturerEnrollments::class, 'store'])
-            ->name('students.store');
-        Route::delete('students/{student}', [LecturerEnrollments::class, 'destroy'])
-            ->name('students.destroy');
+            Route::get('students', [LecturerEnrollments::class, 'index'])
+                ->name('students.index');
+            Route::get('students/create', [LecturerEnrollments::class, 'create'])
+                ->name('students.create');
+            Route::post('students', [LecturerEnrollments::class, 'store'])
+                ->name('students.store');
+            Route::delete('students/{student}', [LecturerEnrollments::class, 'destroy']) // Consider using enrollment ID if possible
+                ->name('students.destroy');
         });
-
     });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ADMIN AREA (UI: one course management, add/remove students, lecturers roster, announcements)
+// ADMIN AREA
 // ─────────────────────────────────────────────────────────────────────────────
 Route::middleware(['auth','admin'])
     ->prefix('admin')->as('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
-        // Course CRUD (even if you run a single “active” course, keep REST — future‑proof)
+        // Course CRUD
         Route::resource('courses', AdminCourses::class)
             ->parameters(['courses' => 'course']);
 
-
+        // Admin Enrollments Management
         Route::resource('courses.enrollments', \App\Http\Controllers\Admin\EnrollmentController::class)
             ->only(['index','store','destroy'])
             ->parameters(['enrollments' => 'enrollment'])
             ->shallow(); // => /admin/enrollments/{enrollment}
 
+         // Student CRUD
          Route::resource('students', AdminStudents::class)
             ->only(['index','create','store','edit','update','destroy']);
 
-        // Lecturers roster
+        // Lecturers CRUD
         Route::resource('lecturers', AdminLecturers::class)
-            ->parameters(['lecturers' => 'lecturer']);
+            ->parameters(['lecturers' => 'lecturer']); // Changed parameter name
 
-        // Global / course announcements
+        // Announcements CRUD
         Route::resource('announcements', AdminAnnouncements::class);
     });
 

@@ -16,7 +16,7 @@
             <input type="file" name="file" class="mt-1 w-full">
             @error('file')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
             @if($submission->file_path)
-                <p class="text-sm text-gray-500 mt-1">Current: <a class="text-blue-600 hover:underline" href="{{ route('submission.download', $submission) }}">download</a></p>
+                <p class="text-sm text-gray-500 mt-1">Current: <a class="text-blue-600 hover:underline" href="{{ route('student.submissions.download', $submission) }}">download</a></p>
             @endif
         </div>
 

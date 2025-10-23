@@ -15,7 +15,7 @@
                 <p>URL: <a href="{{ $submission->url }}" class="text-blue-600 hover:underline">{{ $submission->url }}</a></p>
             @endif
             @if($submission->file_path)
-                <p>File: <a href="{{ route('submission.download', $submission) }}" class="text-blue-600 hover:underline">Download</a></p>
+                <p class="text-sm text-gray-500 mt-1">Current: <a class="text-blue-600 hover:underline" href="{{ route('student.submissions.download', $submission) }}">download</a></p>
             @endif
         </div>
 
