@@ -10,9 +10,7 @@
         $isUpdating = $assessment && $assessment->exists;
 
         // Determine form action
-        $formAction = $isUpdating
-            ? route('lecturer.submissions.assessments.update', ['submission' => $submission, 'assessment' => $assessment])
-            : route('lecturer.submissions.assessments.store', ['submission' => $submission]);
+        $formAction = route('lecturer.submissions.assessments.save');
     @endphp
 
     {{-- ... breadcrumbs, header, flash messages ... --}}
@@ -44,9 +42,7 @@
     {{-- ===================== ASSESSMENT FORM ===================== --}}
     <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="bg-white rounded-lg shadow border p-6 space-y-4">
         @csrf
-        {{-- Use more explicit check for adding @method --}}
-
-        {{-- Display Student Submission --}}
+        <input type="hidden" name="submission_id" value="{{ $submission->id }}">
         @if($submission->file_path)
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Student Submission</label>
@@ -105,11 +101,6 @@
             {{-- Use more explicit check --}}
             @if($isUpdating)
                 {{-- Delete Assessment button --}}
-                <form method="POST" action="{{ route('lecturer.submissions.assessments.destroy', ['submission' => $submission, 'assessment' => $assessment]) }}" onsubmit="return confirm('Remove this grade?');" class="ml-auto">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-red-600 hover:underline text-sm">Remove Grade</button>
-                </form>
             @endif
         </div>
     </form>

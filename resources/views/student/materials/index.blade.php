@@ -1,5 +1,5 @@
+{{-- resources/views/student/materials/index.blade.php --}}
 <x-layout>
-  {{-- Breadcrumbs --}}
   <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
     <ol class="list-reset flex">
       <li>
@@ -13,37 +13,26 @@
       </li>
     </ol>
   </nav>
-
   <div class="max-w-8xl mx-auto p-3">
-    {{-- Header --}}
     @php
       $levelColors = [
-          3 => 'bg-cyan-100 text-cyan-800',
-          2 => 'bg-green-100 text-green-800',
-          1 => 'bg-rose-100 text-rose-800',
+        3 => 'bg-cyan-300',
+        2 => 'bg-green-200',
+        1 => 'bg-rose-200',
       ];
-      // Use level filter for header color, default to gray-100
+      // Use level filter for header, default to gray
       $headerColor = $levelColors[$level ?? null] ?? 'bg-gray-100';
     @endphp
+    
+    {{-- Header (No "Add Material" button) --}}
     <div class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}">
       <div>
-        <h1 class="text-2xl font-semibold">
-            {{ ucfirst(str_replace('_', ' ', $type ?? 'All Materials')) }}
-        </h1>
-        <h2 class="text-xl font-thin">{{ $course->code }} {{ $course->name }}</h2>
-        {{-- Show the student's enrolled level --}}
-        @if ($student_level)
-            <p class="mt-2 text-sm">Your enrolled level: 
-                <span class="font-bold px-2 py-1 text-xs rounded-full {{ $levelColors[$student_level] ?? 'bg-gray-200' }}">
-                    Level {{ $student_level }}
-                </span>
-            </p>
-        @endif
+        <h1 class="text-2xl font-semibold "> {{ ucfirst(str_replace('_', ' ', $type ?? 'All Materials')) }} </h1>
+        <h1 class="text-xl font-thin">{{ $course->code }} {{ $course->name }}</h1>
       </div>
-      {{-- No "Add Material" button for students --}}
     </div>
 
-    {{-- Filters (Students can use these to override dashboard links) --}}
+    {{-- Filters --}}
     <form method="GET" class="mt-4 flex flex-wrap gap-3 items-end">
       {{-- Type Filter --}}
       <div>
@@ -61,24 +50,22 @@
         <select name="level" class="block border rounded py-2.5 px-2 text-xs w-full text-center">
           <option value="">All Levels</option>
           @foreach ([1,2,3] as $lv)
-            {{-- Students should only see their level or lower --}}
-            @if ($lv <= $student_level)
-                <option value="{{ $lv }}" @selected($level == $lv)>Level {{ $lv }}</option>
-            @endif
+            <option value="{{ $lv }}" @selected($level == $lv)>{{ $lv }}</option>
           @endforeach
         </select>
       </div>
       
-      {{-- These inputs ensure week/day filters persist when changing type/level --}}
-      @if($week) <input type="hidden" name="week" value="{{ $week }}"> @endif
-      @if($day) <input type="hidden" name="day" value="{{ $day }}"> @endif
-      
+      {{-- Submitting this form clears week/day --}}
       <button class="px-3 py-2 rounded bg-red-600 text-white">Apply Type/Level</button>
       
       {{-- Clear Filters Link --}}
-      @if ($type || $level || $week || $day)
-        <a href="{{ route('student.materials.index', $course) }}" class="text-sm text-blue-600 hover:underline">Clear All Filters</a>
-      @endif
+        @if ($level || $week || $day)
+            <a href="{{ route('student.materials.index',[
+                    'course' => $course,
+                    'level' => $level,
+                    'type' => $type,
+                    ]) }}" class="text-sm text-blue-600 hover:underline">View All Materials for Level {{ $level }}, Type {{ $type }}</a>
+        @endif
     </form>
 
     {{-- Week/Day Navigation Grid --}}
@@ -96,6 +83,7 @@
                   <span class="font-bold text-blue-700">Week {{ $w }}:</span>
 
                   @foreach ($days as $dayName)
+                    {{-- This URL logic is route-agnostic and works perfectly --}}
                     <a href="{{ request()->fullUrlWithQuery(['week' => $w, 'day' => $dayName]) }}"
                        @class([
                             'font-bold',
@@ -128,10 +116,6 @@
             @endif
         </h2>
         
-        @if(session('success'))
-          <div class="mt-4 p-3 rounded bg-green-50 text-green-700">{{ session('success') }}</div>
-        @endif
-        
         <div class="mt-4 overflow-x-auto">
           <table class="min-w-full text-sm border">
             <thead class="bg-gray-50">
@@ -142,29 +126,35 @@
                 <th class="px-3 py-2 text-left">Week</th>
                 <th class="px-3 py-2 text-left">Day</th>
                 <th class="px-3 py-2 text-left">Uploaded</th>
-                <th class="px-3 py-2 text-left">Link</th>
+                {{-- "Published" column removed --}}
+                <th class="px-3 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               @forelse($materials as $m)
                 <tr class="border-t">
-                  <td class="px-3 py-2">{{ $m->title }}</td>
+                  <td class="px-3 py-2">
+                    {{-- THIS IS THE UPDATED LINE --}}
+                    <a class="text-blue-600 underline" href="{{ route('student.materials.show', $m) }}">{{ $m->title }}</a>
+                  </td>
                   <td class="px-3 py-2">{{ str($m->type)->replace('_',' ')->title() }}</td>
                   <td class="px-3 py-2">{{ $m->level ?? '—' }}</td>
                   <td class="px-3 py-2">{{ $m->week ?? '—' }}</td>
                   <td class="px-3 py-2">{{ $m->day ?? '—' }}</td>
-                  <td class="px-3 py-2">{{ optional($m->uploaded_at)->format('M d, Y') }}</td>
-                  <td class="px-3 py-2 whitespace-nowrap">
+                  <td class="px-3 py-2">{{ optional($m->uploaded_at)->format('Y-m-d') }}</td>
+                  {{-- "Published" td removed --}}
+                  <td class="px-3 py-2 space-x-3 whitespace-nowrap">
+                    {{-- Student-specific actions --}}
+                    @if($m->url)
+                      <a href="{{ $m->url }}" target="_blank" class="text-blue-600 hover:underline">Open Link</a>
+                    @endif
                     @if($m->file_path)
                       <a class="text-blue-600 underline" href="{{ route('student.materials.download', $m) }}">Download</a>
-                    @elseif($m->url)
-                      <a class="text-blue-600 underline" href="{{ $m->url }}" target="_blank" rel="noopener">View Link</a>
-                    @else
-                      <span class="text-gray-400">N/A</span>
                     @endif
                   </td>
                 </tr>
               @empty
+                {{-- Colspan reduced from 8 to 7 --}}
                 <tr><td class="px-3 py-4 text-gray-500" colspan="7">No materials found matching these filters.</td></tr>
               @endforelse
             </tbody>

@@ -53,20 +53,34 @@ class AssessmentController extends Controller // Ensure class name matches file/
      */
     public function create(Submission $submission)
     {
-        $this->authorize('update', $submission->assignment->course);
-        // Usually, the form is part of the index. Redirect back there.
-        // If you had a dedicated create view: return view('lecturer.assessments.create', compact('submission'));
-        return redirect()->route('lecturer.courses.assessments.index', $submission->assignment->course)
-               ->withFragment('assess-' . $submission->id); // Attempt to jump to the submission form
+        $this->authorize('update', $submission->assignment->course); // Authorize
+
+        // Eager load necessary data for the view
+        $submission->load(['student.user', 'assignment.course']);
+        
+        // Pass the submission and a null assessment to the edit view
+        $assessment = null; 
+
+        return view('lecturer.assessments.edit', compact('submission', 'assessment'));
     }
 
     /**
      * Store a newly created assessment resource in storage.
      * Route: POST lecturer/submissions/{submission}/assessments
      */
-    public function store(Request $request, Submission $submission)
+    public function save(Request $request)
     {
-        $this->authorize('update', $submission); // Authorize the action
+        $validated = $request->validate([
+            'submission_id' => ['required', 'exists:submissions,id'],
+            'score'         => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'comment'       => ['nullable', 'string', 'max:2000'],
+            'feedback_file' => ['nullable', 'file', 'max:10240'],
+            'clear_feedback_file' => ['nullable', 'boolean'],
+        ]);
+        
+        // Manually find the submission
+        $submission = Submission::findOrFail($validated['submission_id']);
+        $this->authorize('update', $submission->assignment->course); // Authorize the action
         abort_unless($submission->submitted_at, 403, 'Cannot assess an assignment that has not been submitted.');
 
         $validated = $request->validate([
@@ -85,8 +99,7 @@ class AssessmentController extends Controller // Ensure class name matches file/
             'score'       => $validated['score'] ?? null,
             'comment'     => $validated['comment'] ?? null,
             'lecturer_id' => Auth::user()->lecturer->id,
-            'assessed_by' => Auth::id(),
-            'assessed_at' => now(),
+            'assessed_at'   => now(),
             // Keep existing feedback_file_path unless cleared or replaced
             'feedback_file_path' => $assessment->feedback_file_path,
         ];
@@ -167,7 +180,7 @@ class AssessmentController extends Controller // Ensure class name matches file/
      * Show the form for editing the specified assessment resource.
      * Route: GET lecturer/submissions/{submission}/assessments/{assessment}/edit
      */
-    public function edit(Submission $submission, ? Assessment $assessment = null) // Make assessment optional for create case? Or handle via store
+    public function edit(Submission $submission, Assessment $assessment) // Make assessment optional for create case? Or handle via store
     {
         abort_unless($assessment->submission_id === $submission->id, 404);
 
@@ -181,51 +194,7 @@ class AssessmentController extends Controller // Ensure class name matches file/
         return view('lecturer.assessments.edit', compact('submission', 'assessment'));
     }
 
-    /**
-     * Update the specified assessment resource in storage.
-     * Route: PUT/PATCH lecturer/submissions/{submission}/assessments/{assessment}
-     */
-    public function update(Request $request, Submission $submission, Assessment $assessment)
-    {   
-        $this->authorize('update', $submission->assignment->course);
-        abort_unless($assessment->submission_id === $submission->id, 404, 'Assessment mismatch.');
 
-        $validated = $request->validate([
-            'score'               => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'comment'             => ['nullable', 'string', 'max:2000'],
-            'feedback_file'       => ['nullable', 'file', 'max:10240'],
-            'clear_feedback_file' => ['nullable', 'boolean'],
-        ]);
-
-        $assessmentData = [
-            'score'       => $validated['score'] ?? null,
-            'comment'     => $validated['comment'] ?? null,
-            'lecturer_id' => Auth::user()->lecturer->id, // Update lecturer if needed
-            'assessed_by' => Auth::id(),
-            'assessed_at' => now(),
-        ];
-
-        $diskName = 'public'; // Change if needed
-        $disk = Storage::disk($diskName);
-
-        // Handle feedback file update/clear
-        if ($request->boolean('clear_feedback_file') && $assessment->feedback_file_path) {
-            $disk->delete($assessment->feedback_file_path);
-            $assessmentData['feedback_file_path'] = null;
-        }
-        if ($request->hasFile('feedback_file')) {
-            if ($assessment->feedback_file_path) {
-                $disk->delete($assessment->feedback_file_path);
-            }
-            $feedbackPath = $request->file('feedback_file')->store('feedback/'.$submission->id, $diskName);
-            $assessmentData['feedback_file_path'] = $feedbackPath;
-        }
-
-        $assessment->update($assessmentData);
-
-        return back()->with('success', 'Assessment updated successfully.')
-                     ->withFragment('assess-' . $submission->id);
-    }
 
     /**
      * Remove the specified assessment resource from storage.

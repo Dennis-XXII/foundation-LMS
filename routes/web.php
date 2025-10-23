@@ -83,6 +83,9 @@ Route::middleware(['auth','student'])
         Route::get('/courses/{course}/materials', [StudentMaterials::class, 'index'])
             ->middleware('can:view,course')
             ->name('materials.index');
+            
+        Route::get('materials/{material}', [StudentMaterials::class, 'show'])
+            ->name('materials.show');
 
         // Assignments (aka “Upload links”)
         Route::get('/courses/{course}/assignments', [StudentDashboard::class, 'assignments'])
@@ -136,11 +139,19 @@ Route::middleware(['auth','lecturer'])
         Route::get('courses/{course}/assessments', [LecturerAssessments::class, 'index'])
             ->name('courses.assessments.index');
 
-        Route::resource('submissions.assessments', LecturerAssessments::class)
-            ->parameters(['assessments' => 'assessment']);
+        // --- Create / Edit Assessments for a Submission ---
 
-        Route::get('/submissions/{submission}/assessments', [LecturerAssessments::class, 'create'])
-            ->name('submissions.assessments.create.alias');
+        Route::get('/submissions/{submission}/assessments/create', [LecturerAssessments::class, 'create'])
+            ->name('submissions.assessments.create');
+
+        Route::get('/submissions/{submission}/assessments/{assessment}/edit', [LecturerAssessments::class, 'edit'])
+            ->name('submissions.assessments.edit');
+
+        Route::post('/assessments/save', [LecturerAssessments::class, 'save'])
+            ->name('submissions.assessments.save');
+
+        Route::delete('/submissions/{submission}/assessments/{assessment}', [LecturerAssessments::class, 'destroy'])
+            ->name('submissions.assessments.destroy');
 
         // --- Show Submissions for a Single Assignment ---
         Route::get('/assignments/{assignment}/submissions', [LecturerSubmissions::class, 'index'])
@@ -148,9 +159,6 @@ Route::middleware(['auth','lecturer'])
 
         Route::get('/submissions/{submission}/download', [LecturerSubmissions::class, 'download']) // Example
         ->name('submissions.download');
-
-        Route::post('/submissions/{submission}/score', [LecturerSubmissions::class, 'updateScore'])
-            ->name('submissions.updateScore');
 
         // Announcements authored by lecturer (course‑scoped or global if your policy allows)
         Route::resource('announcements', LecturerAnnouncements::class)

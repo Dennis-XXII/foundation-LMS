@@ -75,10 +75,19 @@
                                     @if($done)
                                         {{-- Link to the Assessment Edit page --}}
                                         {{-- Pass assessment ID = 0 if creating, else actual ID --}}
-                                        <a href="{{ route('lecturer.submissions.assessments.edit', ['submission' => $s, 'assessment' => $assessment ?? 0]) }}"
-                                           class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 whitespace-nowrap">
-                                            {{ $assessment ? 'View/Edit Grade' : 'Grade Now' }}
-                                        </a>
+                                            @if($assessment)
+                                                {{-- If grade exists, go to the EDIT route --}}
+                                                <a href="{{ route('lecturer.submissions.assessments.edit', ['submission' => $s, 'assessment' => $assessment]) }}"
+                                                class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 whitespace-nowrap">
+                                                    View/Edit Grade
+                                                </a>
+                                            @else
+                                                {{-- If no grade, go to the CREATE route --}}
+                                                <a href="{{ route('lecturer.submissions.assessments.create', ['submission' => $s]) }}"
+                                                class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 whitespace-nowrap">
+                                                    Grade Now
+                                                </a>
+                                            @endif
                                         @if($s->file_path)
                                             <a href="{{ route('lecturer.submissions.download', $s) }}" {{-- Use correct route name --}}
                                                class="text-blue-700 underline text-xs whitespace-nowrap">

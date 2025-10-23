@@ -54,14 +54,21 @@ class SubmissionPolicy
 
     public function update(User $user, Submission $submission): bool
     {
-        // Let students update their submission until due date; admin always allowed
+        // Admin can always update
         if ($this->isAdmin($user)) return true;
 
+        // Student can update their own submission before the due date
         if ($this->isStudent($user) && $user->student && $submission->student_id === $user->student->id) {
             $due = $submission->assignment->due_at;
             return is_null($due) || now()->lessThanOrEqualTo($due);
         }
-
+        // Lecturer can "update" (in the context of grading) if they teach the course
+        if ($this->isLecturer($user)) {
+            $submission->loadMissing('assignment.course'); // Make sure relationship is loaded
+            if ($submission->assignment?->course) {
+                return $this->lecturerTeachesCourse($user, $submission->assignment->course);
+            }
+        }
         // Lecturers typically should not "update" student submissions (only assess)
         return false;
     }
