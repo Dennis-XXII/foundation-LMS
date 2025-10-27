@@ -56,20 +56,20 @@
                     $tile = fn($label,$type,$level,$color) => ['label'=>$label,'type'=>$type,'level'=>$level,'color'=>$color];
                     $tiles = [
                         // L3
-                        $tile('Lesson Materials','lesson',3,'bg-cyan-300'),
-                        $tile('Worksheets','worksheet',3,'bg-cyan-300'),
-                        $tile('Self-study','self_study',3,'bg-cyan-300'),
-                        $tile('Upload Links','upload',3,'bg-cyan-300'),
+                        $tile('Lesson Materials','lesson',3,'bg-[#9bd1f8]'),
+                        $tile('Worksheets','worksheet',3,'bg-[#9bd1f8]'),
+                        $tile('Self-study','self_study',3,'bg-[#9bd1f8]'),
+                        $tile('Upload Links','upload',3,'bg-[#9bd1f8]'),
                         // L2
-                        $tile('Lesson Materials','lesson',2,'bg-green-200'),
-                        $tile('Worksheets','worksheet',2,'bg-green-200'),
-                        $tile('Self-study','self_study',2,'bg-green-200'),
-                        $tile('Upload Links','upload',2,'bg-green-200'),
+                        $tile('Lesson Materials','lesson',2,'bg-[#c7f7cf]'),
+                        $tile('Worksheets','worksheet',2,'bg-[#c7f7cf]'),
+                        $tile('Self-study','self_study',2,'bg-[#c7f7cf]'),
+                        $tile('Upload Links','upload',2,'bg-[#c7f7cf]'),
                         // L1
-                        $tile('Lesson Materials','lesson',1,'bg-rose-200'),
-                        $tile('Worksheets','worksheet',1,'bg-rose-200'),
-                        $tile('Self-study','self_study',1,'bg-rose-200'),
-                        $tile('Upload Links','upload',1,'bg-rose-200'),
+                        $tile('Lesson Materials','lesson',1,'bg-[#f0c6bc]'),
+                        $tile('Worksheets','worksheet',1,'bg-[#f0c6bc]'),
+                        $tile('Self-study','self_study',1,'bg-[#f0c6bc]'),
+                        $tile('Upload Links','upload',1,'bg-[#f0c6bc]'),
                     ];
                 @endphp
 

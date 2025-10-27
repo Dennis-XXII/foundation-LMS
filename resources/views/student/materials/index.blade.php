@@ -7,8 +7,8 @@
         <span class="mx-2">/</span>
       </li>
       <li>
-        <a href="{{ route('student.materials.index', $course) }}" class="font-semibold hover:underline">
-          Materials for {{ $course->code }}
+        <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline font-semibold">
+          {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
         </a>
       </li>
     </ol>
@@ -16,9 +16,9 @@
   <div class="max-w-8xl mx-auto p-3">
     @php
       $levelColors = [
-        3 => 'bg-cyan-300',
-        2 => 'bg-green-200',
-        1 => 'bg-rose-200',
+        3 => 'bg-[#9bd1f8]',
+        2 => 'bg-[#c7f7cf]',
+        1 => 'bg-[#f0c6bc]',
       ];
       // Use level filter for header, default to gray
       $headerColor = $levelColors[$level ?? null] ?? 'bg-gray-100';

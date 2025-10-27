@@ -8,7 +8,7 @@
       </li>
       <li>
         <a href="{{ route('lecturer.courses.materials.index', $course) }}{{ request('type') || request('level') ? '?' . http_build_query(array_filter(['type'=>request('type'),'level'=>request('level')])) : '' }}" class="hover:underline">
-            {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}
+            {{ str(request('type') ?? $type)->replace('_', ' ')->title() }}{{ str(request('level') ? ' - Level ' . request('level') : ($level ? ' - Level ' . $level : ''))}}
         </a>
         <span class="mx-2">/</span>
       </li>

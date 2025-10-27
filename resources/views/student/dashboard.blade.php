@@ -6,9 +6,9 @@
 
     // Map level → header/tile background color (mirror lecturer)
     $levelColors = [
-        3 => 'bg-cyan-300',
-        2 => 'bg-green-200',
-        1 => 'bg-rose-200',
+        3 => 'bg-[#9bd1f8]',
+        2 => 'bg-[#c7f7cf]',
+        1 => 'bg-[#f0c6bc]',
     ];
 
     // Define tiles like lecturer (label + type key)
