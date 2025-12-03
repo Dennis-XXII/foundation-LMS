@@ -1,53 +1,77 @@
 <x-layout>
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-thin pl-2 ">Lecturer Dashboard</h1>
-        <!-- <form method="POST" action="{{ route('logout') }}">
+        <h1 class="text-3xl font-thin pl-2">Lecturer Dashboard</h1>
+        <!-- <form method="POST" action="{{ route("logout") }}">
             @csrf
             <button class="px-4 py-2 bg-purple-900 text-white rounded">Log Out</button>
         </form> -->
     </div>
 
     {{-- Flashes / Errors --}}
-    @if(session('success'))
-        <div class="mb-4 bg-green-50 text-green-800 border border-green-200 px-4 py-2 rounded">{{ session('success') }}</div>
+    @if (session("success"))
+        <div
+            class="mb-4 bg-green-50 text-green-800 border border-green-200 px-4 py-2 rounded"
+        >
+            {{ session("success") }}
+        </div>
     @endif
-    @if(session('info'))
-        <div class="mb-4 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded">{{ session('info') }}</div>
+
+    @if (session("info"))
+        <div
+            class="mb-4 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded"
+        >
+            {{ session("info") }}
+        </div>
     @endif
-    @if($errors->any())
-        <div class="mb-4 bg-rose-50 text-rose-800 border border-rose-200 px-4 py-2 rounded">
+
+    @if ($errors->any())
+        <div
+            class="mb-4 bg-rose-50 text-rose-800 border border-rose-200 px-4 py-2 rounded"
+        >
             <ul class="list-disc list-inside">
-                @foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach
+                @foreach ($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
             </ul>
         </div>
     @endif
 
     {{-- Course header card --}}
     <section class="bg-white rounded-lg shadow-lg">
-        <div class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4">
+        <div
+            class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4"
+        >
             <h2 class="text-lg font-semibold">
-                {{ $course->code ?? 'COURSE' }} {{ $course->name ?? '' }}
+                {{ $course->code ?? "COURSE" }} {{ $course->name ?? "" }}
             </h2>
             <div class="flex gap-3">
-                {{--  Direct link to list view, skipping timetable --}}
-                <a href="{{ route('lecturer.materials.all', $course) }}" 
-                   class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
-                   View All Materials
+                {{-- Direct link to list view, skipping timetable --}}
+                <a
+                    href="{{ route("lecturer.materials.all", $course) }}"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                >
+                    View All Materials
                 </a>
                 {{-- Student progress analysis --}}
-                <a href="{{ route('lecturer.courses.progress.index', $course) }}"
-                   class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
+                <a
+                    href="{{ route("lecturer.courses.progress.index", $course) }}"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                >
                     View Student Progress
                 </a>
                 {{-- Students management --}}
-                <a href="{{ route('lecturer.courses.students.index', $course) }}"
-                   class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
+                <a
+                    href="{{ route("lecturer.courses.students.index", $course) }}"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                >
                     Add students to this course
                 </a>
                 {{-- Edit course --}}
-                <a href="{{ route('lecturer.courses.edit', $course) }}"
-                   class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded">
+                <a
+                    href="{{ route("lecturer.courses.edit", $course) }}"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
+                >
                     Edit
                 </a>
             </div>
@@ -55,61 +79,80 @@
 
         <div class="p-6 flex gap-6">
             <aside class="w-40 space-y-4">
-                @foreach (['Emergency Contact','Maps','Useful links','Profile'] as $leftNav)
-                    <button class="w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50">{{ $leftNav }}</button>
+                @foreach (["Emergency Contact", "Maps", "Useful links", "Profile"] as $leftNav)
+                    <button
+                        class="w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50"
+                    >
+                        {{ $leftNav }}
+                    </button>
                 @endforeach
             </aside>
 
             {{-- Tiles --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 flex-1">
                 @php
-                    $tile = fn($label,$type,$level,$color) => ['label'=>$label,'type'=>$type,'level'=>$level,'color'=>$color];
+                    $tile = fn ($label, $type, $level, $color) => ["label" => $label, "type" => $type, "level" => $level, "color" => $color];
                     $tiles = [
                         // L3
-                        $tile('Lesson Materials','lesson',3,'bg-[#9bd1f8]'),
-                        $tile('Worksheets','worksheet',3,'bg-[#9bd1f8]'),
-                        $tile('Self-study','self_study',3,'bg-[#9bd1f8]'),
-                        $tile('Upload Links','upload',3,'bg-[#9bd1f8]'),
+                        $tile("Lesson Materials", "lesson", 3, "bg-[#9bd1f8]"),
+                        $tile("Worksheets", "worksheet", 3, "bg-[#9bd1f8]"),
+                        $tile("Self-study", "self_study", 3, "bg-[#9bd1f8]"),
+                        $tile("Upload Links", "upload", 3, "bg-[#9bd1f8]"),
                         // L2
-                        $tile('Lesson Materials','lesson',2,'bg-[#c7f7cf]'),
-                        $tile('Worksheets','worksheet',2,'bg-[#c7f7cf]'),
-                        $tile('Self-study','self_study',2,'bg-[#c7f7cf]'),
-                        $tile('Upload Links','upload',2,'bg-[#c7f7cf]'),
+                        $tile("Lesson Materials", "lesson", 2, "bg-[#c7f7cf]"),
+                        $tile("Worksheets", "worksheet", 2, "bg-[#c7f7cf]"),
+                        $tile("Self-study", "self_study", 2, "bg-[#c7f7cf]"),
+                        $tile("Upload Links", "upload", 2, "bg-[#c7f7cf]"),
                         // L1
-                        $tile('Lesson Materials','lesson',1,'bg-[#f0c6bc]'),
-                        $tile('Worksheets','worksheet',1,'bg-[#f0c6bc]'),
-                        $tile('Self-study','self_study',1,'bg-[#f0c6bc]'),
-                        $tile('Upload Links','upload',1,'bg-[#f0c6bc]'),
+                        $tile("Lesson Materials", "lesson", 1, "bg-[#f0c6bc]"),
+                        $tile("Worksheets", "worksheet", 1, "bg-[#f0c6bc]"),
+                        $tile("Self-study", "self_study", 1, "bg-[#f0c6bc]"),
+                        $tile("Upload Links", "upload", 1, "bg-[#f0c6bc]"),
                     ];
                 @endphp
 
                 @foreach ($tiles as $t)
                     @php
                         // Materials: nested collection route (because of ->shallow())
-                        $materialsHref = route('lecturer.courses.materials.index', $course)
-                            .'?type='.$t['type'].'&level='.$t['level'];
+                        $materialsHref = route("lecturer.courses.materials.index", $course) . "?type=" . $t["type"] . "&level=" . $t["level"];
 
                         // Assignments: nested collection route (because of ->shallow())
-                        $assignIndex  = route('lecturer.courses.assignments.index', $course).'?level='.$t['level'];
+                        $assignIndex = route("lecturer.courses.assignments.index", $course) . "?level=" . $t["level"];
                         // Assess entry: send to assignments list (no assessments index exists)
-                        $assessEntry  = $assignIndex.'&tab=assess';
+                        $assessEntry = $assignIndex . "&tab=assess";
                     @endphp
 
-                    @if($t['type'] !== 'upload')
-                        <a href="{{ $materialsHref }}"
-                           class="block rounded-lg p-5 border border-gray-300 hover:shadow {{ $t['color'] }}">
-                            <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
-                            <div class="text-lg font-semibold">{{ $t['label'] }}</div>
+                    @if ($t["type"] !== "upload")
+                        <a
+                            href="{{ $materialsHref }}"
+                            class="block rounded-lg p-5 border border-gray-300 hover:shadow {{ $t["color"] }}"
+                        >
+                            <div class="text-xs text-gray-600 mb-1">
+                                LEVEL {{ $t["level"] }}
+                            </div>
+                            <div class="text-lg font-semibold">
+                                {{ $t["label"] }}
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600">
+                                Create, edit, and manage
+                                {{ ucfirst($t["type"]) }} materials
+                            </p>
                         </a>
-                @else
-                    {{-- Single tile → go to Assignments index; lecturer chooses inside --}}
-                    <a href="{{ route('lecturer.courses.assignments.index', $course) }}?level={{ $t['level'] }}"
-                    class="block rounded-lg p-5 border border-gray-300 {{ $t['color'] }}">
-                        <div class="text-xs text-gray-600 mb-1">LEVEL {{ $t['level'] }}</div>
-                        <div class="text-lg font-semibold">{{ $t['label'] }}</div>
-                        <p class="mt-2 text-sm text-gray-600">Create Upload links and assess submissions</p>
-                    </a>
-                @endif 
+                    @else
+                        {{-- Single tile → go to Assignments index; lecturer chooses inside --}}
+                        <a
+                            href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $t["level"] }}"
+                            class="block rounded-lg p-5 border border-gray-300 {{ $t["color"] }}"
+                        >
+                            <div class="text-xs text-gray-600 mb-1">
+                                LEVEL {{ $t["level"] }}
+                            </div>
+                            <div class="text-lg font-semibold">Assignments</div>
+                            <p class="mt-2 text-xs text-gray-600">
+                                Create Assignments and assess submissions
+                            </p>
+                        </a>
+                    @endif
                 @endforeach
             </div>
         </div>
@@ -122,7 +165,7 @@
         </div>
 
         <form class="p-6 space-y-4" method="POST"
-              action="{{ route('lecturer.announcements.store') }}"
+              action="{{ route("lecturer.announcements.store") }}"
               enctype="multipart/form-data">
             @csrf
             <input type="text" name="title" placeholder="Title" class="w-full border rounded px-4 py-2" required>
@@ -143,16 +186,17 @@
                     <li class="flex items-center justify-between">
                         <span class="truncate">{{ $a->title }}</span>
                         <span class="flex gap-2">
-                            <a href="{{ route('lecturer.announcements.edit', $a) }}"
+                            <a href="{{ route("lecturer.announcements.edit", $a) }}"
                                class="text-blue-600 hover:underline text-sm">Edit</a>
-                            <form method="POST" action="{{ route('lecturer.announcements.destroy', $a) }}"
+                            <form method="POST" action="{{ route("lecturer.announcements.destroy", $a) }}"
                                   onsubmit="return confirm('Delete this announcement?')">
-                                @csrf @method('DELETE')
+                                @csrf @method("DELETE")
                                 <button class="text-rose-600 hover:underline text-sm">Delete</button>
                             </form>
                         </span>
                     </li>
-                @empty
+@empty
+
                     <li class="text-gray-500">No announcements yet.</li>
                 @endforelse
             </ul>

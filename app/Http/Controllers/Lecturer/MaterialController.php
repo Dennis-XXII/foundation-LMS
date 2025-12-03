@@ -133,7 +133,13 @@ class MaterialController extends Controller
     public function create(Course $course)
     {
         $this->authorize('update', $course);
-        return view('lecturer.materials.create', compact('course'));
+
+        $type  = $this->normalizeType(request('type'));
+        $level = request('level');
+        $week  = request('week');
+        $day   = request('day');
+
+        return view('lecturer.materials.create', compact('course','type','level','week','day'));
     }
 
     /**

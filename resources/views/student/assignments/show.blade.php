@@ -8,9 +8,12 @@
         <span class="mx-2">/</span>
       </li>
       <li>
-        <a href="{{ route('student.assignments.index', $course) }}" class="hover:underline">
-          Upload Links
-        </a>
+        <a
+                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                    class="hover:underline"
+                >
+                    Assignments
+                </a>
         <span class="mx-2">/</span>
       </li>
       <li class="text-black font-semibold">
@@ -18,25 +21,38 @@
       </li>
     </ol>
   </nav>
+  <div class="max-w-8xl mx-auto p-3">
+        @php
+            $levelColors = [
+                3 => "bg-[#9bd1f8]",
+                2 => "bg-[#c7f7cf]",
+                1 => "bg-[#f0c6bc]",
+            ];
+            // Use level filter for header, default to gray
+            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+        @endphp
 
   {{-- Main Content Card --}}
-  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow border">
+  <div class="max-w-4xl mx-auto p-6 rounded-lg shadow border">
 
     {{-- Header --}}
-    <div class="pb-4 border-b">
-        <h1 class="text-3xl font-bold">{{ $assignment->title }}</h1>
-        <p class="text-lg text-gray-600">{{ $course->code }} — {{ $course->name }}</p>
+    <div class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4">
+        <div>
+        <h1 class="text-2xl font-bold">{{ $assignment->title }}</h1>
+        <h1 class="text-lg text-gray-600 font-thin">{{ $assignment->level ? "Level " . $assignment->level : "All Levels" }}</h1>
+        </div>
         {{-- No Edit/Delete buttons for students --}}
     </div>
 
     {{-- Details Grid --}}
     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      {{-- Column 1: Instructions & Attachments --}}
+            {{-- Column 1 --}}
       <div class="md:col-span-2 space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-500">Instruction</label>
-          <div class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded border whitespace-pre-wrap">
+          <div
+                        class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded border"
+                    >
             {{ $assignment->instruction ?? 'No instruction provided.' }}
           </div>
         </div>
@@ -52,22 +68,22 @@
       </div>
 
       {{-- Column 2 (Sidebar): Assignment Meta --}}
-      <div class="space-y-4">
+      <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
         <div>
-          <label class="block text-sm font-medium text-gray-500">Level</label>
+          <label class="block text-sm font-medium text-gray-700">Level</label>
           <p class="mt-1 text-gray-900">{{ $assignment->level ?? '—' }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-500">Week</label>
+          <label class="block text-sm font-medium text-gray-700">Week</label>
           <p class="mt-1 text-gray-900">{{ $assignment->week ?? '—' }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-500">Day</label>
+          <label class="block text-sm font-medium text-gray-700">Day</label>
           <p class="mt-1 text-gray-900">{{ $assignment->day ?? '—' }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-500">Due Date</label>
-          <p class="mt-1 text-gray-900">{{ optional($assignment->due_at)->format('M d, Y, H:i') ?? '—' }}</p>
+          <label class="block text-sm font-medium text-gray-700">Due Date</label>
+          <p class="mt-1 text-red-600">{{ optional($assignment->due_at)->format('M d, Y, H:i') ?? '—' }}</p>
         </div>
       </div>
     </div>
@@ -79,16 +95,19 @@
         <div class="p-4 rounded-lg bg-gray-50 border flex flex-col md:flex-row md:items-center justify-between gap-4">
             {{-- Status Display --}}
             <div>
-                <label class="block text-xs font-medium text-gray-500">Status</label>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium
-                    @class([
-                        'bg-green-100 text-green-800' => $status === 'Graded',
-                        'bg-blue-100 text-blue-800'  => $status === 'Submitted',
-                        'bg-gray-100 text-gray-700'  => $status === 'Closed',
-                        'bg-yellow-100 text-yellow-800' => $status === 'Open',
-                    ])">
-                    {{ $status }}
-                </span>
+                <label class="block ml-2 text-xs font-medium text-gray-700">Status</label>
+                <span @class([
+    // Static classes (always applied)
+    'flex items-center mt-2 px-3 py-1 rounded-xl text-sm font-medium',
+    
+    // Dynamic classes (applied based on condition)
+    'bg-green-100 text-green-800'   => $status === 'Graded',
+    'bg-blue-100 text-blue-800'     => $status === 'Submitted',
+    'bg-red-100 text-red-600'       => $status === 'Closed',
+    'bg-yellow-100 text-yellow-800' => $status === 'Open',
+])>
+    {{ $status }}
+</span>
                 @if ($submission && $status !== 'Graded')
                    <p class="text-xs text-gray-500 mt-1">Submitted: {{ $submission->created_at->format('M d, Y, H:i') }}</p>
                 @endif
@@ -112,7 +131,7 @@
                        View Feedback
                     </a>
                 @elseif($status === 'Closed')
-                     <span class="px-4 py-2 bg-gray-400 text-white rounded text-sm font-medium cursor-not-allowed">
+                     <span class="px-4 py-2 bg-red-600 text-white rounded text-sm font-medium cursor-not-allowed">
                        Past Due
                     </span>
                 @else
@@ -140,11 +159,12 @@
 
     {{-- Back Link --}}
     <div class="mt-8 pt-4 border-t">
-        <a href="{{ url()->previous() }}" {{-- Or route('student.assignments.index', $course) --}}
-           class="px-4 py-2 rounded border text-sm hover:bg-gray-50">
+        <a
+                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                class="px-4 py-2 rounded border text-sm"
+            >
             &larr; Back
         </a>
     </div>
-
   </div>
 </x-layout>
