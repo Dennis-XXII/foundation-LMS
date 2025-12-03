@@ -132,6 +132,8 @@ Route::middleware(['auth','lecturer'])
         Route::resource('courses.materials', LecturerMaterials::class)
             ->parameters(['materials' => 'material'])
             ->shallow();
+        Route::get('/courses/{course}/materials', [LecturerMaterials::class, 'index']) 
+            ->name('materials.index');
         Route::get('/courses/{course}/materials/list', [LecturerMaterials::class, 'list']) 
             ->name('materials.list');
         Route::get('/courses/{course}/materials/all', [LecturerMaterials::class, 'listAll']) 
