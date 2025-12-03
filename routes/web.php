@@ -23,6 +23,7 @@ use App\Http\Controllers\Lecturer\AnnouncementController as LecturerAnnouncement
 use App\Http\Controllers\Lecturer\EnrollmentController as LecturerEnrollments;
 use App\Http\Controllers\Lecturer\CourseController as LecturerCourses;
 use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissions;
+use App\Http\Controllers\Lecturer\StudentAnalysisController as StudentAnalysisController;
 
 // Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -83,6 +84,9 @@ Route::middleware(['auth','student'])
         Route::get('/courses/{course}/materials', [StudentMaterials::class, 'index'])
             ->middleware('can:view,course')
             ->name('materials.index');
+        Route::get('/courses/{course}/materials/list', [StudentMaterials::class, 'list']) 
+            ->middleware('can:view,course')
+            ->name('materials.list');
         Route::get('materials/{material}', [StudentMaterials::class, 'show'])
              ->middleware('can:view,material') // Assuming MaterialPolicy exists
             ->name('materials.show');
@@ -128,6 +132,10 @@ Route::middleware(['auth','lecturer'])
         Route::resource('courses.materials', LecturerMaterials::class)
             ->parameters(['materials' => 'material'])
             ->shallow();
+        Route::get('/courses/{course}/materials/list', [LecturerMaterials::class, 'list']) 
+            ->name('materials.list');
+        Route::get('/courses/{course}/materials/all', [LecturerMaterials::class, 'listAll']) 
+            ->name('materials.all');
         Route::get('/materials/{material}/download', [LecturerMaterials::class, 'download'])
             ->name('materials.download');
         Route::delete('/materials/{material}/file', [LecturerMaterials::class, 'clearFile'])
@@ -174,6 +182,10 @@ Route::middleware(['auth','lecturer'])
             Route::delete('students/{student}', [LecturerEnrollments::class, 'destroy']) // Consider using enrollment ID if possible
                 ->name('students.destroy');
         });
+
+        // Student Progress Analysis
+        Route::get('courses/{course}/progress', [StudentAnalysisController::class, 'index'])
+            ->name('courses.progress.index');
     });
 
 // ─────────────────────────────────────────────────────────────────────────────

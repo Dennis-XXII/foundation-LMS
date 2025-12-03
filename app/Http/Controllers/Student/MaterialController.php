@@ -18,12 +18,49 @@ class MaterialController extends Controller
     /**
      * Show all published materials for a course (with optional filters).
      */
-    public function index(Request $request, Course $course)
+    public function index(Request $request, Course $course) // <--- MODIFIED
+        {
+            // 1. Authorize that the student can view the course
+            $this->authorize('view', $course);
+
+            // 2. Get and validate filters just for display/links (no material fetch yet)
+            $type  = $this->normalizeType($request->query('type'));
+            $level = $request->integer('level');
+            $week  = $request->integer('week');
+            $day   = $request->query('day');
+
+            $validTypes = ['lesson', 'worksheet', 'self_study'];
+            if ($type && !in_array($type, $validTypes, true)) { $type = null; }
+            if ($level && !in_array($level, [1, 2, 3], true)) { $level = null; }
+
+            // 3. Get the student's enrolled level for this course
+            $student_level = Enrollment::where('student_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->value('level');
+
+            // Fetch materials for timetable display (filtered by type/level only)
+            $materials = Material::query()
+                ->where('course_id', $course->id)
+                ->where('is_published', true); // Students only see published
+
+            // 4. Return the new timetable view
+            return view('student.materials.timetable', compact(
+                'course',
+                'type',
+                'level',
+                'week',
+                'day',
+                'materials',
+                'student_level' 
+            ));
+        }
+
+    public function list(Request $request, Course $course) // <--- NEW METHOD
     {
         // 1. Authorize that the student can view the course
         $this->authorize('view', $course);
 
-        // 2. Get and validate all filters (like lecturer's controller)
+        // 2. Get and validate all filters
         $type  = $this->normalizeType($request->query('type'));
         $level = $request->integer('level');
         $week  = $request->integer('week');
@@ -35,13 +72,23 @@ class MaterialController extends Controller
         if ($week && !in_array($week, range(1, 8), true)) { $week = null; }
         $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW'];
         if ($day && !in_array($day, $validDays, true)) { $day = null; }
+        
+        // Sanity Check: Must have Week and Day selected for this page (user flow enforcement)
+        if (!$week || !$day) {
+             return redirect()->route('student.materials.index', [
+                'course' => $course, 
+                'type' => $type, 
+                'level' => $level
+            ])->with('error', 'Please select a specific week and day from the timetable.');
+        }
+
 
         // 3. Get the student's enrolled level for this course (CRITICAL)
         $student_level = Enrollment::where('student_id', Auth::id())
             ->where('course_id', $course->id)
             ->value('level');
 
-        // 4. Build the database query
+        // 4. Build the database query (Original logic from old index)
         $materials = Material::query()
             ->where('course_id', $course->id)
             ->where('is_published', true) // Students only see published
@@ -66,8 +113,8 @@ class MaterialController extends Controller
             ->paginate(20)          // Match lecturer's pagination
             ->withQueryString();    // Keep filters on pagination links
 
-        // 5. Return the view with all necessary data
-        return view('student.materials.index', compact(
+        // 5. Return the new list view with all necessary data
+        return view('student.materials.list', compact(
             'course',
             'materials',
             'type',

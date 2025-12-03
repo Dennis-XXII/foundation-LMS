@@ -15,17 +15,22 @@ class EnrollmentController extends Controller
      * List all students enrolled in the course.
      */
     public function index(Course $course)
-    {
-        $this->authorize('update', $course); // lecturers assigned to this course
+        {
+            $this->authorize('update', $course); // lecturers assigned to this course
 
-        // Eager load student->user for name/email
-        $enrollments = Enrollment::with(['student.user'])
-            ->where('course_id', $course->id)
-            ->orderByRelation('student.user.name') // Laravel 11 helper; if older: join or sort later.
-            ->get();
+            // Eager load student->user for name/email
+            $enrollments = Enrollment::query()
+                ->with(['student.user'])
+                ->where('course_id', $course->id)
+                // FIX: Replaced orderByRelation with explicit joins for compatibility
+                ->join('students', 'enrollments.student_id', '=', 'students.id')
+                ->join('users', 'students.user_id', '=', 'users.id')
+                ->orderBy('users.name') 
+                ->select('enrollments.*') // Select only columns from enrollments to avoid ambiguity
+                ->get();
 
-        return view('lecturer.students.index', compact('course', 'enrollments'));
-    }
+            return view('lecturer.students.index', compact('course', 'enrollments'));
+        }
 
     /**
      * Add a student by Student ID to the course.

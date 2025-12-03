@@ -26,7 +26,25 @@ class MaterialController extends Controller
      * Query: ?type=lesson|worksheet|self_study&level=1|2|3
      * NEW: Query: ?view=list|grid
      */
-    public function index(Request $request, Course $course)
+    public function index(Request $request, Course $course) // <--- MODIFIED
+        {
+            $this->authorize('view', $course);
+
+            // Normalize & soft-validate only filters used on the timetable page
+            $type  = $this->normalizeType($request->query('type'));
+            $level = $request->integer('level');
+
+            $validTypes = ['lesson','worksheet','self_study'];
+            if ($type && !in_array($type, $validTypes, true))   $type = null;
+            if ($level && !in_array($level, [1,2,3], true))     $level = null;
+
+            return view('lecturer.materials.timetable', compact(
+                'course',
+                'type',
+                'level',
+            ));
+        }
+    public function list(Request $request, Course $course)
     {
         $this->authorize('view', $course);
 
@@ -34,17 +52,24 @@ class MaterialController extends Controller
         $type  = $this->normalizeType($request->query('type'));
         $level = $request->integer('level');
         $week  = $request->integer('week');
-        $day   = $request->query('day'); // 'Monday', 'Review', etc.
+        $day   = $request->query('day'); 
 
-        // Validation for 'type' and 'level'
+        // Validation checks
         $validTypes = ['lesson','worksheet','self_study'];
         if ($type && !in_array($type, $validTypes, true))   $type = null;
         if ($level && !in_array($level, [1,2,3], true))     $level = null;
-        // Basic validation for 'week' and 'day'
         if ($week && !in_array($week, range(1, 8), true))   $week = null;
-        $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW']; // Use your exact day names
+        $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW'];
         if ($day && !in_array($day, $validDays, true))      $day = null;
-
+        
+        // Redirect back to timetable if no specific filters are set (Original logic restored for safety)
+        if (!$week || !$day) {
+             return redirect()->route('lecturer.courses.materials.index', [
+                 'course' => $course, 
+                 'type' => $type, 
+                 'level' => $level
+             ])->with('error', 'Please select a specific week and day from the timetable.');
+        }
 
         $materials = Material::query()
             ->where('course_id', $course->id)
@@ -54,9 +79,47 @@ class MaterialController extends Controller
             ->when($day,   fn($q) => $q->where('day', $day))
             ->latest('uploaded_at')
             ->paginate(20)
-            ->withQueryString(); // This is key to keep filters on pagination links
+            ->withQueryString(); 
 
-        return view('lecturer.materials.index', compact(
+        return view('lecturer.materials.list', compact(
+            'course',
+            'materials',
+            'type',
+            'level',
+            'week',
+            'day'
+        ));
+    }
+
+    public function listAll(Request $request, Course $course)
+    {
+        $this->authorize('view', $course);
+
+        // Normalize & soft-validate filters (Optional filters allowed)
+        $type  = $this->normalizeType($request->query('type'));
+        $level = $request->integer('level');
+        // Week/Day filters are allowed but not required here
+        $week  = $request->integer('week');
+        $day   = $request->query('day'); 
+
+        $validTypes = ['lesson','worksheet','self_study'];
+        if ($type && !in_array($type, $validTypes, true))   $type = null;
+        if ($level && !in_array($level, [1,2,3], true))     $level = null;
+        if ($week && !in_array($week, range(1, 8), true))   $week = null;
+        $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'REVIEW'];
+        if ($day && !in_array($day, $validDays, true))      $day = null;
+
+        $materials = Material::query()
+            ->where('course_id', $course->id)
+            ->when($type,  fn($q) => $q->where('type', $type))
+            ->when($level, fn($q) => $q->where('level', $level))
+            ->when($week,  fn($q) => $q->where('week', $week))
+            ->when($day,   fn($q) => $q->where('day', $day))
+            ->latest('uploaded_at')
+            ->paginate(20)
+            ->withQueryString(); 
+
+        return view('lecturer.materials.all_list', compact(
             'course',
             'materials',
             'type',
