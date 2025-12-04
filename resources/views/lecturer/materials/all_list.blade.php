@@ -140,7 +140,7 @@
 
                 @if ($level || $week || $day || $type)
                     <a
-                        href="{{ route("lecturer.materials.index", $course) }}"
+                        href="{{ route("lecturer.courses.materials.index", $course) }}"
                         class="text-sm text-red-600 hover:text-red-800 font-medium ml-auto"
                     >
                         ✕ Clear All Filters
