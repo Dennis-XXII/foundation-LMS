@@ -2,6 +2,14 @@
 <x-layout>
     @php
         $level = (int) request("level");
+
+        $levelColors = [
+                3 => "bg-[#9bd1f8]",
+                2 => "bg-[#c7f7cf]",
+                1 => "bg-[#f0c6bc]",
+            ];
+            // Use level filter for header, default to gray
+            $headerColor = $levelColors[$level ?? null] ?? "bg-gray-200";
     @endphp
 
     <!-- Breadcrumbs -->
@@ -24,13 +32,13 @@
     <div class="flex items-center justify-center gap-6 mb-8">
         <a
             href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow bg-rose-200 text-rose-800 hover:bg-rose-300"
+            class="px-6 py-2.5 rounded-lg shadow bg-gray-200 hover:bg-gray-300"
         >
-            Post Upload Links
+            Post Assignments
         </a>
         <a
             href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow bg-blue-600 text-white"
+            class="px-6 py-2.5 rounded-lg shadow {{ $headerColor }}"
         >
             Assess Student Uploads
         </a>
@@ -39,7 +47,7 @@
     <!-- Level Filter -->
     <form
         method="GET"
-        class="mt-4 mb-6 flex flex-wrap gap-3 items-end justify-center"
+        class="mt-4 mb-6 flex flex-wrap gap-3 items-end justify-start"
     >
         <div>
             <label for="level_filter" class="block text-sm text-gray-600">

@@ -3,6 +3,8 @@
     @php
         // These variables ($level, $week, $day) are now passed from the controller
         $levelLabel = $level ? "LEVEL " . $level : null;
+        $week = (int) request("week");
+        $day = request("day");
     @endphp
 
     {{-- Breadcrumbs --}}
@@ -99,19 +101,20 @@
     {{-- Week/Day Navigation Grid --}}
     @php
         $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
+
     @endphp
 
     <div class="grid grid-cols-[auto_1fr] gap-4 mt-2">
-    <div class="mt-2">
-        <table class="min-w-full text-lg">
+    <aside class="w-94 mt-2">
+        <table class="w-full text-xs border border-gray-200 mr-2 shadow-sm">
             <tbody class="bg-white">
                 @for ($w = 1; $w <= 8; $w++)
-                    <table class="w-full text-xs border border-gray-200 mr-2">
+                    <tr class="border-b border-gray-200">
                         <td class="px-1 py-1">
                             <div
                                 class="flex flex-wrap items-center gap-x-3 gap-y-1"
                             >
-                                <span class="font-bold text-blue-700 whitespace-nowrap">
+                                <span class="font-bold text-blue-700 whitespace-nowrap bg-gray-200 px-2 py-1 rounded">
                                     Week {{ $w }}:
                                 </span>
                                 @foreach ($days as $dayName)
@@ -119,11 +122,13 @@
                                     <a
                                         href="{{ request()->fullUrlWithQuery(["week" => $w, "day" => $dayName, "level" => $level]) }}"
                                         @class([
-                                            "font-bold",
-                                            "underline" => $week == $w && $day == $dayName,
+                                            "font-semibold",
+                                            "bg-gray-100 px-1 py-1 rounded",
+                                            "underline bg-green-600 text-white" => $week == $w && $day == $dayName,
+                                            "hover:bg-green-600 hover:text-white" => ! ($week == $w && $day == $dayName),
                                             "hover:underline" => ! ($week == $w && $day == $dayName),
-                                            "text-purple-700" => $dayName === "REVIEW",
-                                            "text-red-800" => $dayName !== "REVIEW",
+                                            "text-purple-600" => $dayName === "REVIEW",
+                                            "text-black" => $dayName !== "REVIEW",
                                         ])
                                     >
                                         {{ $dayName }}
@@ -135,10 +140,10 @@
                 @endfor
             </tbody>
         </table>
-    </div>
+                                        </aside>
 
     {{-- Assignments table (now filtered) --}}
-    <div class="mt-2 rounded-lg flex-1">
+    <main class="mt-2 rounded-lg flex-1">
         {{-- Title --}}
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold">
@@ -152,11 +157,11 @@
             </h2>
         </div>
 
-        @if ($week && $day && $level)
-    <div class="flex gap-2">
+@if ($week && $day)
+    <div class="flex gap-2 mb-4">
         {{-- Link 1: View filtered list --}}
-        <a href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-3 py-1.5 rounded bg-white text-purple-900 border border-purple-900 text-sm font-medium hover:bg-purple-800 hover:text-white transition shadow-sm"
+        <a href="{{ route('student.assignments.index',$course, ['level' => $level]) }}"
+            class="px-3 py-1.5 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
         >
             &larr; Back to all Assignments
         </a>
@@ -164,18 +169,18 @@
 @endif
 
         {{-- Assignments Table --}}
-        <div class="mt-4 overflow-x-auto">
-            <table class="min-w-full text-sm border bg-white ">
+        <div class="mt-4 overflow-x-auto rounded-lg shadow-md">
+            <table class="min-w-full text-sm bg-white shadow-sm">
                 <thead class="bg-gray-50 text-left">
                     <tr class="text-sm text-gray-600">
-                        <th class="px-6 py-3 text-left">Assignment title</th>
-                        <th class="px-6 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Assignment title</th>
+                        <th class="px-4 py-3 text-left">Status</th>
                         {{-- Changed from Lecturer's 'Published' status --}}
-                        <th class="px-6 py-3 text-left">Level</th>
-                        <th class="px-6 py-3 text-left">Week</th>
-                        <th class="px-6 py-3 text-left">Day</th>
-                        <th class="px-6 py-3 text-left">Due Date</th>
-                        <th class="px-6 py-3 text-left">Actions</th>
+                        <th class="px-4 py-3 text-left">Level</th>
+                        <th class="px-4 py-3 text-left">Week</th>
+                        <th class="px-4 py-3 text-left">Day</th>
+                        <th class="px-4 py-3 text-left">Due Date</th>
+                        <th class="px-4 py-3 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -200,8 +205,8 @@
                             $canEdit = $submission && ! $hasAssessment && (! $a->due_at || $a->due_at->isFuture());
                         @endphp
 
-                        <tr>
-                            <td class="px-6 py-3 text-left">
+                        <tr  class="hover:bg-gray-50 border-b border-gray-200">
+                            <td class="px-4 py-3 text-left">
                                 {{-- Wrap the title in a link --}}
                                 <a
                                     href="{{ route("student.assignments.show", $a) }}"
@@ -210,36 +215,37 @@
                                     {{ $a->title }}
                                 </a>
                             </td>
-                            <td class="px-6 py-3 text-left">
+                            <td class="px-4 py-3 text-left">
                                 {{-- Student Status Span --}}
                                 <span
-                                    class=" @class([
+                                    @class([
+                                        "px-2 py-1 rounded",
                                         "bg-green-100 text-green-700" => $status === "Graded",
                                         "bg-blue-100 text-blue-700" => $status === "Submitted",
-                                        "bg-gray-100 text-gray-700" => $status === "Closed",
+                                        "bg-red-100 text-red-700" => $status === "Closed",
                                         "bg-yellow-100 text-yellow-700" => $status === "Open",
-                                    ])"
+                                    ])
                                 >
                                     {{ $status }}
                                 </span>
                             </td>
-                            <td class="px-6 py-3 text-left">
+                            <td class="px-4 py-3 text-left">
                                 {{ $a->level ?? "—" }}
                             </td>
-                            <td class="px-6 py-3 text-left">
+                            <td class="px-4 py-3 text-left">
                                 {{ $a->week ?? "—" }}
                             </td>
-                            <td class="px-6 py-3 text-left">
+                            <td class="px-4 py-3 text-left">
                                 {{ $a->day ?? "—" }}
                             </td>
-                            <td class="px-6 py-3 text-left whitespace-nowrap">
+                            <td class="px-4 py-3 text-left whitespace-nowrap">
                                 @if ($a->due_at)
                                     {{ $a->due_at->format("d M Y, H:i") }}
                                 @else
                                     <span class="text-gray-400">—</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-3 text-left">
+                            <td class="px-4 py-3 text-left">
                                 {{-- Student Actions --}}
                                 <div class="flex flex-col items-start gap-1">
                                     {{-- Changed to flex-col for better wrapping --}}
@@ -309,7 +315,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+                                    </main>
 
         {{-- Paginator --}}
         @if ($assignments->hasPages())

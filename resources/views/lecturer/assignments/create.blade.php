@@ -1,5 +1,7 @@
 {{-- resources/views/lecturer/assignments/create.blade.php --}}
 <x-layout>
+    {{-- Breadcrumbs --}}
+
     <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
@@ -16,17 +18,19 @@
                     href="{{ route("lecturer.courses.assignments.index", $course) }}{{ request("level") ? "?level=" . request("level") : "" }}"
                     class="hover:underline"
                 >
-                    Upload Links
+                    Assignments
                 </a>
                 <span class="mx-2">/</span>
             </li>
-            <li class="text-black font-semibold">Create Upload Link</li>
+            <li class="text-black font-semibold">Create Assignment</li>
         </ol>
     </nav>
+
     {{-- Course header --}}
+
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-semibold">
-            Create Upload Link — {{ $course->code }} {{ $course->name }}
+            Create New Assignment — Level {{ request("level") ?? "All Levels" }}
         </h1>
 
         {{-- Validation errors --}}

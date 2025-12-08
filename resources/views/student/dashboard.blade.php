@@ -11,6 +11,8 @@
             1 => "bg-[#f0c6bc]",
         ];
 
+        $headerColor = $levelColors[$student_level ?? null] ?? "bg-gray-100";
+
         // Define tiles like lecturer (label + type key)
         $tile = fn ($label, $type, $level, $color) => ["label" => $label, "type" => $type, "level" => $level, "color" => $color];
         $tiles = [];
@@ -18,22 +20,22 @@
             $tiles[] = $tile("Lesson Materials", "lesson", $lv, $levelColors[$lv]);
             $tiles[] = $tile("Worksheets", "worksheet", $lv, $levelColors[$lv]);
             $tiles[] = $tile("Self-study", "self_study", $lv, $levelColors[$lv]);
-            $tiles[] = $tile("Upload Links", "upload", $lv, $levelColors[$lv]);
+            $tiles[] = $tile("Assignments", "upload", $lv, $levelColors[$lv]);
         }
 
         $hasCourse = isset($course) && $course;
     @endphp
 
     <div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
-        <section class="bg-white rounded-lg shadow-lg">
+        <section class="bg-white rounded-xl shadow-lg">
             <div
-                class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4"
+                class="flex items-center justify-between {{ $headerColor }} rounded-xl px-6 py-4"
             >
                 <h2 class="text-lg font-semibold">
                     {{ ($course->code ?? "COURSE") . " " . ($course->name ?? ($course->title ?? "")) }}
                     @if ($student_level)
                         <span
-                            class="ml-3 font-normal text-sm px-2 py-1 rounded-full bg-white text-purple-900"
+                            class="ml-3 font-normal text-sm px-2 py-1 rounded-full bg-white shadwow-sm"
                         >
                             Level {{ $student_level }}
                         </span>
