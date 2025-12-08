@@ -12,7 +12,8 @@ use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
 use App\Http\Controllers\Student\MaterialController as StudentMaterials;
-use App\Http\Controllers\Student\AssignmentController as StudentAssignments; // <-- NEW CONTROLLER IMPORT
+use App\Http\Controllers\Student\AssignmentController as StudentAssignments;
+use App\Http\Controllers\Student\StudentController; as StudentController;
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
@@ -173,6 +174,10 @@ Route::middleware(['auth','lecturer'])
         Route::resource('announcements', LecturerAnnouncements::class)
             ->except(['show']);
 
+        // Course CRUD (full)
+        Route::resource('courses', LecturerCourses::class)
+            ->parameters(['courses' => 'course']);
+  
         // Enrollments
         Route::prefix('courses/{course}')->name('courses.')->group(function () {
             Route::get('students', [LecturerEnrollments::class, 'index'])

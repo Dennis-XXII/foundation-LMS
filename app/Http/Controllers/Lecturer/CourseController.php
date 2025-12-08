@@ -18,7 +18,7 @@ class CourseController extends Controller
     public function show(Course $course)
     {
         $this->authorize('view', $course);
-        return view('lecturer.courses.show', compact('course'));
+        return view('lecturer.courses.edit', compact('course'));
     }
 
     public function edit(Course $course)
@@ -32,7 +32,7 @@ class CourseController extends Controller
         $this->authorize('update', $course);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 

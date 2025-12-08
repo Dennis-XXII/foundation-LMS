@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Edit Course</h1>
         <a
-            href="{{ route("admin.courses.index") }}"
+            href="{{ route("lecturer.courses.index") }}"
             class="text-blue-600 hover:underline"
         >
             Back
@@ -32,7 +32,7 @@
     {{-- Update basic info --}}
     <form
         method="POST"
-        action="{{ route("admin.courses.update", $course) }}"
+        action="{{ route("lecturer.courses.update", $course) }}"
         class="bg-white border rounded-lg shadow p-6 space-y-4"
     >
         @csrf
@@ -84,7 +84,7 @@
             </button>
             <a
                 class="px-4 py-2 bg-gray-100 border rounded"
-                href="{{ route("admin.students.index", $course) }}"
+                href="{{ route("lecturer.courses.students.index", $course) }}"
             >
                 Manage Students
             </a>
@@ -99,7 +99,7 @@
         </p>
         <form
             method="POST"
-            action="{{ route("admin.courses.destroy", $course) }}"
+            action="{{ route("lecturer.courses.destroy", $course) }}"
             onsubmit="
                 return confirm(
                     'Delete this course and all related coursework? This cannot be undone.',
