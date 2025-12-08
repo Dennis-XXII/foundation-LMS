@@ -11,19 +11,31 @@
         @vite("resources/css/app.css")
     </head>
 
+    @php
+        $userRole = auth()->user()->role;
+
+        $userColors = [
+                "admin" => "bg-green-100",
+                "lecturer" => "bg-slate-300",
+                "student" => "bg-purple-100", 
+        ];
+            // Use level filter for header, default to gray
+            $headerColor = $userColors[$userRole ?? null] ?? "bg-gray-200";
+    @endphp
+
     <body class="bg-white">
         <div class="flex flex-col min-h-screen">
             <!-- Header with Logo and Title -->
-            <header class="border-b border-gray-200">
+            <header class="border-b border-gray-200 flex {{ $headerColor }} items-center px-1 py-1 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base justify-between ">
+            <div class="flex items-center">
                 <!-- Navigation Bar with only logout -->
-                <div
-                    class="flex bg-purple-100 justify-end px-1 py-1 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base"
-                >
                     <h1
-                        class="font-thin text-black mx-auto text-xl md:text-2xl"
+                        class="font-semibold text-gray-900 mx-auto text-xl md:text-2xl"
                     >
-                        FOUNDATION PROGRAMS MOODLE
+                        FOUNDATION PROGRAM MOODLE
                     </h1>
+                </div>
+            <div>
                     @auth
                         <form
                             method="POST"
@@ -34,7 +46,7 @@
                             @csrf
                             <button
                                 type="submit"
-                                class="text-white mr-1 bg-red-500 px-1 py-1 lg:px-2 lg:py-2 rounded-[25%] hover:bg-red-600 transition"
+                                class="flex position-sticky text-white mr-1 bg-red-500 px-3 py-2 rounded-[999px] hover:bg-red-600 transition"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -46,11 +58,13 @@
                                     stroke-width="1.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
+                                    
                                 >
                                     <path
                                         d="M10 3H6a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h4M16 17l5-5-5-5M19.8 12H9"
                                     />
                                 </svg>
+                                <p class="ml-2 text-sm">Log Out</p>
                             </button>
                         </form>
                     @endauth
@@ -64,9 +78,10 @@
 
             <!-- Footer -->
             <footer
-                class="bg-[#7D3C98] text-xs lg:text-base text-center text-white p-4"
+                class="{{ $headerColor }} text-xs text-center text-gray-500 p-2"
             >
-                <p>&copy; {{ date("Y") }} LMS. All rights reserved.</p>
+                <p> Designed and Developed by ICT Students.</p>
+                <p class="mt-1">&copy; Rangsit International College ({{ date("Y") }}). All rights reserved.</p>
             </footer>
         </div>
 

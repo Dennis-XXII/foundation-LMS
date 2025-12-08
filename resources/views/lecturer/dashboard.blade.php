@@ -1,12 +1,4 @@
 <x-layout>
-    {{-- Header --}}
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-thin pl-2">Lecturer Dashboard</h1>
-        <!-- <form method="POST" action="{{ route("logout") }}">
-            @csrf
-            <button class="px-4 py-2 bg-purple-900 text-white rounded">Log Out</button>
-        </form> -->
-    </div>
 
     {{-- Flashes / Errors --}}
     @if (session("success"))
@@ -40,7 +32,7 @@
     {{-- Course header card --}}
     <section class="bg-white rounded-lg shadow-lg">
         <div
-            class="flex items-center justify-between bg-purple-900 text-white rounded-lg px-6 py-4"
+            class="flex items-center justify-between bg-gray-200 text-gray-800 rounded-lg px-6 py-4"
         >
             <h2 class="text-lg font-semibold">
                 {{ $course->code ?? "COURSE" }} {{ $course->name ?? "" }}
@@ -49,30 +41,30 @@
                 {{-- Direct link to list view, skipping timetable --}}
                 <a
                     href="{{ route("lecturer.materials.all", $course) }}"
-                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                    class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg"
                 >
-                    View All Materials
+                    All Materials
                 </a>
                 {{-- Student progress analysis --}}
                 <a
                     href="{{ route("lecturer.courses.progress.index", $course) }}"
-                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                    class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg"
                 >
-                    View Student Progress
+                    Student Progress
                 </a>
                 {{-- Students management --}}
                 <a
                     href="{{ route("lecturer.courses.students.index", $course) }}"
-                    class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded"
+                    class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg"
                 >
-                    Add students to this course
+                    Add Students
                 </a>
                 {{-- Edit course --}}
                 <a
                     href="{{ route("lecturer.courses.edit", $course) }}"
-                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
+                    class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg"
                 >
-                    Edit
+                    Edit Course
                 </a>
             </div>
         </div>

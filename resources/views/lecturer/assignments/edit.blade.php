@@ -1,5 +1,6 @@
 {{-- resources/views/lecturer/assignments/edit.blade.php --}}
 <x-layout>
+    {{-- Breadcrumbs --}}
     <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
@@ -24,6 +25,8 @@
             <li class="text-black font-semibold">Edit</li>
         </ol>
     </nav>
+
+    {{-- Course header --}}
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-semibold">Edit Assignment</h1>
         <p class="text-sm text-gray-600 mt-1">

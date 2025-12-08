@@ -106,18 +106,15 @@
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
-        <div class="mt-6 overflow-x-auto">
-            <h2 class="text-xl font-semibold mb-3 bg-gray-100 p-2 rounded">
-                Select a Date to View Materials
+        <div class="max-w-1/2 mt-6 overflow-x-auto rounded-lg shadow-lg p-2 place-self-left">
+            <h2 class="text-xl font-semibold mb-3 p-2 rounded">
+                Select a Date to View {{ ucfirst($type ?? "Material") }} Materials
             </h2>
-            <table class="min-w-full text-md">
+            <table class="w-full text-base table-auto">
                 <tbody class="bg-white">
                     @for ($w = 1; $w <= 8; $w++)
                         <tr class="border-b border-gray-200">
-                            <td class="px-3 py-2">
-                                <div
-                                    class="flex flex-wrap items-center gap-x-4 gap-y-1"
-                                >
+                            <td class="px-3 py-2 px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">
                                     <span class="font-bold text-blue-700">
                                         Week {{ $w }}:
                                     </span>
@@ -136,16 +133,15 @@
                                                 ])
                                             }}"
                                             @class([
-                                                "font-bold",
-                                                "hover:underline",
-                                                "text-purple-700" => $dayName === "REVIEW",
-                                                "text-red-800" => $dayName !== "REVIEW",
+                                                "px-2 py-1",
+                                                "hover:bg-blue-100 rounded-lg",
+                                                "font-bold text-purple-700 hover:bg-purple-100 rounded-lg" => $dayName === "REVIEW",
+                                                "hover:text-blue-500" => $dayName !== "REVIEW",
                                             ])
                                         >
                                             {{ $dayName }}
                                         </a>
                                     @endforeach
-                                </div>
                             </td>
                         </tr>
                     @endfor

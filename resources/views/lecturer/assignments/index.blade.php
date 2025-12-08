@@ -6,6 +6,14 @@
         $levelLabel = $level ? "LEVEL " . $level : null;
         $week = (int) request("week");
         $day = request("day");
+
+        $levelColors = [
+                3 => "bg-[#9bd1f8]",
+                2 => "bg-[#c7f7cf]",
+                1 => "bg-[#f0c6bc]",
+            ];
+            // Use level filter for header, default to gray
+            $headerColor = $levelColors[$level ?? null] ?? "bg-gray-200";
     @endphp
 
     {{-- Breadcrumbs --}}
@@ -25,21 +33,24 @@
         </ol>
     </nav>
 
-    {{-- Top options: Post / Assess --}}
+    {{-- Page Selector - Post Assignments / Assess Student Uploads --}}
+
+    
+
     <div class="flex items-center justify-center gap-6 mb-8">
         {{-- Current Page (Active style) --}}
         <a
             href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow bg-rose-500 text-white"
+            class="px-6 py-2.5 rounded-lg shadow {{ $headerColor }}"
         >
             {{-- Always active style for this page --}}
-            Post Upload Links
+            Post Assignments
         </a>
         {{-- Link to NEW Assessment Page --}}
         <a
             href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $level }}"
             {{-- UPDATED Route --}}
-            class="px-6 py-2.5 rounded-lg shadow bg-blue-200 text-blue-800 hover:bg-blue-300"
+            class="px-6 py-2.5 rounded-lg shadow bg-gray-200 text-{{ $headerColor }} hover:bg-gray-300"
         >
             {{-- Always inactive style for this page --}}
             Assess Student Uploads
@@ -76,16 +87,6 @@
     @endif
 
     {{-- ===================== POST UPLOAD LINKS (NEW DESIGN) ===================== --}}
-    {{-- @if(!$isAssess) REMOVED --}}
-
-    @php
-        $levelColors = [
-            3 => "bg-[#9bd1f8]",
-            2 => "bg-[#c7f7cf]",
-            1 => "bg-[#f0c6bc]",
-        ];
-        $headerColor = $levelColors[$level ?? null] ?? "bg-gray-100";
-    @endphp
 
     <div
         class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
@@ -139,28 +140,30 @@
         $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
     @endphp
     <div class="grid grid-cols-[auto_1fr] gap-4 mt-2">
-    <div class="mt-2">
-        <table class="w-full text-xs border border-gray-200 mr-2">
+    <aside class="w-94 mt-2">
+        <table class="w-full text-xs border border-gray-200 mr-2 shadow-sm">
             <tbody class="bg-white">
                 @for ($w = 1; $w <= 8; $w++)
                     <tr class="border-b border-gray-200">
-                        <td class="px-1 py-1">
+                        <td class="px-3 py-2 bg-gray-50 font-semibold">
                             <div
                                 class="flex flex-wrap items-center gap-x-3 gap-y-1"
                             >
-                                <span class="font-bold text-blue-700 whitespace-nowrap">
+                                <a class="font-bold text-blue-700 whitespace-nowrap bg-gray-200 px-2 py-1 rounded">
                                     Week {{ $w }}:
-                                </span>
+                                </a>
                                 @foreach ($days as $dayName)
                                     {{-- This link preserves the $level filter --}}
                                     <a
                                         href="{{ request()->fullUrlWithQuery(["week" => $w, "day" => $dayName, "level" => $level]) }}"
                                         @class([
                                             "font-semibold",
+                                            "bg-gray-100 px-1 py-1 rounded",
                                             "underline" => $week == $w && $day == $dayName,
+                                            "hover:bg-green-600 hover:text-white" => ! ($week == $w && $day == $dayName),
                                             "hover:underline" => ! ($week == $w && $day == $dayName),
-                                            "text-purple-700" => $dayName === "REVIEW",
-                                            "text-red-800" => $dayName !== "REVIEW",
+                                            "text-purple-600" => $dayName === "REVIEW",
+                                            "text-black" => $dayName !== "REVIEW",
                                         ])
                                     >
                                         {{ $dayName }}
@@ -172,10 +175,10 @@
                 @endfor
             </tbody>
         </table>
-    </div>
+    </aside>
 
-    {{-- Uploaded Links table (now filtered) --}}
-    <div class="mt-2 rounded-lg flex-1">
+    {{-- Assignments table (now filtered) --}}
+    <main class="mt-2 rounded-lg flex-1">
         {{-- Flex container for title and contextual button --}}
         <div class="flex items-start justify-between mb-4">
             <h2 class="text-xl font-semibold">
@@ -193,7 +196,7 @@
     <div class="flex gap-2">
         {{-- Link 1: View filtered list --}}
         <a href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-3 py-1.5 rounded bg-white text-purple-900 border border-purple-900 text-sm font-medium hover:bg-purple-800 hover:text-white transition shadow-sm"
+            class="px-3 py-1.5 rounded bg-gray-200 border border-gray-300 text-sm font-medium hover:bg-gray-300 transition shadow-sm"
         >
             &larr; Back to all Assignments
         </a>
@@ -205,7 +208,7 @@
                 'week' => $week,
                 'day' => $day,
             ]) }}"
-            class="px-3 py-1.5 rounded bg-purple-900 text-white text-sm font-medium hover:bg-purple-800 transition shadow-sm"
+            class="px-3 py-1.5 rounded {{ $headerColor }} border border-gray-300 text-sm font-medium hover:bg-blue-300 transition shadow-sm"
         >
             Create for Week {{ $week }} - {{ $day }}
         </a>
@@ -213,23 +216,23 @@
 @endif
         </div>
 
-        <div class="mt-4 overflow-x-auto">
-            <table class="min-w-full text-sm border bg-white">
+        <div class="mt-4 overflow-x-auto rounded-lg shadow-md">
+            <table class="min-w-full text-sm bg-white shadow-sm">
                 <thead class="bg-gray-50 text-left">
                     <tr class="text-sm text-gray-600">
-                        <th class="px-6 py-3">Assignment title</th>
-                        <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Level</th>
-                        <th class="px-6 py-3">Week</th>
-                        <th class="px-6 py-3">Day</th>
-                        <th class="px-6 py-3">Due Date</th>
-                        <th class="px-6 py-3">Actions</th>
+                        <th class="px-4 py-3">Assignment title</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Level</th>
+                        <th class="px-4 py-3">Week</th>
+                        <th class="px-4 py-3">Day</th>
+                        <th class="px-4 py-3">Due Date</th>
+                        <th class="px-4 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     @forelse ($assignments as $a)
-                        <tr>
-                            <td class="px-6 py-3">
+                        <tr class="hover:bg-gray-50 border-b border-gray-200">
+                            <td class="px-4 py-3">
                                 <a
                                     href="{{ route("lecturer.assignments.show", $a) }}"
                                     class="text-blue-600 hover:underline font-medium"
@@ -237,28 +240,28 @@
                                     {{ $a->title }}
                                 </a>
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-4 py-3">
                                 @php
                                     $active = (bool) $a->is_published;
                                 @endphp
 
                                 <span
-                                    class="px-2 py-1 text-xs rounded {{ $active ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600" }}"
+                                    class="px-2 py-1 text-xs rounded {{ $active ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600" }}"
                                 >
                                     {{ $active ? "Active" : "Draft" }}
                                 </span>
                             </td>
-                            <td class="px-6 py-3">{{ $a->level ?? "—" }}</td>
-                            <td class="px-6 py-3">{{ $a->week ?? "—" }}</td>
-                            <td class="px-6 py-3">{{ $a->day ?? "—" }}</td>
-                            <td class="px-6 py-3">
+                            <td class="px-4 py-3">{{ $a->level ?? "—" }}</td>
+                            <td class="px-4 py-3">{{ $a->week ?? "—" }}</td>
+                            <td class="px-4 py-3">{{ $a->day ?? "—" }}</td>
+                            <td class="px-4 py-3">
                                 @if ($a->due_at)
                                     {{ \Illuminate\Support\Carbon::parse($a->due_at)->timezone(config("app.timezone"))->format("d M Y") }}
                                 @else
                                     <span class="text-gray-400">—</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-4 py-3">
                                 <div class="flex items-start gap-3">
                                     @if (! empty($a->file_path))
                                         <a
@@ -307,8 +310,8 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
-        </div>
+        </main>
+    </div>
 
         {{-- Paginator --}}
         @if (method_exists($assignments, "links"))
