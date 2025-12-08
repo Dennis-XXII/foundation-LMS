@@ -181,6 +181,8 @@ Route::middleware(['auth','lecturer'])
         Route::prefix('courses/{course}')->name('courses.')->group(function () {
             Route::get('students', [LecturerEnrollments::class, 'index'])
                 ->name('students.index');
+            Route::get('students/{student}', [LecturerEnrollments::class, 'show'])
+                ->name('students.show');
             Route::get('students/create', [LecturerEnrollments::class, 'create'])
                 ->name('students.create');
             Route::post('students', [LecturerEnrollments::class, 'store'])

@@ -121,8 +121,13 @@
             <tbody>
                 @forelse ($enrollments as $e)
                     <tr class="border-t">
-                        <td class="px-4 py-3">
-                            {{ $e->student->user->name ?? "N/A" }}
+                        <td class="px-4 py-3"> 
+                                <a 
+                                    href="{{ route('lecturer.courses.students.show', [$course, $e->student->user_id]) }}"
+                                    class="text-purple-900 hover:text-purple-700 hover:underline"
+                                >
+                                    {{ $e->student->user->name ?? "N/A" }}
+                                </a>
                         </td>
                         <td class="px-4 py-3">
                             {{ $e->student->student_id ?? "—" }}

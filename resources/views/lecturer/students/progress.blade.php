@@ -3,10 +3,7 @@
     <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
-                <a
-                    href="{{ route("lecturer.dashboard") }}"
-                    class="hover:underline"
-                >
+                <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">
                     Dashboard
                 </a>
                 <span class="mx-2">/</span>
@@ -25,13 +22,13 @@
         <div class="flex gap-2">
             {{-- Link back to the operations page --}}
             <a
-                href="{{ route("lecturer.courses.students.index", $course) }}"
+                href="{{ route('lecturer.courses.students.index', $course) }}"
                 class="px-4 py-2 bg-purple-900 text-white rounded text-sm hover:bg-purple-800"
             >
                 Manage Enrollments
             </a>
             <a
-                href="{{ route("lecturer.dashboard") }}"
+                href="{{ route('lecturer.dashboard') }}"
                 class="px-4 py-2 border rounded text-sm hover:bg-gray-50"
             >
                 &larr; Back to Dashboard
@@ -55,10 +52,25 @@
             </thead>
             <tbody>
                 @forelse ($enrollments as $e)
+                    @php
+                        // Safely extract stats
+                        $stats = $e->assignment_stats ?? [];
+                        $pct = $stats['completion_percentage'] ?? 0;
+                        
+                        // Determine colors (fixed to ensure Tailwind compiles them)
+                        $textColor = $pct < 50 ? 'text-red-600' : 'text-green-600';
+                        $barColor = $pct < 50 ? 'bg-red-600' : 'bg-green-600';
+                    @endphp
                     <tr class="border-t">
                         <td class="px-4 py-3 align-top">
                             <p class="font-medium">
-                                {{ $e->student->user->name ?? "N/A" }}
+                                {{-- LINK TO STUDENT SHOW VIEW --}}
+                                <a 
+                                    href="{{ route('lecturer.courses.students.show', [$course, $e->student->user_id]) }}"
+                                    class="text-purple-900 hover:text-purple-700 hover:underline"
+                                >
+                                    {{ $e->student->user->name ?? "N/A" }}
+                                </a>
                             </p>
                             <p class="text-xs text-gray-500">
                                 ID: {{ $e->student->student_id ?? "—" }}
@@ -68,19 +80,13 @@
                             </p>
                         </td>
                         <td class="px-4 py-3 align-top">
-                            <div
-                                class="font-bold text-lg text-{{ $e->assignment_stats["completion_percentage"] < 50 ? "red" : "green" }}-600"
-                            >
-                                {{ $e->assignment_stats["completion_percentage"] }}%
+                            <div class="font-bold text-lg {{ $textColor }}">
+                                {{ $pct }}%
                             </div>
-                            <div
-                                class="w-full bg-gray-200 rounded-full h-2 mt-1 max-w-40"
-                            >
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-1 max-w-40">
                                 <div
-                                    class="h-2 rounded-full bg-{{ $e->assignment_stats["completion_percentage"] < 50 ? "red" : "green" }}-600"
-                                    style="
-                                        width: {{ $e->assignment_stats["completion_percentage"] }}%;
-                                    "
+                                    class="h-2 rounded-full {{ $barColor }}"
+                                    style="width: {{ $pct }}%;"
                                 ></div>
                             </div>
                         </td>
@@ -88,32 +94,28 @@
                             Assignments Visible for Level
                             {{ $e->level ?? "—" }}:
                             <strong class="text-gray-700">
-                                {{ $e->assignment_stats["visible_count"] }}
+                                {{ $stats["visible_count"] ?? 0 }}
                             </strong>
                         </td>
                         <td class="px-4 py-3 align-top text-xs">
                             <p class="text-gray-700">
                                 Submitted:
                                 <strong class="text-blue-600">
-                                    {{ $e->assignment_stats["submitted_count"] }}
+                                    {{ $stats["submitted_count"] ?? 0 }}
                                 </strong>
                             </p>
                             <p class="text-gray-700 mt-1">
                                 Graded:
                                 <strong class="text-green-600">
-                                    {{ $e->assignment_stats["graded_count"] }}
+                                    {{ $stats["graded_count"] ?? 0 }}
                                 </strong>
                             </p>
                         </td>
                     </tr>
                 @empty
                     <tr class="border-t">
-                        <td
-                            colspan="4"
-                            class="px-4 py-6 text-gray-500 text-center"
-                        >
-                            No students are currently enrolled in this course to
-                            analyze.
+                        <td colspan="4" class="px-4 py-6 text-gray-500 text-center">
+                            No students are currently enrolled in this course to analyze.
                         </td>
                     </tr>
                 @endforelse

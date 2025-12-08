@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Student;
+use App\Models\User;
+use App\Models\Submission;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -30,6 +32,59 @@ class EnrollmentController extends Controller
                 ->get();
 
             return view('lecturer.students.index', compact('course', 'enrollments'));
+        }
+
+    public function show(Course $course, User $student)
+        {
+            // Student model ID for the submissions table query.
+            $studentProfile = Student::where('user_id', $student->id)->first();
+
+            if (! $studentProfile) {
+                abort(404, 'Student profile not found for this user.');
+            }
+
+            // Get Enrollment
+            $enrollment = Enrollment::where('course_id', $course->id)
+                ->where('student_id', $studentProfile->id)
+                ->first();
+
+            if (! $enrollment) {
+                abort(404, 'Student not found in this course.');
+            }
+
+            // Get Assignments (Filtered by Level)
+            $assignmentsQuery = $course->assignments()->orderBy('due_at', 'desc');
+
+            // RULE: Only show assignments for student's level. If student level is NULL, show all.
+            if ($enrollment->level !== null) {
+                $assignmentsQuery->where('level', $enrollment->level);
+            }
+
+            $assignments = $assignmentsQuery->get();
+            
+            // Get Submissions
+            // We filter submissions to match only the visible assignments found above
+            $submissions = Submission::whereIn('assignment_id', $assignments->pluck('id'))
+                ->where('student_id', $studentProfile->id) 
+                ->get()
+                ->keyBy('assignment_id');
+
+            // Calculate Stats
+            $totalAssignments = $assignments->count();
+            $submittedCount = $submissions->count();
+
+            $gradedSubmissions = $submissions->whereNotNull('grade');
+
+            return view('lecturer.courses.students.show', compact(
+                'course', 
+                'student',        
+                'studentProfile', 
+                'enrollment',    
+                'assignments', 
+                'submissions', 
+                'totalAssignments', 
+                'submittedCount', 
+            ));
         }
 
     /**
