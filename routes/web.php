@@ -13,7 +13,6 @@ use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
 use App\Http\Controllers\Student\MaterialController as StudentMaterials;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignments;
-use App\Http\Controllers\Student\StudentController; as StudentController;
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
