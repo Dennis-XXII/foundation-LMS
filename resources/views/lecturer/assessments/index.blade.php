@@ -32,13 +32,13 @@
     <div class="flex items-center justify-center gap-6 mb-8">
         <a
             href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow bg-gray-200 hover:bg-gray-300"
+            class="px-6 py-2.5 rounded-full shadow-sm bg-gray-200 hover:bg-gray-300"
         >
             Post Assignments
         </a>
         <a
             href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow {{ $headerColor }}"
+            class="px-6 py-2.5 rounded-full shadow-sm shadow {{ $headerColor }}"
         >
             Assess Student Uploads
         </a>
@@ -99,13 +99,14 @@
     @endif
 
     {{-- ===================== ASSIGNMENTS LIST FOR ASSESSMENT ===================== --}}
-    <div class="bg-white rounded-lg shadow border overflow-hidden">
-        <div class="bg-blue-100 px-6 py-3 font-semibold text-blue-800">
+    <div class="mb-4 text-lg font-semibold">
             Select an Assignment to Assess Submissions
         </div>
+    <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+        
         <table class="w-full text-left text-sm">
-            <thead class="bg-gray-50">
-                <tr class="text-gray-600">
+            <thead class="bg-gray-900 text-white">
+                <tr class="border-b border-gray-700">
                     <th class="px-6 py-3">Assignment Title</th>
                     <th class="px-6 py-3">Level</th>
                     <th class="px-6 py-3">Week</th>

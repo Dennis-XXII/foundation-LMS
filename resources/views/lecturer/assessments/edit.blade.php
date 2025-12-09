@@ -49,16 +49,16 @@
         </ol>
     </nav>
 
-    <div class="mb-6 p-4 rounded-lg bg-blue-100 border border-blue-200">
-        <h1 class="text-2xl font-semibold text-blue-800">Grading Submission</h1>
-        <p class="text-blue-700">
+    <div class="mb-6 p-4 rounded-lg bg-gray-100 border border-gray-200">
+        <h1 class="text-2xl font-semibold text-gray-800">Grading Submission</h1>
+        <p class="text-gray-700">
             Assignment: {{ $assignment->title }} (Level
             {{ $assignment->level ?? "N/A" }})
         </p>
-        <p class="text-blue-700">
+        <p class="text-gray-700">
             Student: {{ $student->name }} ({{ $student->email }})
         </p>
-        <p class="text-blue-700">
+        <p class="text-gray-700">
             Submitted At:
             {{ optional($submission->submitted_at)->format("d M Y, H:i") ?? "N/A" }}
         </p>

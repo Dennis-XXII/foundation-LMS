@@ -78,7 +78,7 @@
 
             <!-- Footer -->
             <footer
-                class="{{ $headerColor }} text-xs text-center text-gray-500 p-2"
+                class="{{ $headerColor }} text-xs text-center text-gray-500 py-4"
             >
                 <p> Designed and Developed by ICT Students.</p>
                 <p class="mt-1">&copy; Rangsit International College ({{ date("Y") }}). All rights reserved.</p>

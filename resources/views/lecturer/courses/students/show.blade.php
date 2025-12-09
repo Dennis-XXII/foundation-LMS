@@ -2,18 +2,18 @@
     {{-- Breadcrumb & Header --}}
     <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
-                <a href="{{ route('lecturer.courses.index') }}" class="hover:text-blue-600">Courses</a>
+            <div class="flex items-center gap-2 text-sm mb-4">
+                <a href="{{ route('lecturer.dashboard') }}" class="hover:underline">Dashboard</a>
                 <span>/</span>
-                <a href="{{ route('lecturer.courses.show', $course) }}" class="hover:text-blue-600">{{ $course->code }}</a>
+                <a href="{{ route("lecturer.courses.progress.index", $course) }}" class="hover:underline">Student Progress: {{ $course->code }}</a>
                 <span>/</span>
-                <a href="{{ route('lecturer.courses.students.index', $course) }}" class="hover:text-blue-600">Students</a>
+                <a href="{{ route('lecturer.courses.students.index', $course) }}" class="font-semibold"> {{ $student->name }}</a>
             </div>
             <h1 class="text-2xl font-bold text-gray-800">Student Profile</h1>
         </div>
         
         <a href="{{ route('lecturer.courses.students.index', $course) }}" 
-           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition border border-gray-300">
             &larr; Back to Student List
         </a>
     </div>

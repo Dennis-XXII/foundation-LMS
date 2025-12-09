@@ -105,18 +105,20 @@
     @endphp
 
     <div class="grid grid-cols-[auto_1fr] gap-4 mt-2">
-    <aside class="w-94 mt-2">
+    <aside class="w-72 mt-2">
         <table class="w-full text-xs border border-gray-200 mr-2 shadow-sm">
             <tbody class="bg-white">
                 @for ($w = 1; $w <= 8; $w++)
                     <tr class="border-b border-gray-200">
-                        <td class="px-1 py-1">
+                        <td class="flex flex-col-2 px-2 py-2 font-semibold">
                             <div
-                                class="flex flex-wrap items-center gap-x-3 gap-y-1"
+                                class="flex min-w-16 items-right border-r border-gray-200 mr-2"
                             >
-                                <span class="font-bold text-blue-700 whitespace-nowrap bg-gray-200 px-2 py-1 rounded">
+                                <a class="font-bold text-blue-700 whitespace-nowrap px-2 py-1 rounded">
                                     Week {{ $w }}:
-                                </span>
+    </a>
+    </div>
+    <div class="gap-x-1 gap-y-2 flex flex-wrap justify-start">
                                 @foreach ($days as $dayName)
                                     {{-- This link preserves the $level filter --}}
                                     <a
@@ -124,8 +126,8 @@
                                         @class([
                                             "font-semibold",
                                             "bg-gray-100 px-1 py-1 rounded",
-                                            "underline bg-green-600 text-white" => $week == $w && $day == $dayName,
-                                            "hover:bg-green-600 hover:text-white" => ! ($week == $w && $day == $dayName),
+                                            "bg-gray-900 text-white" => $week == $w && $day == $dayName,
+                                            "hover:bg-gray-900 hover:text-white" => ! ($week == $w && $day == $dayName),
                                             "hover:underline" => ! ($week == $w && $day == $dayName),
                                             "text-purple-600" => $dayName === "REVIEW",
                                             "text-black" => $dayName !== "REVIEW",
@@ -146,33 +148,34 @@
     <main class="mt-2 rounded-lg flex-1">
         {{-- Title --}}
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold">
+            <h2 class="text-xl font-semibold {{ $headerColor }} rounded-full px-4 py-2 shadow-sm">
                 @if ($week && $day)
                     Assignments for: Week {{ $week }}, {{ $day }}
                 @elseif ($level)
                     Assignments for Level {{ $level }}
                 @else
-                        All My Assignments
+                        All Assignments
                 @endif
             </h2>
-        </div>
+
 
 @if ($week && $day)
-    <div class="flex gap-2 mb-4">
+    <div class="flex gap-2">
         {{-- Link 1: View filtered list --}}
-        <a href="{{ route('student.assignments.index',$course, ['level' => $level]) }}"
-            class="px-3 py-1.5 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
+        <a href="{{ route("student.assignments.index", $course) }}?level={{ $level }}"
+            class="px-4 py-2 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
         >
             &larr; Back to all Assignments
         </a>
     </div>
 @endif
+        </div>
 
         {{-- Assignments Table --}}
         <div class="mt-4 overflow-x-auto rounded-lg shadow-md">
             <table class="min-w-full text-sm bg-white shadow-sm">
-                <thead class="bg-gray-50 text-left">
-                    <tr class="text-sm text-gray-600">
+                <thead class="bg-gray-900 text-left">
+                    <tr class="text-sm text-white">
                         <th class="px-4 py-3 text-left">Assignment title</th>
                         <th class="px-4 py-3 text-left">Status</th>
                         {{-- Changed from Lecturer's 'Published' status --}}

@@ -106,7 +106,7 @@
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
-        <div class="max-w-1/2 mt-6 overflow-x-auto rounded-lg shadow-lg p-2 place-self-left">
+        <div class="max-w-1/2 mt-6 overflow-x-auto rounded-lg shadow-sm border border-gray-300 p-2 place-self-left">
             <h2 class="text-xl font-semibold mb-3 p-2 rounded">
                 Select a Date to View {{ ucfirst($type ?? "Material") }} Materials
             </h2>

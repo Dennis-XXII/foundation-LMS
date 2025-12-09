@@ -41,7 +41,7 @@
         {{-- Current Page (Active style) --}}
         <a
             href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-6 py-2.5 rounded-lg shadow {{ $headerColor }}"
+            class="px-6 py-2.5 rounded-full shadow-sm {{ $headerColor }}"
         >
             {{-- Always active style for this page --}}
             Post Assignments
@@ -50,7 +50,7 @@
         <a
             href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $level }}"
             {{-- UPDATED Route --}}
-            class="px-6 py-2.5 rounded-lg shadow bg-gray-200 text-{{ $headerColor }} hover:bg-gray-300"
+            class="px-6 py-2.5 rounded-full shadow-sm bg-gray-200 text-{{ $headerColor }} hover:bg-gray-300"
         >
             {{-- Always inactive style for this page --}}
             Assess Student Uploads
@@ -105,7 +105,7 @@
                     "level" => $level, // Pass current level filter
                 ])
             }}"
-            class="px-3 py-2 rounded bg-black text-white hover:shadow-lg"
+            class="px-4 py-2 rounded-full bg-gray-900 text-white hover:shadow-lg"
         >
             Create New Assignment
         </a>
@@ -140,36 +140,37 @@
         $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
     @endphp
     <div class="grid grid-cols-[auto_1fr] gap-4 mt-2">
-    <aside class="w-94 mt-2">
+    <aside class="w-72 mt-2">
         <table class="w-full text-xs border border-gray-200 mr-2 shadow-sm">
             <tbody class="bg-white">
                 @for ($w = 1; $w <= 8; $w++)
                     <tr class="border-b border-gray-200">
-                        <td class="px-3 py-2 bg-gray-50 font-semibold">
-                            <div
-                                class="flex flex-wrap items-center gap-x-3 gap-y-1"
-                            >
-                                <a class="font-bold text-blue-700 whitespace-nowrap bg-gray-200 px-2 py-1 rounded">
+                        <td class="flex flex-col-2 px-2 py-2 font-semibold">
+                            <div class="flex min-w-16 items-right border-r border-gray-200 mr-2">
+                                <a class="font-bold text-blue-700 whitespace-nowrap px-2 py-1 rounded">
                                     Week {{ $w }}:
                                 </a>
+                            </div>
+                                {{-- Day Links --}}
+                            <div class="gap-x-1 gap-y-2 flex flex-wrap justify-start">
                                 @foreach ($days as $dayName)
                                     {{-- This link preserves the $level filter --}}
                                     <a
                                         href="{{ request()->fullUrlWithQuery(["week" => $w, "day" => $dayName, "level" => $level]) }}"
                                         @class([
-                                            "font-semibold",
+                                            "font-normal",
                                             "bg-gray-100 px-1 py-1 rounded",
-                                            "underline" => $week == $w && $day == $dayName,
-                                            "hover:bg-green-600 hover:text-white" => ! ($week == $w && $day == $dayName),
+                                            "bg-gray-900 text-white" => $week == $w && $day == $dayName,
+                                            "hover:bg-gray-900 hover:text-white" => ! ($week == $w && $day == $dayName),
                                             "hover:underline" => ! ($week == $w && $day == $dayName),
-                                            "text-purple-600" => $dayName === "REVIEW",
+                                            "text-purple-600 font-semibold" => $dayName === "REVIEW",
                                             "text-black" => $dayName !== "REVIEW",
                                         ])
                                     >
                                         {{ $dayName }}
                                     </a>
                                 @endforeach
-                            </div>
+                                </div>
                         </td>
                     </tr>
                 @endfor
@@ -196,7 +197,7 @@
     <div class="flex gap-2">
         {{-- Link 1: View filtered list --}}
         <a href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
-            class="px-3 py-1.5 rounded bg-gray-200 border border-gray-300 text-sm font-medium hover:bg-gray-300 transition shadow-sm"
+            class="px-4 py-2 rounded bg-gray-200 border border-gray-300 text-sm font-medium hover:bg-gray-300 transition shadow-sm"
         >
             &larr; Back to all Assignments
         </a>
@@ -208,7 +209,7 @@
                 'week' => $week,
                 'day' => $day,
             ]) }}"
-            class="px-3 py-1.5 rounded {{ $headerColor }} border border-gray-300 text-sm font-medium hover:bg-blue-300 transition shadow-sm"
+            class="px-4 py-2 rounded {{ $headerColor }} border border-gray-300 text-sm font-medium hover:bg-blue-300 transition shadow-sm"
         >
             Create for Week {{ $week }} - {{ $day }}
         </a>
@@ -216,10 +217,10 @@
 @endif
         </div>
 
-        <div class="mt-4 overflow-x-auto rounded-lg shadow-md">
+        <div class="mt-4 overflow-x-auto rounded-xl shadow-md">
             <table class="min-w-full text-sm bg-white shadow-sm">
-                <thead class="bg-gray-50 text-left">
-                    <tr class="text-sm text-gray-600">
+                <thead class="bg-gray-900 text-left">
+                    <tr class="text-sm text-white">
                         <th class="px-4 py-3">Assignment title</th>
                         <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3">Level</th>
