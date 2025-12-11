@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Edit Course</h1>
         <a
-            href="{{ route("lecturer.Dashboard") }}"
+            href="{{ route("lecturer.dashboard") }}"
             class="text-blue-600 hover:underline"
         >
             Back
