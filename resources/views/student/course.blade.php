@@ -1,7 +1,7 @@
 <x-layout :title="$course->title">
     <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {{-- Breadcrumbs --}}
-        <nav class="text-sm text-gray-500">
+        <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
             <a href="{{ route("student.dashboard") }}" class="hover:underline">
                 Dashboard
             </a>
@@ -60,8 +60,8 @@
                                     @endif
 
                                     @if ($m->uploaded_at)
-                                            •
-                                            {{ $m->uploaded_at->diffForHumans() }}
+                                        •
+                                        {{ $m->uploaded_at->diffForHumans() }}
                                     @endif
                                 </p>
                             </div>

@@ -2,7 +2,7 @@
 <x-layout>
     {{-- Breadcrumbs --}}
 
-    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a
@@ -30,7 +30,8 @@
 
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-semibold">
-            Create New Assignment — Level {{ request("level") ?? "All Levels" }}
+            Create New Assignment — Level
+            {{ request("level") ?? "All Levels" }}
         </h1>
 
         {{-- Validation errors --}}

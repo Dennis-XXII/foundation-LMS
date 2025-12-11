@@ -42,18 +42,26 @@ class SubmissionController extends Controller
             );
 
             if ($request->hasFile('file')) {
-                if ($submission->file_path) {
-                    Storage::disk('submissions')->delete($submission->file_path);
-                }
-                $submission->file_path = $request->file('file')
-                    ->store(date('Y/m/d'), 'submissions');
-            }
+    if ($submission->file_path) {
+        Storage::disk('submissions')->delete($submission->file_path);
+    }
+
+    $file = $request->file('file');
+$originalName = $file->getClientOriginalName();
+$uniqueName = $submission->student_id . '_' . time() . '_' . $originalName;
+
+$submission->file_path = $file->storeAs(
+    date('Y/m/d'),
+    $uniqueName,
+    'submissions'
+);
+}
 
             $submission->submitted_at = now();
             $submission->save();
         });
 
-        return to_route('student.assignments.index', $assignment->course)
+        return to_route('student.assignments.show', $assignment)
             ->with('success', 'Submission saved.');
     }
 
@@ -89,17 +97,37 @@ class SubmissionController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            if ($submission->file_path) {
-                Storage::disk('submissions')->delete($submission->file_path);
-            }
-            $submission->file_path = $request->file('file')
-                ->store(date('Y/m/d'), 'submissions');
-        }
+    if ($submission->file_path) {
+        Storage::disk('submissions')->delete($submission->file_path);
+    }
+
+    $file = $request->file('file');
+    $originalName = $file->getClientOriginalName();
+    $uniqueName = $submission->student_id . '_' . time() . '_' . $originalName;
+
+    $submission->file_path = $file->storeAs(
+        date('Y/m/d'),
+        $uniqueName,
+        'submissions'
+    );
+}
 
         $submission->submitted_at = now();
         $submission->save();
 
-        return to_route('student.assignments.index', $assignment->course)
+        return to_route('student.assignments.show', $assignment)
             ->with('success', 'Submission updated.');
+    }
+
+    public function download(Submission $submission)
+    {
+        $this->authorize('view', $submission->assignment->course);
+
+        if (!$submission->file_path || !Storage::disk('submissions')->exists($submission->file_path)) {
+            return to_route('student.assignments.show', $submission->assignment)
+                ->with('error', 'File not found.');
+        }
+
+        return Storage::disk('submissions')->download($submission->file_path);
     }
 }

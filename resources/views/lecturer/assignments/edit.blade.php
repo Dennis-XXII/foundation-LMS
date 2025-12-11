@@ -1,7 +1,7 @@
 {{-- resources/views/lecturer/assignments/edit.blade.php --}}
 <x-layout>
     {{-- Breadcrumbs --}}
-    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a

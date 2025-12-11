@@ -29,13 +29,13 @@
     <div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
         <section class="bg-white rounded-xl shadow-lg">
             <div
-                class="flex items-center justify-between {{ $headerColor }} rounded-xl px-6 py-4"
+                class="flex items-center justify-between {{ $headerColor }} rounded-t-xl px-6 py-6"
             >
-                <h2 class="text-lg font-semibold">
+                <h2 class="text-lg font-semibold font-gray-800">
                     {{ ($course->code ?? "COURSE") . " " . ($course->name ?? ($course->title ?? "")) }}
                     @if ($student_level)
                         <span
-                            class="ml-3 font-normal text-sm px-2 py-1 rounded-full bg-white shadwow-sm"
+                            class="ml-3 font-normal text-sm px-3 py-2 rounded-full bg-white shadwow-sm"
                         >
                             Level {{ $student_level }}
                         </span>

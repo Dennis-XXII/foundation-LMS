@@ -18,7 +18,7 @@
 
     {{-- Breadcrumbs --}}
 
-    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a
@@ -87,7 +87,7 @@
     @endif
 
     {{-- ===================== POST UPLOAD LINKS (NEW DESIGN) ===================== --}}
-
+<section class="max-w-8xl mx-auto p-6 rounded-lg shadow border border-gray-300">
     <div
         class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
     >
@@ -222,17 +222,16 @@
                 <thead class="bg-gray-900 text-left">
                     <tr class="text-sm text-white">
                         <th class="px-4 py-3">Assignment title</th>
-                        <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3">Level</th>
-                        <th class="px-4 py-3">Week</th>
-                        <th class="px-4 py-3">Day</th>
+                        <th class="px-4 py-3">Week / Day</th>
                         <th class="px-4 py-3">Due Date</th>
+                        <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     @forelse ($assignments as $a)
-                        <tr class="hover:bg-gray-50 border-b border-gray-200">
+                        <tr class="hover:bg-gray-50 border-b border-gray-200" onClick="window.location='{{ route("lecturer.assignments.show", $a) }}'">
                             <td class="px-4 py-3">
                                 <a
                                     href="{{ route("lecturer.assignments.show", $a) }}"
@@ -240,6 +239,20 @@
                                 >
                                     {{ $a->title }}
                                 </a>
+                            </td>
+                            
+                            <td class="px-4 py-3">{{ $a->level ?? "—" }}</td>
+                            @if ($a->week && $a->day)
+                            <td class="px-4 py-3">Week {{ $a->week ?? "—" }} &mdash; {{ $a->day ?? "—" }}</td>
+                            @else
+                            <td class="px-4 py-3">—</td>
+                            @endif
+                            <td class="px-4 py-3">
+                                @if ($a->due_at)
+                                    {{ \Illuminate\Support\Carbon::parse($a->due_at)->timezone(config("app.timezone"))->format("M d, Y") }}
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
                             </td>
                             <td class="px-4 py-3">
                                 @php
@@ -251,16 +264,6 @@
                                 >
                                     {{ $active ? "Active" : "Draft" }}
                                 </span>
-                            </td>
-                            <td class="px-4 py-3">{{ $a->level ?? "—" }}</td>
-                            <td class="px-4 py-3">{{ $a->week ?? "—" }}</td>
-                            <td class="px-4 py-3">{{ $a->day ?? "—" }}</td>
-                            <td class="px-4 py-3">
-                                @if ($a->due_at)
-                                    {{ \Illuminate\Support\Carbon::parse($a->due_at)->timezone(config("app.timezone"))->format("d M Y") }}
-                                @else
-                                    <span class="text-gray-400">—</span>
-                                @endif
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-start gap-3">
@@ -313,6 +316,7 @@
             </table>
         </main>
     </div>
+</section>
 
         {{-- Paginator --}}
         @if (method_exists($assignments, "links"))

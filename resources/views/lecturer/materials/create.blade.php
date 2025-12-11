@@ -13,15 +13,18 @@
             </li>
             <li>
                 {{-- Link back to timetable, preserving filters --}}
-                <a class="hover:underline"
+                <a
+                    class="hover:underline"
                     href="{{
                         route("lecturer.courses.materials.index", [
                             "course" => $course,
                             "type" => $type,
                             "level" => $level,
                         ])
-                      }}">
-                    {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} Timetable
+                    }}"
+                >
+                    {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }}
+                    Timetable
                 </a>
                 <span class="mx-2">/</span>
             </li>

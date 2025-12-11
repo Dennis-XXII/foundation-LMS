@@ -23,7 +23,8 @@
                     }}"
                     class="hover:underline"
                 >
-                    {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} Timetable
+                    {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }}
+                    Timetable
                 </a>
                 <span class="mx-2">/</span>
             </li>
@@ -31,7 +32,9 @@
         </ol>
     </nav>
 
-    <div class="max-w-8xl mx-auto p-3">
+    <section
+        class="max-w-6xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+    >
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -46,7 +49,8 @@
         >
             <div>
                 <h1 class="text-2xl font-semibold">
-                    {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} - Week {{ $week }}:
+                    {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }} -
+                    Week {{ $week }}:
                     {{ $day }}
                 </h1>
                 <h1 class="text-xl font-thin">
@@ -71,7 +75,7 @@
         </div>
 
         {{-- Materials List --}}
-        <div class="mt-8">
+        <div class="mt-2">
             <h2 class="text-xl font-semibold">Filtered Materials</h2>
 
             @if (session("success"))
@@ -80,9 +84,11 @@
                 </div>
             @endif
 
-            <div class="mt-4 overflow-x-auto">
-                <table class="min-w-full text-sm border">
-                    <thead class="bg-gray-50">
+            <div
+                class="mt-4 overflow-x-auto rounded-lg shadow-sm border border-gray-300"
+            >
+                <table class="min-w-full text-sm">
+                    <thead class="bg-gray-900 text-white">
                         <tr>
                             <th class="px-3 py-2 text-left">Title</th>
                             <th class="px-3 py-2 text-left">Type</th>
@@ -94,8 +100,11 @@
                     </thead>
                     <tbody>
                         @forelse ($materials as $m)
-                            <tr class="border-t">
-                                <td class="px-3 py-2">
+                            <tr
+                                class="border-t text-gray-600 hover:bg-gray-50"
+                                onClick="window.location='{{ route("lecturer.materials.show", $m) }}'"
+                            >
+                                <td class="px-3 py-3">
                                     <a
                                         class="text-blue-600 underline"
                                         href="{{ route("lecturer.materials.show", $m) }}"
@@ -103,16 +112,16 @@
                                         {{ $m->title }}
                                     </a>
                                 </td>
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-3">
                                     {{ str($m->type)->replace("_", " ")->title() }}
                                 </td>
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-3">
                                     {{ $m->level ?? "—" }}
                                 </td>
-                                <td class="px-3 py-2">
-                                    {{ optional($m->uploaded_at)->format("Y-m-d") }}
+                                <td class="px-3 py-3">
+                                    {{ optional($m->uploaded_at)->format("M d, Y") }}
                                 </td>
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-3">
                                     <span
                                         class="inline-flex px-2 py-0.5 rounded text-xs {{ $m->is_published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600" }}"
                                     >
@@ -120,7 +129,7 @@
                                     </span>
                                 </td>
                                 <td
-                                    class="px-3 py-2 space-x-3 whitespace-nowrap"
+                                    class="px-3 py-3 space-x-3 whitespace-nowrap"
                                 >
                                     @if ($m->file_path)
                                         <a
@@ -210,5 +219,5 @@
                 </a>
             </div>
         </div>
-    </div>
+    </section>
 </x-layout>

@@ -1,6 +1,6 @@
 {{-- resources/views/lecturer/materials/edit.blade.php --}}
 <x-layout>
-    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a
@@ -22,7 +22,8 @@
                     }}"
                     class="hover:underline"
                 >
-                    {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} Timetable
+                    {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }}
+                    Timetable
                 </a>
                 <span class="mx-2">/</span>
             </li>

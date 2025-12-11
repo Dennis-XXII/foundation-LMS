@@ -1,38 +1,39 @@
 <x-layout>
-
-    {{-- Flashes / Errors --}}
-    @if (session("success"))
-        <div
-            class="mb-4 bg-green-50 text-green-800 border border-green-200 px-4 py-2 rounded"
-        >
-            {{ session("success") }}
-        </div>
-    @endif
-
-    @if (session("info"))
-        <div
-            class="mb-4 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded"
-        >
-            {{ session("info") }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div
-            class="mb-4 bg-rose-50 text-rose-800 border border-rose-200 px-4 py-2 rounded"
-        >
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $err)
-                    <li>{{ $err }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     {{-- Course header card --}}
-    <section class="bg-white rounded-lg shadow-lg">
+    <section
+        class="max-w-6xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+    >
+        {{-- Flashes / Errors --}}
+        @if (session("success"))
+            <div
+                class="mb-4 bg-green-50 text-green-800 border border-green-200 px-4 py-2 rounded"
+            >
+                {{ session("success") }}
+            </div>
+        @endif
+
+        @if (session("info"))
+            <div
+                class="mb-4 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded"
+            >
+                {{ session("info") }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div
+                class="mb-4 bg-rose-50 text-rose-800 border border-rose-200 px-4 py-2 rounded"
+            >
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div
-            class="flex items-center justify-between bg-gray-200 text-gray-800 rounded-lg px-6 py-4"
+            class="flex items-center justify-between bg-gray-200 text-gray-800 rounded-t-xl px-6 py-6"
         >
             <h2 class="text-lg font-semibold">
                 {{ $course->code ?? "COURSE" }} {{ $course->name ?? "" }}
@@ -188,6 +189,7 @@
                         </span>
                     </li>
 @empty
+
 
                     <li class="text-gray-500">No announcements yet.</li>
                 @endforelse

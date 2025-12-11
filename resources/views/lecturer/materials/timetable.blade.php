@@ -12,11 +12,14 @@
                 <span class="mx-2">/</span>
             </li>
             <li class="font-semibold">
-                {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} Timetable
+                {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }}
+                Timetable
             </li>
         </ol>
     </nav>
-    <div class="max-w-8xl mx-auto p-3">
+    <section
+        class="max-w-6xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+    >
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -33,7 +36,8 @@
         >
             <div>
                 <h1 class="text-2xl font-semibold">
-                    {{ ucfirst(str_replace('_', '-', $type ?? "Material")) }} Timetable
+                    {{ ucfirst(str_replace("_", "-", $type ?? "Material")) }}
+                    Timetable
                 </h1>
                 <h1 class="text-xl font-thin">
                     {{ $level ? "Level $level" : "All Levels" }}
@@ -111,7 +115,9 @@
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
-        <div class=" max-w-1/2 mt-6 overflow-x-auto rounded-lg shadow-sm border border-gray-300 p-2 place-self-left">
+        <div
+            class="max-w-full mt-6 overflow-x-auto rounded-lg shadow-sm border border-gray-300 p-2 place-self-center"
+        >
             <h2 class="text-xl font-semibold mb-3 p-2 rounded">
                 Select a Date to View {{ ucfirst($type ?? "Material") }}
                 Materials
@@ -120,34 +126,38 @@
                 <tbody class="bg-white">
                     @for ($w = 1; $w <= 8; $w++)
                         <tr class="border-b border-gray-200">
-                            <td class="px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                                    <span class="font-bold text-blue-700">
-                                        Week {{ $w }}:
-                                    </span>
+                            <td
+                                class="px-3 py-3 flex flex-wrap items-center gap-x-6 gap-y-1"
+                            >
+                                <span
+                                    class="font-bold text-blue-700 justify-end text-end border-r border-gray-300 pr-3"
+                                >
+                                    Week {{ $w }}:
+                                </span>
 
-                                    @foreach ($days as $dayName)
-                                        {{-- Link to the new list route --}}
-                                        <a
-                                            href="{{
-                                                route("lecturer.materials.list", [
-                                                    "course" => $course,
-                                                    "week" => $w,
-                                                    "day" => $dayName,
-                                                    "type" => $type,
-                                                    "level" => $level,
-                                                ])
-                                            }}"
-                                            @class([
-                                                
-                                                "px-2 py-1",
-                                                "hover:bg-blue-100 rounded-lg",
-                                                "font-bold text-purple-700 hover:bg-purple-100 rounded-lg" => $dayName === "REVIEW",
-                                                "hover:text-blue-500" => $dayName !== "REVIEW",
+                                @foreach ($days as $dayName)
+                                    {{-- Link to the new list route --}}
+                                    <a
+                                        href="{{
+                                            route("lecturer.materials.list", [
+                                                "course" => $course,
+                                                "week" => $w,
+                                                "day" => $dayName,
+                                                "type" => $type,
+                                                "level" => $level,
                                             ])
-                                        >
-                                            {{ $dayName }}
-                                        </a>
-                                    @endforeach
+                                        }}"
+                                        @class([
+                                            "px-3 py-1",
+                                            "hover:bg-blue-100 rounded-lg",
+                                            "font-bold text-purple-700 hover:bg-purple-100 rounded-lg" =>
+                                                $dayName === "REVIEW",
+                                            "hover:text-blue-500" => $dayName !== "REVIEW",
+                                        ])
+                                    >
+                                        {{ $dayName }}
+                                    </a>
+                                @endforeach
                             </td>
                         </tr>
                     @endfor
@@ -157,13 +167,11 @@
 
         <div class="mt-8 pt-4 border-t">
             <a
-                href="{{
-                    route("lecturer.dashboard", [])
-                }}"
+                href="{{ route("lecturer.dashboard", []) }}"
                 class="px-4 py-2 rounded border text-sm hover:bg-gray-50"
             >
                 &larr; Back to Dashbord
             </a>
         </div>
-    </div>
+    </section>
 </x-layout>

@@ -1,5 +1,5 @@
 <x-layout>
-    <nav class="mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a
@@ -18,7 +18,9 @@
         </ol>
     </nav>
 
-    <div class="max-w-7xl mx-auto p-2">
+    <section
+        class="max-w-8xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+    >
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -66,9 +68,7 @@
                 @foreach ($types as $key => $label)
                     <a
                         href="{{ request()->fullUrlWithQuery(["type" => $key]) }}"
-                        class="px-5 py-2 rounded-full text-sm font-medium transition-all shadow-sm {{
-                            $currentType == $key ? "bg-black text-white shadow-md transform scale-105" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                        }}"
+                        class="px-5 py-2 rounded-full text-sm font-medium transition-all shadow-sm {{ $currentType == $key ? "bg-black text-white shadow-md transform scale-105" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300" }}"
                     >
                         {{ $label }}
                     </a>
@@ -183,7 +183,7 @@
                                 Uploaded
                             </th>
                             <th
-                                class="px-6 py-4 text-right font-semibold text-gray-600"
+                                class="px-6 py-4 text-left font-semibold text-gray-600"
                             >
                                 Action
                             </th>
@@ -216,7 +216,7 @@
                                 <td class="px-6 py-4">
                                     @if ($m->level)
                                         <span
-                                            class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white {{ $m->level == 1 ? "bg-rose-400" : ($m->level == 2 ? "bg-green-400" : "bg-cyan-400") }}"
+                                            class="inline-flex items-center justify-center w-6 h-6 rounded-full {{ $m->level == 1 ? "bg-[#f0c6bc]" : ($m->level == 2 ? "bg-[#c7f7cf]" : "bg-[#9bd1f8]") }} text-xs font-bold"
                                         >
                                             {{ $m->level }}
                                         </span>
@@ -244,10 +244,10 @@
                                     {{ optional($m->uploaded_at)->format("M d, Y") }}
                                 </td>
                                 <td
-                                    class="px-6 py-4 text-right"
+                                    class="px-6 py-4 text-left"
                                     onclick="event.stopPropagation()"
                                 >
-                                    <div class="flex justify-end gap-3">
+                                    <div class="flex justify-start gap-3">
                                         @if ($m->url)
                                             <a
                                                 href="{{ $m->url }}"
@@ -337,5 +337,5 @@
                 </div>
             @endif
         </div>
-    </div>
+    </section>
 </x-layout>

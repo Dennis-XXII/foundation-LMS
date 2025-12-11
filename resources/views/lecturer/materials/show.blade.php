@@ -49,8 +49,7 @@
             </li>
         </ol>
     </nav>
-
-    <div class="max-w-8xl mx-auto p-3">
+    <section class="max-w-8xl mx-auto p-3">
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -62,7 +61,7 @@
         @endphp
 
         {{-- Course header --}}
-        <div class="max-w-4xl mx-auto p-6 rounded-lg shadow border">
+        <div class="max-w-4xl mx-auto p-6 rounded-lg shadow border border-gray-300">
             {{-- Header with Edit/Delete buttons --}}
             <div
                 class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4"
@@ -112,7 +111,7 @@
                             Description
                         </label>
                         <div
-                            class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded border"
+                            class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded border border-gray-300"
                         >
                             {!! nl2br(e($material->descriptions)) !!}
                         </div>
@@ -125,61 +124,68 @@
                             >
                                 File
                             </label>
+                            <div class="border border-gray-300 p-3 rounded mt-1 bg-gray-50">
                             <a
                                 href="{{ route("lecturer.materials.download", $material) }}"
-                                class="mt-1 text-blue-600 hover:underline font-medium"
+                                class="mt-1 text-blue-600 hover:underline text-sm font-medium"
                             >
-                                Download Attached File
+                                {{ basename($material->file_path) }}
                             </a>
                         </div>
                     @endif
+        </div>
 
                     @if ($material->url)
+                    <div>
                     <label
                                 class="block text-sm font-medium text-gray-500"
                             >
                                 External Link
                             </label>
-                        <div class="border border-gray-300 p-3 rounded">
+                        <div class="border border-gray-300 p-3 rounded mt-1 bg-gray-50">
                             
                             <a
                                 href="{{ $material->url }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="text-blue-600 hover:underline font-medium"
+                                class="text-sm text-blue-600 hover:underline font-medium break-all"
                             >
                                 {{ $material->url }}
                             </a>
                         </div>
                     @endif
+                    </div>
                 </div>
 
                 {{-- Column 2 (Sidebar) --}}
-                <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
+                <div>
+                <label class="block text-sm font-medium text-gray-500">Details</label>
+                <div class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100 mt-1">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">
-                            Status
-                        </label>
+                        <label class="block text-md font-medium text-gray-500">
+                            Status:
                         @if ($material->is_published)
-                            <span
-                                class="mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+                            <p
+                                class="ml-1 inline-flex items-left px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
                             >
                                 Published
-                            </span>
+                            </p>
                         @else
-                            <span
-                                class="mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
+                            <p
+                                class="ml-1 inline-flex items-left px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
                             >
                                 Draft
-                            </span>
+                            </p>
                         @endif
+                        </label>
+                        
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">
-                            Type
+                            Type of Material
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ str($material->type)->replace("_", " ")->title() }}
+                            {{ str($material->type)->replace("_", " ")->title() }} Material
                         </p>
                     </div>
                     <div>
@@ -192,27 +198,20 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">
-                            Week
+                            Week / Day
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ $material->week ?? "—" }}
+                            {{ $material->week ?? "—" }} &mdash; {{ $material->day ?? "—" }}
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500">
-                            Day
-                        </label>
-                        <p class="mt-1 text-gray-900">
-                            {{ $material->day ?? "—" }}
-                        </p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500">
-                            Uploaded
+                            Uploaded on
                         </label>
                         <p class="mt-1 text-gray-900">
                             {{ optional($material->uploaded_at)->format("M d, Y") ?? "—" }}
                         </p>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -226,5 +225,5 @@
                 </a>
             </div>
         </div>
-    </div>
+    </section>
 </x-layout>

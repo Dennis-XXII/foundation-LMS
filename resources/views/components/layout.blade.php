@@ -76,6 +76,18 @@
                 {{ $slot }}
             </main>
 
+            {{-- <div class="mx-auto p-4 text-sm text-gray-500 place-self-center justify-center">
+                <p> Levels are color-coded as following:</p>
+                <ul class="list-disc list-inside mt-2 ml-2">
+                    <li class="bg-[#9bd1f8] inline-block px-2 py
+                        rounded-lg mr-2">Level 3</li>
+                    <li class="bg-[#c7f7cf] inline-block px-2 py
+                        rounded-lg mr-2">Level 2</li>
+                    <li class="bg-[#f0c6bc] inline-block px-2 py
+                        rounded-lg mr-2">Level 1</li>
+                </ul>
+            </div> --}}
+
             <!-- Footer -->
             <footer
                 class="{{ $headerColor }} text-xs text-center text-gray-500 py-4"
