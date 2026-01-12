@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin User',
             'nickname' => 'admin',
             'email' => 'admin@test.com',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('fpadmin2026'),
             'role' => 'admin',
             'line_id' => 'admin_line_id',
         ]);
@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             'name' => 'Lecturer User',
             'nickname' => 'lect1',
             'email' => 'lecturer@test.com',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('fplecturer2026'),
             'role' => 'lecturer',
             'line_id' => 'lecturer_line_id',
         ]);
