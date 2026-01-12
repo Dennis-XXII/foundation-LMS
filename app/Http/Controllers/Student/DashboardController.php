@@ -40,6 +40,7 @@ class DashboardController extends Controller
                 'announcements' => collect(),
                 'assignments'   => collect(),
                 'materials'     => collect(),
+                'student_level'=> null,
             ]);
         }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -20,14 +21,24 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8'],
+            'login_identifier' => ['required', 'string'], // This will be Email OR Student ID
+            'password'         => ['required', 'string'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // prevent session fixation
+        // 1. Try to find user by email (for Admin/Lecturer)
+        $user = \App\Models\User::where('email', $credentials['login_identifier'])->first();
 
-            $user = Auth::user(); // ensures no "undefined user()" error
+        // 2. If not found, try to find by Student ID (via relationship)
+        if (!$user) {
+            $student = \App\Models\Student::where('student_id', $credentials['login_identifier'])->first();
+            if ($student) {
+                $user = $student->user;
+            }
+        }
+
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            Auth::login($user);
+            $request->session()->regenerate();
 
             return match ($user->role) {
                 'student'  => to_route('student.dashboard'),
@@ -37,9 +48,7 @@ class LoginController extends Controller
             };
         }
 
-        return back()
-            ->withErrors(['email' => 'The provided credentials do not match our records.'])
-            ->onlyInput('email');
+        return back()->withErrors(['login_identifier' => 'Invalid credentials.']);
     }
 
     public function logout(Request $request)

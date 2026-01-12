@@ -23,6 +23,26 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'student_id' => [
+                'required', 
+                'string', 
+                'unique:eligible_students,student_id', // Must not be in whitelist already
+                'unique:students,student_id'           // Must not have an active account already
+            ],
+        ]);
+
+        \App\Models\EligibleStudent::create([
+            'student_id' => $request->student_id
+        ]);
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student ID added to eligible list.');
+    }
+
+    /*
+    public function store(Request $request)
+    {
         $data = $request->validate([
             'name'       => ['required','string','max:255'],
             'email'      => ['required','email','max:255','unique:users,email'],
@@ -45,6 +65,7 @@ class StudentController extends Controller
 
         return redirect()->route('admin.students.index')->with('success','Student created.');
     }
+    */
 
     public function edit(Student $student)
     {

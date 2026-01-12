@@ -23,7 +23,6 @@ class SignupController extends Controller
     }
 
     /** LECTURER: show form */
-    // NOTE: use this exact name in routes (avoid the earlier "mentor" typo).
     public function showLecturerRegistrationForm()
     {
         return view('auth.register-lecturer');
@@ -41,13 +40,16 @@ class SignupController extends Controller
     public function registerStudent(Request $request)
     {
         $data = $request->validate([
+            'student_id'   => ['required','string',
+            'exists:eligible_students,student_id', // Check if Admin added it
+            Rule::unique('students', 'student_id')  // Check if already registered
+            ],
             'name'         => ['required','string','max:255'],
             'nickname'     => ['required','string','max:255'],
             'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
             'password'     => ['required','string','min:8','confirmed'],
             'line_id'      => ['nullable','string','max:255'],
             'phone_number' => ['nullable','string','max:255'],
-            'student_id'   => ['required','string','max:64', Rule::unique('students','student_id')],
             'faculty'      => ['required','string','max:255'],
             'language'     => ['required','string','max:255'],
             'level'        => ['required','string','max:255'],
