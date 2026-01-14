@@ -1,4 +1,30 @@
 <x-layout>
+    <nav>
+        <ol
+            class="list-reset flex text-sm text-gray-600 mb-4"
+            aria-label="Breadcrumb"
+        >
+            <li>
+                <a
+                    href="{{ route("admin.dashboard") }}"
+                    class="hover:underline"
+                >
+                    Dashboard
+                </a>
+                <span class="mx-2">/</span>
+            </li>
+            <li>
+                <a
+                    href="{{ route("admin.courses.index") }}"
+                    class="hover:underline"
+                >
+                    Courses
+                </a>
+                <span class="mx-2">/</span>
+            </li>
+            <li class="text-black font-semibold">Edit Course</li>
+        </ol>
+    </nav>
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Edit Course</h1>
         <a
@@ -93,7 +119,7 @@
 
     {{-- Dangerous tools per your UI note (remove all coursework for reupload) --}}
     <div class="mt-6 bg-white border rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold mb-3">Danger Zone</h2>
+        <h2 class="text-lg font-semibold mb-3">Deletion</h2>
         <p class="text-sm text-gray-600 mb-4">
             Delete all materials and assignments for this course.
         </p>
@@ -102,7 +128,7 @@
             action="{{ route("admin.courses.destroy", $course) }}"
             onsubmit="
                 return confirm(
-                    'Delete this course and all related coursework? This cannot be undone.',
+                    'Are you sure you want to delete this course and all related coursework? This cannot be undone.',
                 );
             "
         >

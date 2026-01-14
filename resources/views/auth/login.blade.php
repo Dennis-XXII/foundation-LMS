@@ -31,14 +31,14 @@
                         for="login_identifier"
                         class="block text-sm lg:text-base font-normal text-gray-800"
                     >
-                        Email or Student ID
+                        Email or ID
                     </label>
                     <input
-                        type="text" 
+                        type="text"
                         name="login_identifier"
                         value="{{ old("login_identifier") }}"
                         class="w-full border border-gray-400 rounded-md px-4 py-2 focus:ring-2 focus:ring-[#b085c2] focus:outline-none placeholder-gray-300"
-                        placeholder="Enter email or student ID"
+                        placeholder="eg. 6xxxxxx"
                         required
                     />
                     @error("login_identifier")

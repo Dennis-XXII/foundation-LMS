@@ -15,27 +15,29 @@
         $userRole = auth()->user()->role;
 
         $userColors = [
-                "admin" => "bg-green-100",
-                "lecturer" => "bg-slate-300",
-                "student" => "bg-purple-100", 
+            "admin" => "bg-green-100",
+            "lecturer" => "bg-slate-300",
+            "student" => "bg-purple-100",
         ];
-            // Use level filter for header, default to gray
-            $headerColor = $userColors[$userRole ?? null] ?? "bg-gray-200";
+        // Use level filter for header, default to gray
+        $headerColor = $userColors[$userRole ?? null] ?? "bg-gray-200";
     @endphp
 
     <body class="bg-white">
         <div class="flex flex-col min-h-screen">
             <!-- Header with Logo and Title -->
-            <header class="border-b border-gray-200 flex {{ $headerColor }} items-center px-1 py-1 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base justify-between ">
-            <div class="flex items-center">
-                <!-- Navigation Bar with only logout -->
+            <header
+                class="border-b border-gray-200 flex {{ $headerColor }} items-center px-1 py-1 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base justify-between"
+            >
+                <div class="flex items-center">
+                    <!-- Navigation Bar with only logout -->
                     <h1
                         class="font-semibold text-gray-900 mx-auto text-xl md:text-2xl"
                     >
                         FOUNDATION PROGRAM MOODLE
                     </h1>
                 </div>
-            <div>
+                <div>
                     @auth
                         <form
                             method="POST"
@@ -58,7 +60,6 @@
                                     stroke-width="1.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    
                                 >
                                     <path
                                         d="M10 3H6a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h4M16 17l5-5-5-5M19.8 12H9"
@@ -76,24 +77,29 @@
                 {{ $slot }}
             </main>
 
-            {{-- <div class="mx-auto p-4 text-sm text-gray-500 place-self-center justify-center">
+            {{--
+                <div class="mx-auto p-4 text-sm text-gray-500 place-self-center justify-center">
                 <p> Levels are color-coded as following:</p>
                 <ul class="list-disc list-inside mt-2 ml-2">
-                    <li class="bg-[#9bd1f8] inline-block px-2 py
-                        rounded-lg mr-2">Level 3</li>
-                    <li class="bg-[#c7f7cf] inline-block px-2 py
-                        rounded-lg mr-2">Level 2</li>
-                    <li class="bg-[#f0c6bc] inline-block px-2 py
-                        rounded-lg mr-2">Level 1</li>
+                <li class="bg-[#9bd1f8] inline-block px-2 py
+                rounded-lg mr-2">Level 3</li>
+                <li class="bg-[#c7f7cf] inline-block px-2 py
+                rounded-lg mr-2">Level 2</li>
+                <li class="bg-[#f0c6bc] inline-block px-2 py
+                rounded-lg mr-2">Level 1</li>
                 </ul>
-            </div> --}}
+                </div>
+            --}}
 
             <!-- Footer -->
             <footer
                 class="{{ $headerColor }} text-xs text-center text-gray-500 py-4"
             >
-                <p> Designed and Developed by ICT Students.</p>
-                <p class="mt-1">&copy; Rangsit International College ({{ date("Y") }}). All rights reserved.</p>
+                <p>Designed and Developed by ICT Students.</p>
+                <p class="mt-1">
+                    &copy; Rangsit International College ({{ date("Y") }}). All
+                    rights reserved.
+                </p>
             </footer>
         </div>
 

@@ -1,4 +1,21 @@
 <x-layout>
+    <nav>
+        <ol
+            class="list-reset flex text-sm text-gray-600 mb-4"
+            aria-label="Breadcrumb"
+        >
+            <li>
+                <a
+                    href="{{ route("admin.dashboard") }}"
+                    class="hover:underline"
+                >
+                    Dashboard
+                </a>
+                <span class="mx-2">/</span>
+            </li>
+            <li class="text-black font-semibold">Courses</li>
+        </ol>
+    </nav>
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Courses</h1>
         <a
@@ -11,17 +28,23 @@
 
     <div class="bg-white rounded-lg shadow border">
         <table class="min-w-full divide-y">
-            <thead class="bg-gray-50">
-                <tr class="text-left text-xs font-semibold text-gray-600">
-                    <th class="px-4 py-3">Code</th>
-                    <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Level</th>
-                    <th class="px-4 py-3"></th>
-                </tr>
-            </thead>
+            @foreach ($courses as $course)
+                <thead class="bg-gray-50">
+                    <tr class="text-left text-xs font-semibold text-gray-600">
+                        <th class="px-4 py-3">Code</th>
+                        <th class="px-4 py-3">Name</th>
+                        <th class="px-4 py-3">Year / Program</th>
+                        <th class="px-4 py-3"></th>
+                    </tr>
+                </thead>
+            @endforeach
+
             <tbody class="divide-y">
                 @forelse ($courses as $c)
-                    <tr>
+                    <tr
+                        class="hover:bg-gray-50 rounded-2xl cursor-pointer"
+                        onClick="window.location='{{ route("admin.courses.edit", $c) }}'"
+                    >
                         <td class="px-4 py-3">{{ $c->code }}</td>
                         <td class="px-4 py-3">{{ $c->name }}</td>
                         <td class="px-4 py-3">{{ $c->level ?? "—" }}</td>
