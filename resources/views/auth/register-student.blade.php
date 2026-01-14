@@ -81,6 +81,29 @@
                         </div>
                     </div>
 
+                    <div>
+                        <label
+                            for="student_id"
+                            class="block text-gray-800 mb-2"
+                        >
+                            Student ID
+                        </label>
+                        <input
+                            type="text"
+                            id="student_id"
+                            name="student_id"
+                            value="{{ old("student_id") }}"
+                            class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                            placeholder="eg., 6xxxxxx"
+                            required
+                        />
+                        @error("student_id")
+                            <p class="text-red-500 text-sm mt-1">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
                     <!-- Email Address - Full Width -->
                     <div>
                         <label for="email" class="block text-gray-800 mb-2">
@@ -145,9 +168,8 @@
                         @enderror
                     </div>
 
-                    <!-- Two Column Layout for Phone and LINE ID -->
+                    <!-- Two Column Layout for Phone and LINE ID
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Phone Number -->
                         <div>
                             <label
                                 for="phone_number"
@@ -164,13 +186,25 @@
                                 placeholder="Enter Ph No."
                             />
                             @error("phone_number")
+
+
+
+
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
+
+
+
+
                         </div>
 
-                        <!-- Line ID -->
+                        <!-- Line ID
                         <div>
                             <label
                                 for="line_id"
@@ -187,66 +221,52 @@
                                 placeholder="Enter LINE ID"
                             />
                             @error("line_id")
+
+
+
+
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
+
+
+
+
                         </div>
                     </div>
+                     -->
 
                     <!-- Two Column Layout for Student ID and Faculty -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Student ID -->
-                        <div>
-                            <label
-                                for="student_id"
-                                class="block text-gray-800 mb-2"
-                            >
-                                Student ID
-                            </label>
-                            <input
-                                type="text"
-                                id="student_id"
-                                name="student_id"
-                                value="{{ old("student_id") }}"
-                                class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
-                                placeholder="Enter student ID"
-                                required
-                            />
-                            @error("student_id")
-                                <p class="text-red-500 text-sm mt-1">
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                    <!-- Student ID -->
 
-                        <!-- Faculty Field (New) -->
-                        <div>
-                            <label
-                                for="faculty"
-                                class="block text-gray-800 mb-2"
-                            >
-                                Faculty
-                            </label>
-                            <input
-                                type="text"
-                                id="faculty"
-                                name="faculty"
-                                value="{{ old("faculty") }}"
-                                class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
-                                placeholder="Enter faculty"
-                            />
-                            @error("faculty")
-                                <p class="text-red-500 text-sm mt-1">
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                    <!-- Faculty Field (New) -->
+                    <div>
+                        <label for="faculty" class="block text-gray-800 mb-2">
+                            Faculty
+                        </label>
+                        <input
+                            type="text"
+                            id="faculty"
+                            name="faculty"
+                            value="{{ old("faculty") }}"
+                            class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                            placeholder="Enter faculty"
+                        />
+                        @error("faculty")
+                            <p class="text-red-500 text-sm mt-1">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
-                    <!-- Two Column Layout for Language and Level -->
+                    <!-- Two Column Layout for Language and Level
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Language Field (New) -->
+                        <!-- Language Field (New)
                         <div>
                             <label
                                 for="language"
@@ -262,13 +282,17 @@
                                 class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
                             />
                             @error("language")
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
                         </div>
 
-                        <!-- Level Field (New) -->
+                        <!-- Level Field (New)
                         <div>
                             <label for="level" class="block text-gray-800 mb-2">
                                 Level
@@ -281,12 +305,16 @@
                                 class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
                             />
                             @error("level")
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Terms Checkbox -->
                     <div class="flex items-center mt-6">

@@ -62,7 +62,7 @@ class CourseController extends Controller
 
         $course->update($data);
 
-        return back()->with('success', 'Course updated by admin: '.Auth::id());
+        return to_route('admin.courses.index')->with('success', 'Course updated by admin: '.Auth::id());
     }
 
     public function destroy(Course $course)

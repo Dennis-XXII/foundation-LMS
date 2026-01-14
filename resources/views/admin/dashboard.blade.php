@@ -27,8 +27,15 @@
 
     {{-- Courses overview --}}
     <section class="bg-white rounded-lg shadow border overflow-hidden">
-        <div class="bg-purple-900 text-white px-6 py-4">
-            <h2 class="text-lg font-semibold">Courses</h2>
+        <div class="flex bg-purple-900 text-white px-6 py-4">
+            <h2 class="px-4 py-2 text-lg font-semibold">Courses</h2>
+            <div class="flex-grow"></div>
+            <a
+                href="{{ route("admin.courses.create") }}"
+                class="px-4 py-2 bg-white text-purple-900 rounded"
+            >
+                New Course
+            </a>
         </div>
 
         <div class="p-6">
