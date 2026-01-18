@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\EligibleStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,28 +17,41 @@ class StudentController extends Controller
         return view('admin.students.index', compact('students'));
     }
 
-    public function create()
+// app/Http/Controllers/Admin/StudentController.php
+
+    public function wlCreate()
     {
-        return view('admin.students.create');
+        // Eager load 'registeredStudent' to avoid N+1 query issues
+        $whitelistedStudents = \App\Models\EligibleStudent::with('registeredStudent')
+            ->latest()
+            ->get();
+        
+        return view('admin.students.create', compact('whitelistedStudents'));
     }
 
-    public function store(Request $request)
+    // New Whitelist Store Method
+    public function wlStore(Request $request)
     {
         $request->validate([
             'student_id' => [
                 'required', 
                 'string', 
-                'unique:eligible_students,student_id', // Must not be in whitelist already
-                'unique:students,student_id'           // Must not have an active account already
+                'unique:eligible_students,student_id',
+                'unique:students,student_id'
             ],
         ]);
 
-        \App\Models\EligibleStudent::create([
-            'student_id' => $request->student_id
-        ]);
+        EligibleStudent::create(['student_id' => $request->student_id]);
 
-        return redirect()->route('admin.students.index')
-            ->with('success', 'Student ID added to eligible list.');
+        return redirect()->route('admin.students.wlCreate')
+            ->with('success', 'Student ID added to whitelist.');
+    }
+
+    // New Whitelist Destroy Method
+    public function wlDestroy(EligibleStudent $eligible)
+    {
+        $eligible->delete();
+        return back()->with('success', 'Student ID removed from whitelist.');
     }
 
     /*

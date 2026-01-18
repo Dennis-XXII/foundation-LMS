@@ -51,8 +51,8 @@ class SignupController extends Controller
             'line_id'      => ['nullable','string','max:255'],
             'phone_number' => ['nullable','string','max:255'],
             'faculty'      => ['required','string','max:255'],
-            'language'     => ['required','string','max:255'],
-            'level'        => ['required','string','max:255'],
+            //'language'     => ['required','string','max:255'],
+            //'level'        => ['required','string','max:255'],
         ]);
 
         $data['email'] = Str::lower(trim($data['email']));
@@ -67,8 +67,8 @@ class SignupController extends Controller
                 'line_id'      => $data['line_id']      ?? null,
                 'phone_number' => $data['phone_number'] ?? null,
                 'faculty'      => $data['faculty'],
-                'language'     => $data['language'],
-                'level'        => $data['level'],
+                //'language'     => $data['language'],
+                //'level'        => $data['level'],
             ]);
 
             Student::query()->create([

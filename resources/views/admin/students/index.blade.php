@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Students</h1>
         <a
-            href="{{ route("admin.students.create") }}"
+            href="{{ route("admin.students.wlCreate") }}"
             class="px-4 py-2 bg-purple-900 text-white rounded"
         >
             Add Student
