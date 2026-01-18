@@ -1,4 +1,4 @@
-<x-layout>
+<x-guest-layout>
     <div
         class="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-10"
     >
@@ -328,7 +328,7 @@
             </div>
         </div>
     </div>
-</x-layout>
+</x-guest-layout>
 
 <!-- Add mobile responsive styles -->
 <style>

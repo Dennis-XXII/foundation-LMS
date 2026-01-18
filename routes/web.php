@@ -199,7 +199,7 @@ Route::middleware(['auth','lecturer'])
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN AREA
 // ─────────────────────────────────────────────────────────────────────────────
-Route::middleware(['auth','admin'])
+    Route::middleware(['auth', 'admin'])
     ->prefix('admin')->as('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -210,17 +210,22 @@ Route::middleware(['auth','admin'])
 
         // Admin Enrollments Management
         Route::resource('courses.enrollments', \App\Http\Controllers\Admin\EnrollmentController::class)
-            ->only(['index','store','destroy'])
+            ->only(['index', 'store', 'destroy'])
             ->parameters(['enrollments' => 'enrollment'])
-            ->shallow(); // => /admin/enrollments/{enrollment}
+            ->shallow();
 
-         // Student CRUD
-         Route::resource('students', AdminStudents::class)
-            ->only(['index','create','store','edit','update','destroy']);
+        // 1. Whitelist Routes (Must be ABOVE the resource)
+        Route::get('students/whitelist', [AdminStudents::class, 'wlCreate'])->name('students.wlCreate');
+        Route::post('students/whitelist', [AdminStudents::class, 'wlStore'])->name('students.wlStore');
+        Route::delete('students/whitelist/{eligible}', [AdminStudents::class, 'wlDestroy'])->name('students.wlDestroy');
+
+        // 2. Student CRUD (Exclude 'create' and 'store' as they are now handled by whitelist)
+        Route::resource('students', AdminStudents::class)
+            ->only(['index', 'edit', 'update', 'destroy']);
 
         // Lecturers CRUD
         Route::resource('lecturers', AdminLecturers::class)
-            ->parameters(['lecturers' => 'lecturer']); // Changed parameter name
+            ->parameters(['lecturers' => 'lecturer']);
 
         // Announcements CRUD
         Route::resource('announcements', AdminAnnouncements::class);
