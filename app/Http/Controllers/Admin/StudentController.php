@@ -26,7 +26,7 @@ class StudentController extends Controller
             ->latest()
             ->get();
         
-        return view('admin.students.create', compact('whitelistedStudents'));
+        return view('admin.students.wlCreate', compact('whitelistedStudents'));
     }
 
     // New Whitelist Store Method
