@@ -26,7 +26,7 @@ class StudentController extends Controller
             ->latest()
             ->get();
         
-        return view('admin.students.wlCreate', compact('whitelistedStudents'));
+        return view('admin.students.create', compact('whitelistedStudents'));
     }
 
     // New Whitelist Store Method
@@ -43,7 +43,7 @@ class StudentController extends Controller
 
         EligibleStudent::create(['student_id' => $request->student_id]);
 
-        return redirect()->route('admin.students.wlCreate')
+        return redirect()->route('admin.students.create')
             ->with('success', 'Student ID added to whitelist.');
     }
 
