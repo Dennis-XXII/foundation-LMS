@@ -27,12 +27,12 @@
         <div class="flex flex-col min-h-screen">
             <!-- Header with Logo and Title -->
             <header
-                class="border-b border-gray-200 flex {{ $headerColor }} items-center px-1 py-1 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base justify-between"
+                class="border-b border-gray-200 flex {{ $headerColor }} items-center px-2 py-2 lg:px-5 lg:py-3 border-t border-purple-200 shadow-sm md:text-sm lg:text-base justify-between"
             >
                 <div class="flex items-center">
                     <!-- Navigation Bar with only logout -->
                     <h1
-                        class="font-semibold text-gray-900 mx-auto text-xl md:text-2xl"
+                        class="ml-2 font-semibold text-gray-900 mx-auto text-md lg:text-2xl md:text-2xl"
                     >
                         FOUNDATION PROGRAM MOODLE
                     </h1>
@@ -48,7 +48,7 @@
                             @csrf
                             <button
                                 type="submit"
-                                class="flex position-sticky text-white mr-1 bg-red-500 px-3 py-2 rounded-[999px] hover:bg-red-600 transition"
+                                class="flex position-sticky text-white mr-1 bg-red-500 px-3 py-2 lg:px-3 lg:py-2 rounded-[999px] hover:bg-red-600 transition"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,9 @@
                                         d="M10 3H6a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h4M16 17l5-5-5-5M19.8 12H9"
                                     />
                                 </svg>
-                                <p class="ml-2 text-sm">Log Out</p>
+                                <p class="ml-2 hidden lg:block text-sm">
+                                    Log Out
+                                </p>
                             </button>
                         </form>
                     @endauth
@@ -93,13 +95,27 @@
 
             <!-- Footer -->
             <footer
-                class="{{ $headerColor }} text-xs text-center text-gray-500 py-4"
+                class="{{ $headerColor }} text-[10px] text-gray-500 grid grid-cols-2 p-6 lg:px-10"
             >
-                <p>Designed and Developed by ICT Students.</p>
-                <p class="mt-1">
-                    &copy; Rangsit International College ({{ date("Y") }}). All
-                    rights reserved.
-                </p>
+                <div class="text-right pr-4 border-r border-gray-300">
+                    <h3 class="font-semibold text-xs lg:text-sm">
+                        Developed by
+                    </h3>
+                    <p class="mt-1">
+                        Kyaw Swar Hein
+                        <br />
+                        Khant Htet
+                        <br />
+                        Kyaw Myo Htet
+                    </p>
+                </div>
+                <div class="text-left pl-4">
+                    <p class="lg:text-sm">
+                        &copy; Rangsit International College ({{ date("Y") }}).
+                        <br />
+                        All rights reserved.
+                    </p>
+                </div>
             </footer>
         </div>
 

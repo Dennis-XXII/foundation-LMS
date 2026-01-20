@@ -1,6 +1,9 @@
 {{-- resources/views/student/materials/list.blade.php --}}
 <x-layout>
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav
+        class="mb-2 text-sm text-gray-600 p-3 lg:flex hidden"
+        aria-label="Breadcrumb"
+    >
         <ol class="list-reset flex">
             <li>
                 <a
@@ -24,8 +27,20 @@
             <li class="font-semibold">Week {{ $week }} - {{ $day }}</li>
         </ol>
     </nav>
+    <a
+        href="{{
+            route("student.materials.index", [
+                "course" => $course,
+                "type" => $type,
+                "level" => $level,
+            ])
+        }}"
+        class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+    >
+        &larr; Back to Timetable
+    </a>
     <section
-        class="max-w-6xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
     >
         @php
             $levelColors = [
@@ -54,16 +69,22 @@
 
         {{-- Materials List --}}
         <div class="mt-2">
-            <div
-                class="mt-4 overflow-x-auto rounded-lg shadow-sm border border-gray-300"
-            >
-                <table class="min-w-full text-sm">
-                    <thead class="bg-gray-900 text-white">
+            <div class="mt-4 overflow-x-auto rounded-lg shadow-sm">
+                <table class="w-full text-sm lg:text-base text-center">
+                    <thead class="bg-gray-900 text-white text-xs lg:text-sm">
                         <tr>
-                            <th class="px-3 py-3 text-left">Title</th>
-                            <th class="px-3 py-3 text-left">Type</th>
-                            <th class="px-1 py-3 text-left">Uploaded</th>
-                            <th class="px-1 py-3 text-left"></th>
+                            <th class="px-1 py-3 lg:px-3 lg:py-3 text-center">
+                                Title
+                            </th>
+                            <th class="px-1 py-3 lg:px-3 lg:py-3 text-center">
+                                Type
+                            </th>
+                            <th class="px-1 py-3 lg:px-1 lg:py-3 text-center">
+                                Uploaded
+                            </th>
+                            <th
+                                class="px-1 py-3 lg:px-1 lg:py-3 text-center"
+                            ></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,7 +96,9 @@
                                         '{{ route("student.materials.show", $m) }}'
                                 "
                             >
-                                <td class="px-3 py-3">
+                                <td
+                                    class="px-1 py-3 lg:px-3 lg:py-3 text-center"
+                                >
                                     <a
                                         class="text-blue-600 underline"
                                         href="{{ route("student.materials.show", $m) }}"
@@ -83,49 +106,49 @@
                                         {{ $m->title }}
                                     </a>
                                 </td>
-                                <td class="px-3 py-3">
+                                <td class="px-1 py-3 lg:px-3 lg:py-3">
                                     {{ str($m->type)->replace("_", " ")->title() }}
                                 </td>
-                                <td class="px-1 py-3">
+                                <td class="px-1 py-3 lg:px-1 lg:py-3">
                                     {{ optional($m->uploaded_at)->format("M d, Y") }}
                                 </td>
-                                <td
-                                    class="px-1 py-3 space-x-3 whitespace-nowrap"
-                                >
+                                <td class="px-1 py-3 lg:px-1 lg:py-3">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
+                                        width="18"
+                                        height="18"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="#000000"
                                         stroke-width="2"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
+                                        class="inline-block ml-8"
                                     >
                                         <path d="M9 18l6-6-6-6" />
                                     </svg>
-                                    {{--
-                                        @if ($m->url)
-                                        <a
-                                        href="{{ $m->url }}"
-                                        target="_blank"
-                                        class="text-blue-600 hover:underline"
-                                        >
-                                        Open Link
-                                        </a>
-                                        @endif
-                                        
-                                        @if ($m->file_path)
-                                        <a
-                                        class="text-blue-600 underline"
-                                        href="{{ route("student.materials.download", $m) }}"
-                                        >
-                                        Download
-                                        </a>
-                                        @endif Student-specific actions
-                                    --}}
                                 </td>
+
+                                {{--
+                                    @if ($m->url)
+                                    <a
+                                    href="{{ $m->url }}"
+                                    target="_blank"
+                                    class="text-blue-600 hover:underline"
+                                    >
+                                    Open Link
+                                    </a>
+                                    @endif
+                                    
+                                    @if ($m->file_path)
+                                    <a
+                                    class="text-blue-600 underline"
+                                    href="{{ route("student.materials.download", $m) }}"
+                                    >
+                                    Download
+                                    </a>
+                                    @endif Student-specific actions
+                                --}}
                             </tr>
                         @empty
                             <tr>
@@ -147,13 +170,13 @@
         <div class="mt-8 pt-4 border-t">
             <a
                 href="{{
-                    route("student.materials.index", [
-                        "course" => $course,
-                        "type" => $type,
-                        "level" => $level,
-                    ])
-                }}"
-                class="px-4 py-2 rounded border text-sm hover:bg-gray-50"
+            route("student.materials.index", [
+                "course" => $course,
+                "type" => $type,
+                "level" => $level,
+            ])
+        }}"
+                class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
             >
                 &larr; Back to Timetable
             </a>

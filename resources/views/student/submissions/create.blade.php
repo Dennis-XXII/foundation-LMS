@@ -1,5 +1,8 @@
 <x-layout title="Submit Assignment">
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav
+        class="hidden lg:flex mb-2 text-sm text-gray-600 p-3"
+        aria-label="Breadcrumb"
+    >
         <ol class="list-reset flex">
             <li>
                 <a
@@ -35,7 +38,7 @@
     </nav>
 
     <section
-        class="max-w-2xl mx-auto p-6 space-y-6 shadow border border-gray-300 rounded-lg"
+        class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
     >
         @php
             $levelColors = [
@@ -48,7 +51,7 @@
         @endphp
 
         <div
-            class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4"
+            class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4 mb-6"
         >
             <div>
                 <h1 class="text-2xl font-bold">{{ $assignment->title }}</h1>

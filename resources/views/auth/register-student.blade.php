@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div
-        class="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-10"
+        class="flex flex-col items-center justify-center max-h-screen bg-white px-4 py-10"
     >
         <!-- Main Content Container -->
         <div class="w-full max-w-3xl">
@@ -192,10 +192,14 @@
 
 
 
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
 
 
 
@@ -227,10 +231,14 @@
 
 
 
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
 
 
 
@@ -284,10 +292,14 @@
                             @error("language")
 
 
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
 
 
                         </div>
@@ -307,10 +319,14 @@
                             @error("level")
 
 
+
+
                                 <p class="text-red-500 text-sm mt-1">
                                     {{ $message }}
                                 </p>
                             @enderror
+
+
 
 
                         </div>

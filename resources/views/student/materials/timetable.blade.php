@@ -1,6 +1,9 @@
 {{-- resources/views/student/materials/timetable.blade.php --}}
 <x-layout>
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav
+        class="mb-2 text-sm text-gray-600 p-3 lg:flex hidden"
+        aria-label="Breadcrumb"
+    >
         <ol class="list-reset flex">
             <li>
                 <a
@@ -17,8 +20,14 @@
             </li>
         </ol>
     </nav>
+    <a
+        href="{{ route("student.dashboard") }}"
+        class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+    >
+        &larr; Back to Dashboard
+    </a>
     <section
-        class="max-w-6xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
     >
         @php
             $levelColors = [
@@ -55,7 +64,7 @@
         {{-- Filters --}}
         <form
             method="GET"
-            class="mt-4 flex flex-wrap gap-3 items-end justify-start place-self-left"
+            class="hidden mt-4 lg:flex flex-wrap gap-3 items-end justify-start place-self-left"
         >
             {{-- Type Filter --}}
             <div>
@@ -122,43 +131,48 @@
                 Select a Date to View {{ ucfirst($type ?? "Material") }}
                 Materials
             </h2>
-            <table class="w-full text-base table-auto">
+            <table class="w-full text-xs lg:text-base table-auto">
                 <tbody class="bg-white">
                     @for ($w = 1; $w <= 8; $w++)
                         <tr class="border-b border-gray-200">
+                            {{-- Changed from flex-wrap items-center to a layout that handles mobile better --}}
                             <td
-                                class="px-3 py-3 flex flex-wrap items-center gap-x-6 gap-y-1"
+                                class="px-2 py-4 lg:px-3 lg:py-3 flex flex-col sm:flex-row sm:items-center gap-y-3 gap-x-6"
                             >
+                                {{-- Week Label: Full width on mobile, auto-width with border on desktop --}}
                                 <span
-                                    class="font-bold text-blue-700 justify-end text-end border-r border-gray-300 pr-3"
+                                    class="font-bold text-blue-700 sm:border-r border-gray-300 sm:pr-3 w-fit"
                                 >
                                     Week {{ $w }}:
                                 </span>
 
-                                @foreach ($days as $dayName)
-                                    {{-- THIS IS THE CRITICAL CHANGE: Link to the new list route --}}
-                                    {{-- Pass all existing filters (type, level) plus new time filters --}}
-                                    <a
-                                        href="{{
-                                            route("student.materials.list", [
-                                                "course" => $course,
-                                                "week" => $w,
-                                                "day" => $dayName,
-                                                "type" => $type,
-                                                "level" => $level,
+                                {{-- Days Container: Wraps nicely on mobile --}}
+                                <div
+                                    class="flex flex-wrap items-center grid grid-cols-3 lg:grid-cols-6 gap-x-2 lg:gap-x-6 gap-y-4"
+                                >
+                                    @foreach ($days as $dayName)
+                                        <a
+                                            href="{{
+                                                route("student.materials.list", [
+                                                    "course" => $course,
+                                                    "week" => $w,
+                                                    "day" => $dayName,
+                                                    "type" => $type,
+                                                    "level" => $level,
+                                                ])
+                                            }}"
+                                            @class([
+                                                "px-4 py-2 justify-center transition-colors whitespace-nowrap bg-blue-50 lg:bg-none",
+                                                "hover:bg-blue-100 rounded-lg",
+                                                "font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg" =>
+                                                    $dayName === "REVIEW",
+                                                "hover:text-blue-500" => $dayName !== "REVIEW",
                                             ])
-                                        }}"
-                                        @class([
-                                            "px-3 py-1",
-                                            "hover:bg-blue-100 rounded-lg",
-                                            "font-bold text-purple-700 hover:bg-purple-100 rounded-lg" =>
-                                                $dayName === "REVIEW",
-                                            "hover:text-blue-500" => $dayName !== "REVIEW",
-                                        ])
-                                    >
-                                        {{ $dayName }}
-                                    </a>
-                                @endforeach
+                                        >
+                                            {{ $dayName }}
+                                        </a>
+                                    @endforeach
+                                </div>
                             </td>
                         </tr>
                     @endfor
