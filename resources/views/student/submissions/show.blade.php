@@ -1,5 +1,5 @@
 <x-layout title="Submission Feedback">
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav class="hidden lg:flex mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
     <ol class="list-reset flex">
       <li>
         <a href="{{ route('student.dashboard') }}" class="hover:underline">Dashboard</a>
@@ -25,7 +25,13 @@
         </li>
     </ol>
   </nav>
-    <section class="max-w-2xl mx-auto px-4 py-4 space-y-6 border border-gray-300 rounded-xl shadow-sm mt-6">
+    <a
+        href="{{ route("student.assignments.show", $assignment) }}"
+        class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+    >
+        &larr; {{ $assignment->title }}
+    </a>
+    <section class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
         <h1 class="text-2xl p-2 font-semibold">{{ $assignment->title }}</h1>
 
         <div class="bg-white rounded-xl border border-gray-300 p-6 space-y-3">
@@ -95,12 +101,12 @@
             </div>
 
             <div class="mt-2">
-                <a  class="px-4 py-2 rounded border border-gray-300 text-sm hover:bg-gray-100"
-                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
-                    
-                >
-                    &larr; Back
-                </a>
+                <a
+        href="{{ route("student.assignments.show", $assignment) }}"
+        class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+    >
+        &larr; {{ $assignment->title }}
+    </a>
             </div>
             </div>
         </div>

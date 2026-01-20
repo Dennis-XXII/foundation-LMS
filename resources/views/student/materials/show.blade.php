@@ -1,7 +1,7 @@
 {{-- resources/views/student/materials/show.blade.php --}}
 <x-layout>
     {{-- Breadcrumbs --}}
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav class="mb-2 text-sm text-gray-600 p-3 lg:flex hidden" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
                 <a
@@ -50,8 +50,22 @@
             </li>
         </ol>
     </nav>
-
-    <section class="max-w-6xl mx-auto p-3">
+    <a
+                    href="{{
+                        route("student.materials.list", [
+                            "course" => $material->course,
+                            "type" => request("type") ?? $material->type,
+                            "level" => request("level") ?? $material->level,
+                            "week" => $material->week,
+                            "day" => $material->day,
+                        ])
+                    }}"
+                    class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+                >
+                    &larr; Week {{ $material->week ?? "—" }} -
+                    {{ $material->day ?? "—" }} Materials
+                </a>
+    <section class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -63,7 +77,7 @@
         @endphp
 
         {{-- Course header --}}
-    <div class="max-w-4xl mx-auto p-6 rounded-lg shadow border border-gray-300">
+    <div class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
         {{-- Header --}}
         <div class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4">
             <div>
@@ -197,12 +211,20 @@
         {{-- Back Link --}}
         <div class="mt-8 pt-4 border-t">
             <a
-                href="{{ url()->previous() }}"
-                {{-- Or route('student.materials.index', ...) --}}
-                class="px-4 py-2 rounded border text-sm hover:bg-gray-50"
-            >
-                &larr; Back
-            </a>
+                    href="{{
+                        route("student.materials.list", [
+                            "course" => $material->course,
+                            "type" => request("type") ?? $material->type,
+                            "level" => request("level") ?? $material->level,
+                            "week" => $material->week,
+                            "day" => $material->day,
+                        ])
+                    }}"
+                    class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+                >
+                    &larr; Week {{ $material->week ?? "—" }} -
+                    {{ $material->day ?? "—" }} Materials
+                </a>
         </div>
     </section>
 </x-layout>

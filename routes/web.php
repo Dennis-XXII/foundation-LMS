@@ -80,6 +80,10 @@ Route::middleware(['auth','student'])
         //     ->middleware('can:view,course')
         //     ->name('courses.show');
 
+        // Profile
+        Route::get('/profile', [\App\Http\Controllers\Student\StudentController::class, 'show'])
+            ->name('profile.show');
+
         // Materials routes
         Route::get('/courses/{course}/materials', [StudentMaterials::class, 'index'])
             ->middleware('can:view,course')

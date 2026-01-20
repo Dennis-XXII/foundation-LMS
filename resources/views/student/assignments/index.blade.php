@@ -8,7 +8,10 @@
     @endphp
 
     {{-- Breadcrumbs --}}
-    <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
+    <nav
+        class="hidden lg:flex mb-2 text-sm text-gray-600 p-3"
+        aria-label="Breadcrumb"
+    >
         <ol class="list-reset flex">
             <li>
                 <a
@@ -23,23 +26,32 @@
         </ol>
     </nav>
 
-    {{-- Level Guidance/Info --}}
+    <a
+        href="{{ route("student.dashboard") }}"
+        class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
+    >
+        &larr; Back to Dashboard
+    </a>
 
-    @if ($student_level)
+    {{--
+        Level Guidance/Info
+        
+        @if ($student_level && $level)
         <div
-            class="rounded border bg-blue-50 text-blue-800 px-4 py-3 mb-6 text-sm"
+        class="rounded border bg-blue-50 text-blue-800 px-4 py-3 mb-4 text-sm"
         >
-            You are enrolled at Level {{ $student_level }}. You can see
-            assignments for Level {{ $student_level }} and below.
+        You are enrolled at Level {{ $student_level }}. You can see
+        assignments for Level {{ $student_level }} and below.
         </div>
-    @else
+        @else
         <div
-            class="rounded border bg-yellow-50 text-yellow-800 px-4 py-3 mb-6 text-sm"
+        class="rounded border bg-yellow-50 text-yellow-800 px-4 py-3 mb-4 text-sm"
         >
-            You don't seem to be enrolled in this course with a specific level.
-            Showing all available assignments.
+        You don't seem to be enrolled in this course with a specific level.
+        Showing all available assignments.
         </div>
-    @endif
+        @endif
+    --}}
 
     {{-- Header --}}
     @php
@@ -53,13 +65,23 @@
     @endphp
 
     <section
-        class="max-w-8xl mx-auto p-6 rounded-lg shadow border border-gray-300"
+        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
     >
         <div
             class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
         >
             <div>
-                <h1 class="text-2xl font-semibold">Assignments</h1>
+                <h1 class="text-xl font-semibold">
+                    @if ($week && $day)
+                        Assignments for: Week {{ $week }}, {{ $day }}
+                    @elseif ($week)
+                        Assignments for: Week {{ $week }}
+                    @elseif ($level)
+                        All Assignments for: Level {{ $level }}
+                    @else
+                            All Assignments
+                    @endif
+                </h1>
                 <h1 class="text-xl font-thin">
                     {{ $level ? "Level $level" : "All Levels" }}
                 </h1>
@@ -67,7 +89,7 @@
         </div>
 
         {{-- Filters --}}
-        <form method="GET" class="mt-4 flex flex-wrap gap-3 items-end">
+        <form method="GET" class="mt-4 flex flex-wrap gap-3 items-end hidden">
             {{-- Level Filter --}}
             <div>
                 <label class="block text-sm text-gray-600">Level</label>
@@ -112,8 +134,8 @@
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
-        <div class="grid grid-cols-[auto_1fr] gap-4 mt-2">
-            <aside class="w-72 mt-2">
+        <div class="grid grid-row gap-4 mt-2">
+            <aside class="w-72 mt-2 hidden">
                 <table
                     class="w-full text-xs border border-gray-200 mr-2 shadow-sm"
                 >
@@ -159,36 +181,81 @@
                     </tbody>
                 </table>
             </aside>
+            {{-- Week and Day filter --}}
+            <form
+                method="GET"
+                action="{{ url()->current() }}"
+                class="grid grid-cols-2 gap-4 max-w-xs"
+            >
+                {{-- Preserve Level if exists --}}
+                <input type="hidden" name="level" value="{{ $level }}" />
+
+                <div class="block">
+                    <label
+                        class="block text-xs font-bold text-gray-600 uppercase mb-1"
+                    >
+                        Select Week
+                    </label>
+                    <select
+                        name="week"
+                        onchange="this.form.submit()"
+                        class="w-full border border-gray-300 rounded-md py-2 px-2 text-sm"
+                    >
+                        <option value="">All Weeks</option>
+                        @for ($i = 1; $i <= 8; $i++)
+                            <option
+                                value="{{ $i }}"
+                                @selected(request("week") == $i)
+                            >
+                                Week {{ $i }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="block">
+                    <label
+                        class="block text-xs font-bold text-gray-600 uppercase mb-1"
+                    >
+                        Select Day
+                    </label>
+                    <select
+                        name="day"
+                        onchange="this.form.submit()"
+                        class="w-full border border-gray-300 rounded-md py-2 px-2 text-sm"
+                    >
+                        <option value="">All Days</option>
+                        @foreach ($days as $d)
+                            <option
+                                value="{{ $d }}"
+                                @selected(request("day") == $d)
+                            >
+                                {{ $d }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </form>
 
             {{-- Assignments table (now filtered) --}}
-            <main class="mt-2 rounded-lg flex-1">
+            <main class="rounded-lg flex-1">
                 {{-- Title --}}
                 <div class="flex items-center justify-between mb-4">
-                    <h2
-                        class="text-xl font-semibold {{ $headerColor }} rounded-full px-4 py-2 shadow-sm"
-                    >
-                        @if ($week && $day)
-                            Assignments for: Week {{ $week }}, {{ $day }}
-                        @elseif ($level)
-                            Assignments for Level {{ $level }}
-                        @else
-                                All Assignments
-                        @endif
-                    </h2>
-
-                    @if ($week && $day)
+                    @if ($week && $day or $week)
                         <div class="flex gap-2">
                             {{-- Link 1: View filtered list --}}
                             <a
                                 href="{{ route("student.assignments.index", $course) }}?level={{ $level }}"
-                                class="px-4 py-2 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
+                                class="text-sm px-4 py-2 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
                             >
                                 &larr; Back to all Assignments
                             </a>
                         </div>
                     @endif
                 </div>
-                <div class="mb-4">
+                <div
+                    class="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-4"
+                >
                     @php
                         $totalAssignments = $assignments->total();
                         $submittedCount = $assignments
@@ -212,97 +279,81 @@
                         $completionRate = $totalAssignments > 0 ? round(($gradedCount / $totalAssignments) * 100) : 0;
                     @endphp
 
+                    {{-- Overview Header --}}
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="max-w-xs">
+                            <h2 class="text-sm font-semibold text-gray-900">
+                                Assignment Overview
+                            </h2>
+                            <p class="text-xs text-gray-500">
+                                Quick summary of Assignments
+                            </p>
+                        </div>
+                        <span
+                            class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+                        >
+                            {{ $completionRate }}% completed
+                        </span>
+                    </div>
+
+                    {{-- Progress bar --}}
+                    <div class="mb-4">
+                        <div
+                            class="flex items-center justify-between text-xs text-gray-500 mb-1"
+                        >
+                            <span>Completion</span>
+                            <span>
+                                {{ $gradedCount }} /
+                                {{ $totalAssignments }}
+                            </span>
+                        </div>
+                        <div class="h-2 rounded-full bg-gray-100">
+                            <div
+                                class="h-full rounded-full bg-green-500 transition-all"
+                                style="width: {{ $completionRate }}%"
+                            ></div>
+                        </div>
+                    </div>
+
+                    {{-- Stats row --}}
                     <div
-                        class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5"
+                        class="grid grid-cols-3 sm:grid-cols-3 gap-3 text-xs max-w-base"
                     >
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 class="text-sm font-semibold text-gray-900">
-                                    Assignment Overview
-                                </h2>
-                                <p class="text-xs text-gray-500">
-                                    Quick summary of your progress in this
-                                    level.
-                                </p>
-                            </div>
-                            <span
-                                class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
-                            >
-                                {{ $completionRate }}% completed
+                        <div
+                            class="flex items-center justify-between rounded-lg bg-gray-50 px-2 py-2"
+                        >
+                            <span class="text-gray-600">Total Assignments</span>
+                            <span class="text-sm font-semibold text-gray-900">
+                                {{ $totalAssignments }}
                             </span>
                         </div>
 
-                        {{-- Progress bar --}}
-                        <div class="mb-4">
-                            <div
-                                class="flex items-center justify-between text-xs text-gray-500 mb-1"
-                            >
-                                <span>Completion</span>
-                                <span>
-                                    {{ $gradedCount }} /
-                                    {{ $totalAssignments }}
-                                </span>
-                            </div>
-                            <div
-                                class="h-2 w-full rounded-full bg-gray-100 overflow-hidden"
-                            >
-                                <div
-                                    class="h-full rounded-full bg-green-500 transition-all"
-                                    style="width: {{ $completionRate }}%"
-                                ></div>
-                            </div>
+                        <div
+                            class="flex items-center justify-between rounded-lg bg-green-50 px-2 py-2"
+                        >
+                            <span class="text-gray-700">Completed</span>
+                            <span class="text-sm font-semibold text-green-800">
+                                {{ $gradedCount }}
+                            </span>
                         </div>
 
-                        {{-- Stats row --}}
                         <div
-                            class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs"
+                            class="flex items-center justify-between rounded-lg bg-rose-50 px-2 py-2"
                         >
-                            <div
-                                class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2"
-                            >
-                                <span class="text-gray-600">
-                                    Total Assignments
-                                </span>
-                                <span
-                                    class="text-sm font-semibold text-gray-900"
-                                >
-                                    {{ $totalAssignments }}
-                                </span>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between rounded-lg bg-green-50 px-3 py-2"
-                            >
-                                <span class="text-gray-700">Completed</span>
-                                <span
-                                    class="text-sm font-semibold text-green-800"
-                                >
-                                    {{ $gradedCount }}
-                                </span>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between rounded-lg bg-rose-50 px-3 py-2"
-                            >
-                                <span class="text-gray-700">Overdue</span>
-                                <span
-                                    class="text-sm font-semibold text-rose-700"
-                                >
-                                    {{ $overdueCount }}
-                                </span>
-                            </div>
+                            <span class="text-gray-700">Overdue</span>
+                            <span class="text-sm font-semibold text-rose-700">
+                                {{ $overdueCount }}
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 {{-- Assignments Table --}}
-                <div class="mt-4 overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full text-sm bg-white shadow-sm">
+                <div class="mt-4 overflow-hidden rounded-lg shadow-md">
+                    <table class="lg:min-w-full text-sm bg-white shadow-sm">
                         <thead class="bg-gray-900 text-left">
-                            <tr class="text-sm text-white">
-                                <th class="px-4 py-3 text-left">
-                                    Assignment title
-                                </th>
+                            <tr class="text-xs text-white">
+                                <th class="px-4 py-3 text-left">Title</th>
 
                                 {{-- Changed from Lecturer's 'Published' status --}}
                                 <th class="px-4 py-3 text-left">Week & Day</th>
@@ -334,7 +385,7 @@
                                 @endphp
 
                                 <tr
-                                    class="hover:bg-gray-50 border-b border-gray-200"
+                                    class="hover:bg-gray-50 border-b border-gray-200 text-xs"
                                     onclick="
                                         window.location =
                                             '{{ route("student.assignments.show", $a) }}'
@@ -358,7 +409,7 @@
                                         @endif
                                     </td>
                                     <td
-                                        class="px-4 py-3 text-left whitespace-nowrap"
+                                        class="px-2 py-3 text-left text-red-500 whitespace-wrap"
                                     >
                                         @if ($a->due_at)
                                             {{ $a->due_at->format("d M Y - H:i") }}
@@ -383,8 +434,8 @@
                                     <td class="px-1 py-3 text-xl text-left">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
+                                            width="18"
+                                            height="18"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="#000000"
