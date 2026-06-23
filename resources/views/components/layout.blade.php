@@ -95,17 +95,9 @@
 
             <!-- Footer -->
             <footer
-                class="{{ $headerColor }} text-[10px] text-gray-500 grid grid-cols-2 p-6 lg:px-10"
+                class="flex {{ $headerColor }} w-full text-[10px] text-gray-500 p-6 lg:px-10 justify-center"
             >
-                <div class="text-right pr-4 border-r border-gray-300">
-                    <h3 class="font-semibold text-xs lg:text-sm">
-                        Developed by
-                    </h3>
-                    <p class="mt-1">
-                        66's ICT Students
-                    </p>
-                </div>
-                <div class="text-left pl-4">
+                <div class="text-center pl-4">
                     <p class="lg:text-sm">
                         &copy; Rangsit International College ({{ date("Y") }}).
                     </p>

@@ -64,7 +64,7 @@ class EnrollmentController extends Controller
             
             // Get Submissions
             // We filter submissions to match only the visible special projects found above
-            $submissions = Submission::whereIn('special_project_id', $specialProjects->pluck('id'))
+            $submissions = Submission::with('assessment')->whereIn('special_project_id', $specialProjects->pluck('id'))
                 ->where('student_id', $studentProfile->id) 
                 ->get()
                 ->keyBy('special_project_id');

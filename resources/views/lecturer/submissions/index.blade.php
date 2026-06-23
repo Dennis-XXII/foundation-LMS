@@ -220,8 +220,12 @@
                         @endphp
 
                         <tr
-                            onClick="window.location='{{ $done ? route("lecturer.submissions.assessments.edit", ["submission" => $s, "assessment" => $assessment]) : route("lecturer.submissions.assessments.create", ["submission" => $s]) }}'"
-                            class="hover:bg-gray-50 cursor-pointer"
+                            @if ($done)
+                                onClick="window.location='{{ $assessment ? route("lecturer.submissions.assessments.edit", ["submission" => $s, "assessment" => $assessment]) : route("lecturer.submissions.assessments.create", ["submission" => $s]) }}'"
+                                class="hover:bg-gray-50 cursor-pointer"
+                            @else
+                                class="hover:bg-gray-50"
+                            @endif
                         >
                             <td class="px-3 py-3 whitespace-nowrap">
                                 {{ $s->student->user->name ?? "—" }}

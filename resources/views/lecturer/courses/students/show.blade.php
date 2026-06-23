@@ -242,13 +242,13 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4">
-                                                @if ($submission && $submission->grade !== null)
+                                                @if ($submission && $submission->assessment && $submission->assessment->score !== null)
                                                     <span
                                                         class="font-bold text-gray-900"
                                                     >
-                                                        {{ $submission->grade }}
+                                                        {{ $submission->assessment->score }}
                                                     </span>
-                                                    /100
+                                                    /10
                                                 @elseif ($submission)
                                                     <span
                                                         class="text-gray-400 italic"
@@ -264,16 +264,21 @@
                                             <td class="px-6 py-4 text-right">
                                                 @if ($submission)
                                                     {{-- Link to Grade/Assess the submission --}}
-                                                    <a
-                                                        href="{{ route("lecturer.submissions.assessments.create", $submission) }}"
-                                                        class="text-blue-600 font-medium hover:underline hover:text-blue-800"
-                                                    >
-                                                        @if ($submission->grade)
+                                                    @if ($submission->assessment)
+                                                        <a
+                                                            href="{{ route("lecturer.submissions.assessments.edit", ["submission" => $submission, "assessment" => $submission->assessment]) }}"
+                                                            class="text-blue-600 font-medium hover:underline hover:text-blue-800"
+                                                        >
                                                             Review
-                                                        @else
-                                                                Grade
-                                                        @endif
-                                                    </a>
+                                                        </a>
+                                                    @else
+                                                        <a
+                                                            href="{{ route("lecturer.submissions.assessments.create", $submission) }}"
+                                                            class="text-blue-600 font-medium hover:underline hover:text-blue-800"
+                                                        >
+                                                            Grade
+                                                        </a>
+                                                    @endif
                                                 @else
                                                     <span
                                                         class="text-gray-300 cursor-default"
