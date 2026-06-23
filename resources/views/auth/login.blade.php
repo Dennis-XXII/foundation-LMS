@@ -1,8 +1,11 @@
 <x-guest-layout>
     <div
-        class="flex flex-col items-center justify-center min-h-[70vh] bg-white px-4 my-8"
+        class="flex flex-col items-center justify-center min-h-[86vh] bg-white px-4 my-8"
     >
-        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <div class="w-full max-w-lg bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20">
+            <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
+                >&larr; Go back</a
+            >
             <h1
                 class="text-xl lg:text-2xl font-bold text-center text-[#7D3C98] mb-6"
             >

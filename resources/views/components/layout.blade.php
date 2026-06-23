@@ -102,18 +102,12 @@
                         Developed by
                     </h3>
                     <p class="mt-1">
-                        Kyaw Swar Hein
-                        <br />
-                        Khant Htet
-                        <br />
-                        Kyaw Myo Htet
+                        66's ICT Students
                     </p>
                 </div>
                 <div class="text-left pl-4">
                     <p class="lg:text-sm">
                         &copy; Rangsit International College ({{ date("Y") }}).
-                        <br />
-                        All rights reserved.
                     </p>
                 </div>
             </footer>

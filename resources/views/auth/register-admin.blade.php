@@ -2,14 +2,17 @@
     <div class="flex justify-center items-center min-h-screen">
         <div
             id="signup_main_Div"
-            class="w-full max-w-lg bg-white shadow-xl rounded-lg p-8"
+            class="w-full max-w-3xl bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20"
         >
-            <img
+            <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
+                >&larr; Go back</a
+            >
+            <!-- <img
                 id="logo"
                 class="mx-auto w-24 mb-6"
                 src="/images/logo_new.png"
                 alt="Logo"
-            />
+            />  -->
 
             <form
                 method="POST"
