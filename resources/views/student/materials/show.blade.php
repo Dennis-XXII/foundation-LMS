@@ -140,27 +140,27 @@
                 @endif
             </div>
 
-                {{-- UPDATED: Related Assignment Link --}}
-                @if ($relatedAssignment)
+                {{-- UPDATED: Related Special Project Link --}}
+                @if ($relatedSpecialProject)
                     <div
                         class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
                     >
                         <h3 class="font-semibold text-yellow-800">
-                            Related Assignment
+                            Related Special Project
                         </h3>
                         <p class="text-sm text-yellow-700 mt-1">
-                            This material is related to the assignment:
+                            This material is related to the special project:
                             <strong class="font-medium">
-                                {{ $relatedAssignment->title }}
+                                {{ $relatedSpecialProject->title }}
                             </strong>
                             .
                         </p>
-                        {{-- Link directly to the assignment's show page --}}
+                        {{-- Link directly to the special project's show page --}}
                         <a
-                            href="{{ route("student.assignments.show", $relatedAssignment) }}"
+                            href="{{ route("student.special_projects.show", $relatedSpecialProject) }}"
                             class="inline-block mt-2 px-3 py-1 bg-yellow-500 text-white text-xs font-medium rounded hover:bg-yellow-600"
                         >
-                            View Assignment Details
+                            View Special Project Details
                         </a>
                     </div>
                 @endif

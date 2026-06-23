@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->boolean('is_published')->default(false)->index();
-            $table->enum('type', ['lesson','worksheet','self_study']);
+            $table->enum('type', ['lesson','homework','self_study']);
             $table->unsignedTinyInteger('level')->nullable();
             $table->string('title');
             $table->text('descriptions')->nullable();

@@ -7,16 +7,16 @@
       </li>
       <li>
         <a
-                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                    href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
                     class="hover:underline"
                 >
-                    Assignments
+                    Special Projects
                 </a>
         <span class="mx-2">/</span>
       </li>
       <li>
-        <a href ="{{ route("student.assignments.show", $assignment) }}" class="hover:underline">
-        {{ $assignment->title }}
+        <a href ="{{ route("student.special_projects.show", $specialProject) }}" class="hover:underline">
+        {{ $specialProject->title }}
         </a>
         <span class="mx-2">/</span>
       </li>
@@ -26,13 +26,13 @@
     </ol>
   </nav>
     <a
-        href="{{ route("student.assignments.show", $assignment) }}"
+        href="{{ route("student.special_projects.show", $specialProject) }}"
         class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
     >
-        &larr; {{ $assignment->title }}
+        &larr; {{ $specialProject->title }}
     </a>
     <section class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
-        <h1 class="text-2xl p-2 font-semibold">{{ $assignment->title }}</h1>
+        <h1 class="text-2xl p-2 font-semibold">{{ $specialProject->title }}</h1>
 
         <div class="bg-white rounded-xl border border-gray-300 p-6 space-y-3">
             <div class="text-sm text-gray-600">
@@ -92,7 +92,7 @@
             <div class="mt-2 border-b border-gray-200 pb-4">
                 @if (! $submission->assessment && $canEdit)
                     <a
-                        href="{{ route("student.assignments.submissions.edit", [$assignment, $submission]) }}"
+                        href="{{ route("student.special-projects.submissions.edit", [$specialProject, $submission]) }}"
                         class="px-4 py-2 bg-yellow-500 text-white rounded border border-yellow-600 text-sm hover:bg-yellow-600"
                     >
                         Edit submission
@@ -102,10 +102,10 @@
 
             <div class="mt-2">
                 <a
-        href="{{ route("student.assignments.show", $assignment) }}"
+        href="{{ route("student.special_projects.show", $specialProject) }}"
         class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
     >
-        &larr; {{ $assignment->title }}
+        &larr; {{ $specialProject->title }}
     </a>
             </div>
             </div>

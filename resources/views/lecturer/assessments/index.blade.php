@@ -31,10 +31,10 @@
     <!-- Top Tabs -->
     <div class="flex items-center justify-center gap-6 mb-8">
         <a
-            href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $level }}"
+            href="{{ route("lecturer.courses.special_projects.index", $course) }}?level={{ $level }}"
             class="px-6 py-2.5 rounded-full shadow-sm bg-gray-200 hover:bg-gray-300"
         >
-            Post Assignments
+            Post Special Projects
         </a>
         <a
             href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $level }}"
@@ -112,9 +112,9 @@
             </div>
         @endif
 
-        {{-- ===================== ASSIGNMENTS LIST FOR ASSESSMENT ===================== --}}
+        {{-- ===================== SPECIAL PROJECTS LIST FOR ASSESSMENT ===================== --}}
         <div class="mb-4 text-lg font-semibold">
-            Select an Assignment to Assess Submissions
+            Select a Special Project to Assess Submissions
         </div>
         <div
             class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden"
@@ -122,7 +122,7 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-gray-900 text-white">
                     <tr class="border-b border-gray-700">
-                        <th class="px-6 py-3">Assignment Title</th>
+                        <th class="px-6 py-3">Special Project Title</th>
                         <th class="px-6 py-3">Level</th>
                         <th class="px-6 py-3">Week</th>
                         <th class="px-6 py-3">Day</th>
@@ -132,37 +132,37 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @forelse ($assignments as $assignment)
+                    @forelse ($specialProjects as $specialProject)
                         <tr>
                             <td class="px-6 py-3">
-                                {{-- Link to the submissions page for this assignment --}}
+                                {{-- Link to the submissions page for this special project --}}
                                 <a
-                                    href="{{ route("lecturer.assignments.submissions.index", $assignment) }}"
+                                    href="{{ route("lecturer.special_projects.submissions.index", $specialProject) }}"
                                     class="font-medium text-blue-600 hover:underline"
                                 >
-                                    {{ $assignment->title }}
+                                    {{ $specialProject->title }}
                                 </a>
                             </td>
                             <td class="px-6 py-3">
-                                {{ $assignment->level ?? "N/A" }}
+                                {{ $specialProject->level ?? "N/A" }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ $assignment->week ?? "—" }}
+                                {{ $specialProject->week ?? "—" }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ $assignment->day ?? "—" }}
+                                {{ $specialProject->day ?? "—" }}
                             </td>
                             <td class="px-6 py-3 whitespace-nowrap">
-                                {{ optional($assignment->due_at)->format("d M Y") ?? "N/A" }}
+                                {{ optional($specialProject->due_at)->format("d M Y") ?? "N/A" }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ $assignment->submissions_count }}
+                                {{ $specialProject->submissions_count }}
                             </td>
                             {{-- Display submission count --}}
                             <td class="px-6 py-3">
-                                {{-- Link to the submissions page for this assignment --}}
+                                {{-- Link to the submissions page for this special project --}}
                                 <a
-                                    href="{{ route("lecturer.assignments.submissions.index", $assignment) }}"
+                                    href="{{ route("lecturer.special_projects.submissions.index", $specialProject) }}"
                                     class="text-blue-600 hover:underline"
                                 >
                                     View Submissions
@@ -175,17 +175,17 @@
                                 class="px-6 py-6 text-gray-500 text-center"
                                 colspan="7"
                             >
-                                No assignments
+                                No special projects
                                 found{{ $level ? " for Level " . $level : "" }}.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            {{-- Pagination for Assignments List --}}
-            @if ($assignments instanceof \Illuminate\Pagination\LengthAwarePaginator && $assignments->hasPages())
+            {{-- Pagination for Special Projects List --}}
+            @if ($specialProjects instanceof \Illuminate\Pagination\LengthAwarePaginator && $specialProjects->hasPages())
                 <div class="px-6 py-3 border-t border-gray-200">
-                    {{ $assignments->links() }}
+                    {{ $specialProjects->links() }}
                 </div>
             @endif
         </div>

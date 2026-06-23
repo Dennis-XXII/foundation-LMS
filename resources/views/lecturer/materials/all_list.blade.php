@@ -59,7 +59,7 @@
                     $types = [
                         "" => "All",
                         "lesson" => "Lesson Materials",
-                        "worksheet" => "Worksheets",
+                        "homework" => "Homeworks",
                         "self_study" => "Self-study",
                     ];
                     $currentType = request("type");

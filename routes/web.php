@@ -12,12 +12,12 @@ use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
 use App\Http\Controllers\Student\MaterialController as StudentMaterials;
-use App\Http\Controllers\Student\AssignmentController as StudentAssignments;
+use App\Http\Controllers\Student\SpecialProjectController as StudentSpecialProjects;
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
 use App\Http\Controllers\Lecturer\MaterialController  as LecturerMaterials;
-use App\Http\Controllers\Lecturer\AssignmentController as LecturerAssignments;
+use App\Http\Controllers\Lecturer\SpecialProjectController as LecturerSpecialProjects;
 use App\Http\Controllers\Lecturer\AssessmentController as LecturerAssessments;
 use App\Http\Controllers\Lecturer\AnnouncementController as LecturerAnnouncements;
 use App\Http\Controllers\Lecturer\EnrollmentController as LecturerEnrollments;
@@ -98,21 +98,21 @@ Route::middleware(['auth','student'])
             ->middleware('can:view,material') // Assuming MaterialPolicy exists
             ->name('materials.download');
 
-        // --- Assignments routes (Now use StudentAssignments controller) ---
-        Route::get('/courses/{course}/assignments', [StudentAssignments::class, 'index']) // <-- UPDATED CONTROLLER
+        // --- Special Projects routes ---
+        Route::get('/courses/{course}/special-projects', [StudentSpecialProjects::class, 'index'])
             ->middleware('can:view,course')
-            ->name('assignments.index');
-        Route::get('/assignments/{assignment}', [StudentAssignments::class, 'show']) // <-- NEW ROUTE
-            ->middleware('can:view,assignment') // Assuming AssignmentPolicy exists
-            ->name('assignments.show');
-        Route::get('/assignments/{assignment}/download', [StudentAssignments::class, 'download']) // <-- NEW ROUTE
-            ->middleware('can:view,assignment') // Assuming AssignmentPolicy exists
-            ->name('assignments.download');
+            ->name('special_projects.index');
+        Route::get('/special-projects/{special_project}', [StudentSpecialProjects::class, 'show'])
+            ->middleware('can:view,special_project') // Assuming SpecialProjectPolicy exists
+            ->name('special_projects.show');
+        Route::get('/special-projects/{special_project}/download', [StudentSpecialProjects::class, 'download'])
+            ->middleware('can:view,special_project') // Assuming SpecialProjectPolicy exists
+            ->name('special_projects.download');
 
-        // --- Submissions routes (Still handled by StudentSubmissions controller) ---
-        Route::resource('assignments.submissions', StudentSubmissions::class)
+        // --- Submissions routes ---
+        Route::resource('special-projects.submissions', StudentSubmissions::class)
             ->only(['create','store','edit','update','show'])
-            ->scoped(); // {assignment}/{submission}
+            ->scoped(); // {special_project}/{submission}
 
          // Need a download route for student submissions too
         Route::get('/submissions/{submission}/download', [StudentSubmissions::class, 'download']) // <-- ADDED (assuming download method exists)
@@ -147,12 +147,21 @@ Route::middleware(['auth','lecturer'])
         Route::delete('/materials/{material}/file', [LecturerMaterials::class, 'clearFile'])
             ->name('materials.clear-file'); // Corrected name mismatch
 
-        // Assignments (“upload links” w/ title, instructions, due_at, attachment)
-        Route::resource('courses.assignments', LecturerAssignments::class)
-            ->parameters(['assignments' => 'assignment'])
+        // Special Projects (“upload links” w/ title, instructions, due_at, attachment)
+        Route::resource('courses.special-projects', LecturerSpecialProjects::class)
+            ->parameters(['special-projects' => 'special_project'])
+            ->names([
+                'index' => 'courses.special_projects.index',
+                'create' => 'courses.special_projects.create',
+                'store' => 'courses.special_projects.store',
+                'show' => 'special_projects.show',
+                'edit' => 'special_projects.edit',
+                'update' => 'special_projects.update',
+                'destroy' => 'special_projects.destroy',
+            ])
             ->shallow();
-        Route::get('/assignments/{assignment}/download', [LecturerAssignments::class, 'download'])
-            ->name('assignments.download');
+        Route::get('/special-projects/{special_project}/download', [LecturerSpecialProjects::class, 'download'])
+            ->name('special_projects.download');
 
         // Assessments (grade + comment on submissions)
         Route::get('courses/{course}/assessments', [LecturerAssessments::class, 'index'])
@@ -167,9 +176,9 @@ Route::middleware(['auth','lecturer'])
         Route::delete('/submissions/{submission}/assessments/{assessment}', [LecturerAssessments::class, 'destroy'])
             ->name('submissions.assessments.destroy');
 
-        // Show Submissions for a Single Assignment (Lecturer view)
-        Route::get('/assignments/{assignment}/submissions', [LecturerSubmissions::class, 'index'])
-            ->name('assignments.submissions.index');
+        // Show Submissions for a Single Special Project (Lecturer view)
+        Route::get('/special-projects/{special_project}/submissions', [LecturerSubmissions::class, 'index'])
+            ->name('special_projects.submissions.index');
         Route::get('/submissions/{submission}/download', [LecturerSubmissions::class, 'download'])
             ->name('submissions.download');
 

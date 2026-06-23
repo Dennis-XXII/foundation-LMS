@@ -132,28 +132,28 @@
                         <div
                             class="text-xs font-medium text-gray-500 uppercase mb-1"
                         >
-                            Assignments Done
+                            Special Projects Done
                         </div>
                         <div class="flex items-baseline gap-1">
                             <span class="text-2xl font-bold text-gray-800">
                                 {{ $submittedCount }}
                             </span>
                             <span class="text-gray-400 text-sm">
-                                / {{ $totalAssignments }}
+                                / {{ $totalSpecialProjects }}
                             </span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
                             <div
                                 class="bg-blue-600 h-1.5 rounded-full"
                                 style="
-                                    width: {{ $totalAssignments > 0 ? ($submittedCount / $totalAssignments) * 100 : 0 }}%;
+                                    width: {{ $totalSpecialProjects > 0 ? ($submittedCount / $totalSpecialProjects) * 100 : 0 }}%;
                                 "
                             ></div>
                         </div>
                     </div>
                 </div>
 
-                {{-- 2. Detailed Assignment Table --}}
+                {{-- 2. Detailed Special Project Table --}}
                 <div
                     class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
                 >
@@ -161,14 +161,14 @@
                         class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50"
                     >
                         <h3 class="font-semibold text-gray-800">
-                            Assignment History
+                            Special Project History
                         </h3>
                     </div>
 
-                    @if ($assignments->isEmpty())
+                    @if ($specialProjects->isEmpty())
                         <div class="p-8 text-center text-gray-500">
                             <p>
-                                No assignments have been created for this course
+                                No special projects have been created for this course
                                 yet.
                             </p>
                         </div>
@@ -180,7 +180,7 @@
                                 >
                                     <tr>
                                         <th class="px-6 py-3 font-medium">
-                                            Assignment
+                                            Special Project
                                         </th>
                                         <th class="px-6 py-3 font-medium">
                                             Due Date
@@ -199,15 +199,15 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
-                                    @foreach ($assignments as $assignment)
+                                    @foreach ($specialProjects as $specialProject)
                                         @php
-                                            $submission = $submissions->get($assignment->id);
+                                            $submission = $submissions->get($specialProject->id);
 
                                             // FIX: Check if due_at exists first.
                                             // If due_at is null, it cannot be overdue.
                                             $isOverdue =
-                                                $assignment->due_at &&
-                                                \Carbon\Carbon::now()->gt($assignment->due_at) &&
+                                                $specialProject->due_at &&
+                                                \Carbon\Carbon::now()->gt($specialProject->due_at) &&
                                                 ! $submission;
                                         @endphp
 
@@ -215,10 +215,10 @@
                                             <td
                                                 class="px-6 py-4 font-medium text-gray-900"
                                             >
-                                                {{ $assignment->title }}
+                                                {{ $specialProject->title }}
                                             </td>
                                             <td class="px-6 py-4 text-gray-500">
-                                                {{ \Carbon\Carbon::parse($assignment->due_at)->format("M d, H:i") }}
+                                                {{ \Carbon\Carbon::parse($specialProject->due_at)->format("M d, H:i") }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 @if ($submission)

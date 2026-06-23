@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         \App\Models\Material::class     => \App\Policies\MaterialPolicy::class,
-        \App\Models\Assignment::class   => \App\Policies\AssignmentPolicy::class,
+        \App\Models\SpecialProject::class   => \App\Policies\SpecialProjectPolicy::class,
         \App\Models\Announcement::class => \App\Policies\AnnouncementPolicy::class,
         \App\Models\Assessment::class   => \App\Policies\AssessmentPolicy::class,
         \App\Models\Submission::class   => \App\Policies\SubmissionPolicy::class,

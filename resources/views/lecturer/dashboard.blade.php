@@ -88,17 +88,17 @@
                     $tiles = [
                         // L3
                         $tile("Lesson Materials", "lesson", 3, "bg-[#9bd1f8]"),
-                        $tile("Homeworks", "worksheet", 3, "bg-[#9bd1f8]"),
+                        $tile("Homeworks", "homework", 3, "bg-[#9bd1f8]"),
                         $tile("Self-study", "self_study", 3, "bg-[#9bd1f8]"),
                         $tile("Special Projects", "upload", 3, "bg-[#9bd1f8]"),
                         // L2
                         $tile("Lesson Materials", "lesson", 2, "bg-[#c7f7cf]"),
-                        $tile("Homeworks", "worksheet", 2, "bg-[#c7f7cf]"),
+                        $tile("Homeworks", "homework", 2, "bg-[#c7f7cf]"),
                         $tile("Self-study", "self_study", 2, "bg-[#c7f7cf]"),
                         $tile("Special Projects", "upload", 2, "bg-[#c7f7cf]"),
                         // L1
                         $tile("Lesson Materials", "lesson", 1, "bg-[#f0c6bc]"),
-                        $tile("Homeworks", "worksheet", 1, "bg-[#f0c6bc]"),
+                        $tile("Homeworks", "homework", 1, "bg-[#f0c6bc]"),
                         $tile("Self-study", "self_study", 1, "bg-[#f0c6bc]"),
                         $tile("Special Projects", "upload", 1, "bg-[#f0c6bc]"),
                     ];
@@ -110,7 +110,7 @@
                         $materialsHref = route("lecturer.courses.materials.index", $course) . "?type=" . $t["type"] . "&level=" . $t["level"];
 
                         // Assignments: nested collection route (because of ->shallow())
-                        $assignIndex = route("lecturer.courses.assignments.index", $course) . "?level=" . $t["level"];
+                        $assignIndex = route("lecturer.courses.special_projects.index", $course) . "?level=" . $t["level"];
                         // Assess entry: send to assignments list (no assessments index exists)
                         $assessEntry = $assignIndex . "&tab=assess";
                     @endphp
@@ -128,21 +128,21 @@
                             </div>
                             <p class="mt-2 text-xs text-gray-600">
                                 Create, edit, and manage
-                                {{ ucfirst($t["type"]) }} materials
+                                {{ $t["type"] === 'homework' ? 'homework' : ucfirst($t["type"]) }} materials
                             </p>
                         </a>
                     @else
                         {{-- Single tile → go to Assignments index; lecturer chooses inside --}}
                         <a
-                            href="{{ route("lecturer.courses.assignments.index", $course) }}?level={{ $t["level"] }}"
+                            href="{{ route("lecturer.courses.special_projects.index", $course) }}?level={{ $t["level"] }}"
                             class="block rounded-lg p-5 border border-gray-300 {{ $t["color"] }}"
                         >
                             <div class="text-xs text-gray-600 mb-1">
                                 LEVEL {{ $t["level"] }}
                             </div>
-                            <div class="text-lg font-semibold">Assignments</div>
+                            <div class="text-lg font-semibold">Special Projects</div>
                             <p class="mt-2 text-xs text-gray-600">
-                                Create Assignments and assess submissions
+                                Create Special Projects and assess submissions
                             </p>
                         </a>
                     @endif

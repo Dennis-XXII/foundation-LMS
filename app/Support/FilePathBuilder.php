@@ -12,15 +12,15 @@ class FilePathBuilder
         return "course_{$courseId}/{$type}/".now()->format('Y/m').'/'.Str::random(8)."_{$slug}.".$file->getClientOriginalExtension();
     }
 
-    public static function assignmentPath(int $courseId, int $assignmentId, UploadedFile $file): string
+    public static function specialProjectPath(int $courseId, int $specialProjectId, UploadedFile $file): string
     {
         $slug = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-        return "course_{$courseId}/assignment_{$assignmentId}/{$slug}.".$file->getClientOriginalExtension();
+        return "course_{$courseId}/special_project_{$specialProjectId}/{$slug}.".$file->getClientOriginalExtension();
     }
 
-    public static function submissionPath(int $assignmentId, int $studentId, UploadedFile $file): string
+    public static function submissionPath(int $specialProjectId, int $studentId, UploadedFile $file): string
     {
         $slug = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-        return "assignment_{$assignmentId}/student_{$studentId}/".now()->timestamp."_{$slug}.".$file->getClientOriginalExtension();
+        return "special_project_{$specialProjectId}/student_{$studentId}/".now()->timestamp."_{$slug}.".$file->getClientOriginalExtension();
     }
 }

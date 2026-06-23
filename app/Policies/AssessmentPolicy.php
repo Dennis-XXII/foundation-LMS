@@ -14,13 +14,13 @@ class AssessmentPolicy
         if ($this->isAdmin($user)) return true;
 
         // Lecturer who graded OR any lecturer who teaches the course may view
-        $assignmentCourse = $assessment->submission->assignment->course;
+        $specialProjectCourse = $assessment->submission->specialProject->course;
 
         if ($this->isLecturer($user)) {
             if ($assessment->lecturer && $assessment->lecturer->user_id === $user->id) {
                 return true;
             }
-            return $this->lecturerTeachesCourse($user, $assignmentCourse);
+            return $this->lecturerTeachesCourse($user, $specialProjectCourse);
         }
 
         // Student: only if it’s their own assessment
@@ -41,11 +41,11 @@ class AssessmentPolicy
         if ($this->isAdmin($user)) return true;
 
         // Only the grading lecturer (or lecturer of the course) can update
-        $assignmentCourse = $assessment->submission->assignment->course;
+        $specialProjectCourse = $assessment->submission->specialProject->course;
         if ($assessment->lecturer && $assessment->lecturer->user_id === $user->id) {
             return true;
         }
-        return $this->lecturerTeachesCourse($user, $assignmentCourse);
+        return $this->lecturerTeachesCourse($user, $specialProjectCourse);
     }
 
     public function delete(User $user, Assessment $assessment): bool

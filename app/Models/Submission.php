@@ -10,10 +10,10 @@ class Submission extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['assignment_id','student_id','file_path','submitted_at'];
+    protected $fillable = ['special_project_id','student_id','file_path','submitted_at'];
     protected $casts    = ['submitted_at' => 'datetime'];
 
-    public function assignment() { return $this->belongsTo(Assignment::class); }
+    public function specialProject() { return $this->belongsTo(SpecialProject::class); }
     public function student()    { return $this->belongsTo(Student::class); }
     public function assessment() { return $this->hasOne(Assessment::class); }
 }

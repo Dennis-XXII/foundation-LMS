@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Assignment;
+use App\Models\SpecialProject;
 use App\Models\Course;
 
-class AssignmentSeeder extends Seeder
+class SpecialProjectSeeder extends Seeder
 {
     public function run(): void
     {
         $course = Course::firstOrFail();
 
         // Open to all (null level) — published
-        Assignment::create([
+        SpecialProject::create([
             'course_id'    => $course->id,
             'is_published' => true,
             'level'        => null,
@@ -23,7 +23,7 @@ class AssignmentSeeder extends Seeder
         ]);
 
         // Level 2 — hidden (draft)
-        Assignment::create([
+        SpecialProject::create([
             'course_id'    => $course->id,
             'is_published' => false,
             'level'        => 2,
@@ -32,7 +32,7 @@ class AssignmentSeeder extends Seeder
         ]);
 
         // Level 3 — published
-        Assignment::create([
+        SpecialProject::create([
             'course_id'    => $course->id,
             'is_published' => true,
             'level'        => 3,

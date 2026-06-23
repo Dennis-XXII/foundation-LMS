@@ -81,7 +81,7 @@
                     class="block border rounded py-2.5 px-2 text-xs w-full text-center"
                 >
                     <option value="">All Types</option>
-                    @foreach (["lesson" => "Lesson Materials", "worksheet" => "Worksheet", "self_study" => "Self‑study"] as $val => $label)
+                    @foreach (["lesson" => "Lesson Materials", "homework" => "Homework", "self_study" => "Self‑study"] as $val => $label)
                         <option value="{{ $val }}" @selected($type === $val)>
                             {{ $label }}
                         </option>

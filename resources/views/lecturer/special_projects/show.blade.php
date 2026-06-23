@@ -1,4 +1,4 @@
-{{-- resources/views/lecturer/assignments/show.blade.php --}}
+{{-- resources/views/lecturer/special_projects/show.blade.php --}}
 <x-layout>
     <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
@@ -13,15 +13,15 @@
             </li>
             <li>
                 <a
-                    href="{{ route("lecturer.courses.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                    href="{{ route("lecturer.courses.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
                     class="hover:underline"
                 >
-                    Assignments
+                    Special Projects
                 </a>
                 <span class="mx-2">/</span>
             </li>
             <li class="text-black font-semibold">
-                {{ $assignment->title }}
+                {{ $specialProject->title }}
             </li>
         </ol>
     </nav>
@@ -33,8 +33,7 @@
                 2 => "bg-[#c7f7cf]",
                 1 => "bg-[#f0c6bc]",
             ];
-            // Use level filter for header, default to gray
-            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+            $headerColor = $levelColors[$specialProject->level ?? null] ?? "bg-gray-100";
         @endphp
 
         {{-- Course header --}}
@@ -47,26 +46,26 @@
             >
                 <div>
                     <h1 class="text-2xl font-bold">
-                        {{ $assignment->title }}
+                        {{ $specialProject->title }}
                     </h1>
                     <h1 class="text-xl text-gray-600 font-thin">
                         Level -
-                        {{ $assignment->level }}
+                        {{ $specialProject->level }}
                     </h1>
                 </div>
                 <div class="flex gap-2">
                     <a
-                        href="{{ route("lecturer.assignments.edit", $assignment) }}"
+                        href="{{ route("lecturer.special_projects.edit", $specialProject) }}"
                         class="px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium"
                     >
                         Edit
                     </a>
                     <form
                         method="POST"
-                        action="{{ route("lecturer.assignments.destroy", $assignment) }}"
+                        action="{{ route("lecturer.special_projects.destroy", $specialProject) }}"
                         onsubmit="
                             return confirm(
-                                'Are you sure you want to delete this assignment?',
+                                'Are you sure you want to delete this special project?',
                             );
                         "
                     >
@@ -95,10 +94,10 @@
                         <div
                             class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded border"
                         >
-                            {{ $assignment->instruction ?? "No instruction provided." }}
+                            {{ $specialProject->instruction ?? "No instruction provided." }}
                         </div>
                     </div>
-                    @if ($assignment->file_path)
+                    @if ($specialProject->file_path)
                         <div>
                             <label
                                 class="block text-sm font-medium text-gray-500"
@@ -106,7 +105,7 @@
                                 Attachment
                             </label>
                             <a
-                                href="{{ route("lecturer.assignments.download", $assignment) }}"
+                                href="{{ route("lecturer.special_projects.download", $specialProject) }}"
                                 class="mt-1 text-blue-600 hover:underline font-medium"
                             >
                                 Download Attached File
@@ -114,8 +113,7 @@
                         </div>
                     @endif
 
-                    @if ($assignment->url)
-                        {{-- If you add URL later --}}
+                    @if ($specialProject->url)
                         <div>
                             <label
                                 class="block text-sm font-medium text-gray-500"
@@ -123,12 +121,12 @@
                                 External Link
                             </label>
                             <a
-                                href="{{ $assignment->url }}"
+                                href="{{ $specialProject->url }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="mt-1 text-blue-600 hover:underline font-medium"
                             >
-                                {{ $assignment->url }}
+                                {{ $specialProject->url }}
                             </a>
                         </div>
                     @endif
@@ -140,7 +138,7 @@
                         <label class="block text-sm font-medium text-gray-500">
                             Status
                         </label>
-                        @if ($assignment->is_published)
+                        @if ($specialProject->is_published)
                             <span
                                 class="mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
                             >
@@ -159,7 +157,7 @@
                             Level
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ $assignment->level ?? "—" }}
+                            {{ $specialProject->level ?? "—" }}
                         </p>
                     </div>
                     <div>
@@ -167,7 +165,7 @@
                             Week
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ $assignment->week ?? "—" }}
+                            {{ $specialProject->week ?? "—" }}
                         </p>
                     </div>
                     <div>
@@ -175,7 +173,7 @@
                             Day
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ $assignment->day ?? "—" }}
+                            {{ $specialProject->day ?? "—" }}
                         </p>
                     </div>
                     <div>
@@ -183,7 +181,7 @@
                             Due Date
                         </label>
                         <p class="mt-1 text-gray-900">
-                            {{ optional($assignment->due_at)->format("M d, Y") ?? "—" }}
+                            {{ optional($specialProject->due_at)->format("M d, Y") ?? "—" }}
                         </p>
                     </div>
                 </div>
@@ -193,7 +191,7 @@
             <h2 id="submissions" class="mt-10 text-xl font-semibold">
                 Submissions
             </h2>
-            @if ($assignment->submissions->isEmpty())
+            @if ($specialProject->submissions->isEmpty())
                 <p class="text-sm text-gray-600 mt-2">No submissions yet.</p>
             @else
                 <div class="mt-3 overflow-x-auto">
@@ -208,7 +206,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($assignment->submissions as $s)
+                            @foreach ($specialProject->submissions as $s)
                                 <tr class="border-t">
                                     <td class="px-3 py-2">
                                         {{ $s->student->user->name }}
@@ -221,10 +219,9 @@
                                     </td>
                                     <td class="px-3 py-2">
                                         @if ($s->file_path)
-                                            {{-- You will need to create this route --}}
                                             <a
                                                 class="text-blue-600 underline"
-                                                href="#"
+                                                href="{{ route("lecturer.submissions.download", $s) }}"
                                             >
                                                 Download Submission
                                             </a>
@@ -243,10 +240,10 @@
 
             <div class="mt-8 pt-4 border-t">
                 <a
-                    href="{{ route("lecturer.courses.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                    href="{{ route("lecturer.courses.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
                     class="px-4 py-2 rounded border text-sm hover:bg-gray-100"
                 >
-                    &larr; Back to All Assignments
+                    &larr; Back to All Special Projects
                 </a>
             </div>
         </div>

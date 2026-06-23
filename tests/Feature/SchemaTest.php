@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\{User,Student,Admin,Lecturer,Course,Enrollment,Material,Assignment,Announcement};
+use App\Models\{User,Student,Admin,Lecturer,Course,Enrollment,Material,SpecialProject,Announcement};
 
 class LmsSchemaTest extends TestCase
 {

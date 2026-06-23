@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Lecturer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Assignment;
+use App\Models\SpecialProject;
 use App\Models\Course;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
@@ -22,10 +22,10 @@ class StudentAnalysisController extends Controller
         $enrollments = Enrollment::query()
             ->with([
                 'student.user',
-                // Load only the current student's submissions for this course's assignments
+                // Load only the current student's submissions for this course's special projects
                 'student.submissions' => function ($q) use ($course) {
-                    $q->whereHas('assignment', fn($qq) => $qq->where('course_id', $course->id))
-                        ->with('assessment', 'assignment'); 
+                    $q->whereHas('specialProject', fn($qq) => $qq->where('course_id', $course->id))
+                        ->with('assessment', 'specialProject'); 
                 }
             ])
             ->where('course_id', $course->id)
@@ -38,24 +38,24 @@ class StudentAnalysisController extends Controller
             // 2. Calculate completion metrics for each student
             ->map(function ($enrollment) use ($course) {
                 
-                // Get ALL published assignments relevant to this student's level
-                $visibleAssignments = Assignment::where('course_id', $course->id)
+                // Get ALL published special projects relevant to this student's level
+                $visibleSpecialProjects = SpecialProject::where('course_id', $course->id)
                     ->where('is_published', true)
                     ->when($enrollment->level, fn($q) => $q->where(function ($w) use ($enrollment) {
                         $w->whereNull('level')->orWhere('level', '<=', $enrollment->level);
                     }))
                     ->get();
 
-                $visibleAssignmentsCount = $visibleAssignments->count();
+                $visibleSpecialProjectsCount = $visibleSpecialProjects->count();
 
                 $submittedCount = 0;
                 $gradedCount = 0;
 
                 $submissions = $enrollment->student->submissions;
                 
-                // Check submissions against the list of visible (relevant) assignments
-                foreach($visibleAssignments as $assignment) {
-                    $submission = $submissions->firstWhere('assignment_id', $assignment->id);
+                // Check submissions against the list of visible special projects
+                foreach($visibleSpecialProjects as $specialProject) {
+                    $submission = $submissions->firstWhere('special_project_id', $specialProject->id);
                     if ($submission) {
                         $submittedCount++;
                         if ($submission->assessment) {
@@ -64,12 +64,12 @@ class StudentAnalysisController extends Controller
                     }
                 }
 
-                $completionPercentage = $visibleAssignmentsCount > 0 
-                    ? round(($submittedCount / $visibleAssignmentsCount) * 100) 
+                $completionPercentage = $visibleSpecialProjectsCount > 0 
+                    ? round(($submittedCount / $visibleSpecialProjectsCount) * 100) 
                     : 0;
 
-                $enrollment->assignment_stats = [
-                    'visible_count' => $visibleAssignmentsCount,
+                $enrollment->special_project_stats = [
+                    'visible_count' => $visibleSpecialProjectsCount,
                     'submitted_count' => $submittedCount,
                     'graded_count' => $gradedCount,
                     'completion_percentage' => $completionPercentage,

@@ -1,7 +1,6 @@
-{{-- resources/views/lecturer/assignments/create.blade.php --}}
+{{-- resources/views/lecturer/special_projects/create.blade.php --}}
 <x-layout>
     {{-- Breadcrumbs --}}
-
     <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
         <ol class="list-reset flex">
             <li>
@@ -15,22 +14,21 @@
             </li>
             <li>
                 <a
-                    href="{{ route("lecturer.courses.assignments.index", $course) }}{{ request("level") ? "?level=" . request("level") : "" }}"
+                    href="{{ route("lecturer.courses.special_projects.index", $course) }}{{ request("level") ? "?level=" . request("level") : "" }}"
                     class="hover:underline"
                 >
-                    Assignments
+                    Special Projects
                 </a>
                 <span class="mx-2">/</span>
             </li>
-            <li class="text-black font-semibold">Create Assignment</li>
+            <li class="text-black font-semibold">Create Special Project</li>
         </ol>
     </nav>
 
     {{-- Course header --}}
-
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-semibold">
-            Create New Assignment — Level
+            Create New Special Project — Level
             {{ request("level") ?? "All Levels" }}
         </h1>
 
@@ -48,7 +46,7 @@
         <form
             class="mt-6 space-y-4"
             method="POST"
-            action="{{ route("lecturer.courses.assignments.store", $course) }}"
+            action="{{ route("lecturer.courses.special_projects.store", $course) }}"
             enctype="multipart/form-data"
         >
             @csrf
@@ -79,7 +77,7 @@
                 <input
                     name="title"
                     class="mt-1 w-full border rounded px-3 py-2"
-                    placeholder="Assignment 1"
+                    placeholder="Special Project 1"
                     value="{{ old("title") }}"
                     required
                 />
@@ -223,7 +221,7 @@
                 @endphp
 
                 <a
-                    href="{{ route("lecturer.courses.assignments.index", $course) . ($backParams ? "?" . $backParams : "") }}"
+                    href="{{ route("lecturer.courses.special_projects.index", $course) . ($backParams ? "?" . $backParams : "") }}"
                     class="px-4 py-2 rounded border"
                 >
                     Back

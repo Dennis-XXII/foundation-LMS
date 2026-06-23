@@ -99,7 +99,7 @@
                                 </span>
                                 · Upload Links:
                                 <span class="font-medium">
-                                    {{ $c->stats["assignments"] ?? "0" }}
+                                    {{ $c->stats["special_projects"] ?? "0" }}
                                 </span>
                             </div>
                         @endif
@@ -173,7 +173,7 @@
                                     </span>
                                     · Upload Links:
                                     <span class="font-medium">
-                                        {{ $c->stats["assignments"] ?? "0" }}
+                                        {{ $c->stats["special_projects"] ?? "0" }}
                                     </span>
                                 </div>
                             @endif

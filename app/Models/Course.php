@@ -15,7 +15,7 @@ class Course extends Model
     public function lecturers()   { return $this->belongsToMany(Lecturer::class, 'course_lecturers'); }
     public function enrollments() { return $this->hasMany(Enrollment::class); }
     public function materials()   { return $this->hasMany(Material::class); }
-    public function assignments() { return $this->hasMany(Assignment::class); }
+    public function specialProjects() { return $this->hasMany(SpecialProject::class); }
     public function announcements(){ return $this->belongsToMany(Announcement::class, 'announcement_courses'); }
 
     public function students()

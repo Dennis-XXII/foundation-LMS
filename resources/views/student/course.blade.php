@@ -17,7 +17,7 @@
             </p>
             <div class="mt-4 text-sm text-gray-600 flex flex-wrap gap-4">
                 <span>Materials: {{ $course->materials_count }}</span>
-                <span>Assignments: {{ $course->assignments_count }}</span>
+                <span>Special Projects: {{ $course->special_projects_count }}</span>
             </div>
         </div>
 
@@ -29,14 +29,14 @@
             >
                 <h3 class="font-semibold">Browse Materials</h3>
                 <p class="text-sm text-gray-500 mt-1">
-                    Lesson • Worksheet • Self‑study
+                    Lesson • Homework • Self‑study
                 </p>
             </a>
             <a
-                href="{{ route("student.assignments.index", $course) }}"
+                href="{{ route("student.special_projects.index", $course) }}"
                 class="bg-white rounded-xl shadow p-5 hover:shadow-md"
             >
-                <h3 class="font-semibold">Assignments</h3>
+                <h3 class="font-semibold">Special Projects</h3>
                 <p class="text-sm text-gray-500 mt-1">Upload & feedback</p>
             </a>
             {{-- Add announcements link if you expose a page --}}
@@ -83,9 +83,9 @@
             </div>
 
             <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="font-semibold">Latest Assignments</h3>
+                <h3 class="font-semibold">Latest Special Projects</h3>
                 <ul class="divide-y divide-gray-100 mt-4">
-                    @forelse ($course->assignments as $a)
+                    @forelse ($course->specialProjects as $a)
                         <li class="py-3 flex items-center justify-between">
                             <div class="min-w-0">
                                 <p class="font-medium truncate">
@@ -100,7 +100,7 @@
                                 </p>
                             </div>
                             <a
-                                href="{{ route("student.assignments.index", $course) }}"
+                                href="{{ route("student.special_projects.index", $course) }}"
                                 class="text-sm text-blue-600 hover:underline"
                             >
                                 Submit
@@ -108,7 +108,7 @@
                         </li>
                     @empty
                         <li class="py-6 text-gray-500 text-sm">
-                            No assignments yet.
+                            No special projects yet.
                         </li>
                     @endforelse
                 </ul>

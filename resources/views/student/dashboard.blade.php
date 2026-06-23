@@ -21,7 +21,7 @@
         $tiles = [];
         foreach ($levels as $lv) {
             $tiles[] = $tile("Lesson Materials", "lesson", $lv, $levelColors[$lv]);
-            $tiles[] = $tile("Homeworks", "worksheet", $lv, $levelColors[$lv]);
+            $tiles[] = $tile("Homeworks", "homework", $lv, $levelColors[$lv]);
             $tiles[] = $tile("Self-study", "self_study", $lv, $levelColors[$lv]);
             $tiles[] = $tile("Special Projects", "upload", $lv, $levelColors[$lv]);
         }
@@ -139,7 +139,7 @@
                                                 if ($t["type"] !== "upload") {
                                                     $href = route("student.materials.index", $course) . "?type=" . $t["type"] . "&level=" . $t["level"];
                                                 } else {
-                                                    $href = route("student.assignments.index", $course) . "?level=" . $t["level"];
+                                                    $href = route("student.special_projects.index", $course) . "?level=" . $t["level"];
                                                 }
                                             } else {
                                                 $href = null;
