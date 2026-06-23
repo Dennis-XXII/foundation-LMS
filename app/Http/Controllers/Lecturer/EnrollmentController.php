@@ -122,12 +122,22 @@ class EnrollmentController extends Controller
     /**
      * Remove ONE student from the course.
      */
-    public function destroy(Course $course, Enrollment $enrollment)
+    public function destroy(Course $course, User $student)
     {
         $this->authorize('update', $course);
 
+        // Find the student profile first
+        $studentProfile = Student::where('user_id', $student->id)->first();
+        if (!$studentProfile) {
+            abort(404);
+        }
+
         // Safety: ensure this enrollment belongs to the given course
-        if ($enrollment->course_id !== $course->id) {
+        $enrollment = Enrollment::where('course_id', $course->id)
+            ->where('student_id', $studentProfile->id)
+            ->first();
+
+        if (!$enrollment) {
             abort(404);
         }
 

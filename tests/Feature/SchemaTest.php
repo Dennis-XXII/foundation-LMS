@@ -14,6 +14,29 @@ class LmsSchemaTest extends TestCase
     {
         parent::setUp();
         $this->artisan('migrate', ['--seed' => true]);
+
+        // Seed students specifically for tests since they were removed from the general UserSeeder
+        User::factory()
+            ->count(10)
+            ->create(['role' => 'student'])
+            ->each(function (User $user, $i) {
+                Student::create([
+                    'user_id'    => $user->id,
+                    'student_id' => '8' . str_pad($i + 1, 6, '0', STR_PAD_LEFT)
+                ]);
+            });
+
+        // Enroll students since EnrollmentSeeder ran when there were no students
+        $course = Course::firstOrFail();
+        Student::all()->each(function ($student) use ($course) {
+            Enrollment::updateOrCreate(
+                ['student_id' => $student->id, 'course_id' => $course->id],
+                [
+                    'level'  => 1,
+                    'status' => 'active',
+                ]
+            );
+        });
     }
 
     public function test_core_tables_seeded()
@@ -49,5 +72,21 @@ class LmsSchemaTest extends TestCase
         } else {
             $this->assertTrue(true); // no course-specific ann, skip
         }
+    }
+
+    public function test_lecturer_can_remove_student()
+    {
+        $lecturerUser = User::where('role', 'lecturer')->firstOrFail();
+        $course = Course::firstOrFail();
+        $student = Student::firstOrFail();
+        $studentUser = $student->user;
+
+        $this->assertTrue(Enrollment::where('course_id', $course->id)->where('student_id', $student->id)->exists());
+
+        $response = $this->actingAs($lecturerUser)
+            ->delete(route('lecturer.courses.students.destroy', [$course, $studentUser->id]));
+
+        $response->assertStatus(302); // Redirect back
+        $this->assertFalse(Enrollment::where('course_id', $course->id)->where('student_id', $student->id)->exists());
     }
 }

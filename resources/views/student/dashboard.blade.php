@@ -21,9 +21,9 @@
         $tiles = [];
         foreach ($levels as $lv) {
             $tiles[] = $tile("Lesson Materials", "lesson", $lv, $levelColors[$lv]);
-            $tiles[] = $tile("Worksheets", "worksheet", $lv, $levelColors[$lv]);
+            $tiles[] = $tile("Homeworks", "worksheet", $lv, $levelColors[$lv]);
             $tiles[] = $tile("Self-study", "self_study", $lv, $levelColors[$lv]);
-            $tiles[] = $tile("Assignments", "upload", $lv, $levelColors[$lv]);
+            $tiles[] = $tile("Special Projects", "upload", $lv, $levelColors[$lv]);
         }
 
         $hasCourse = isset($course) && $course;

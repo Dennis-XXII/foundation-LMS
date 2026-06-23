@@ -161,7 +161,7 @@ class MaterialController extends Controller
             'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
-            'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
+            'file'         => ['nullable','file','extensions:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
             'uploaded_at'  => ['nullable','date'],
         ]);
 
@@ -224,7 +224,7 @@ class MaterialController extends Controller
             'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
-            'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'],
+            'file'         => ['nullable','file','extensions:pdf,doc,docx,ppt,pptx,zip','max:20480'],
             'uploaded_at'  => ['nullable','date'],
             'remove_file'  => ['sometimes','in:1'], // optional checkbox
         ]);

@@ -108,7 +108,7 @@ class AssignmentController extends Controller
             'instruction'  => ['nullable', 'string', 'max:65535'],
             'level'        => ['required', 'integer', 'min:1', 'max:3'],
             'due_at'       => ['nullable', 'date'],
-            'file'         => ['nullable', 'file', 'mimes:pdf,doc,docx,zip', 'max:20480'],
+            'file'         => ['nullable', 'file', 'extensions:pdf,doc,docx,zip', 'max:20480'],
             'is_published' => ['sometimes', 'boolean'],
             'week'         => ['nullable', 'integer', 'min:1', 'max:8'],
             'day'          => ['nullable', 'in:Monday,Tuesday,Wednesday,Thursday,Friday,REVIEW'],
@@ -157,7 +157,7 @@ class AssignmentController extends Controller
             'level'        => ['nullable', 'integer', 'min:1'],
             'due_at'       => ['nullable', 'date'],
             'url'          => ['nullable', 'url', 'max:2048'], // Assuming URL might be added later
-            'file'         => ['nullable', 'file', 'mimes:pdf,doc,docx,ppt,pptx,zip', 'max:20480'],
+            'file'         => ['nullable', 'file', 'extensions:pdf,doc,docx,ppt,pptx,zip', 'max:20480'],
             'is_published' => ['sometimes', 'boolean'],
             'remove_file'  => ['sometimes', Rule::in(['1'])],
             'week'         => ['nullable', 'integer', 'min:1', 'max:8'],

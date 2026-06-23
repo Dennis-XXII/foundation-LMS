@@ -22,7 +22,7 @@
                 </a>
                 <span class="mx-2">/</span>
             </li>
-            <li class="text-black font-semibold">Assignments</li>
+            <li class="text-black font-semibold">Special Projects</li>
         </ol>
     </nav>
 
@@ -41,14 +41,14 @@
         class="rounded border bg-blue-50 text-blue-800 px-4 py-3 mb-4 text-sm"
         >
         You are enrolled at Level {{ $student_level }}. You can see
-        assignments for Level {{ $student_level }} and below.
+        special projects for Level {{ $student_level }} and below.
         </div>
         @else
         <div
         class="rounded border bg-yellow-50 text-yellow-800 px-4 py-3 mb-4 text-sm"
         >
         You don't seem to be enrolled in this course with a specific level.
-        Showing all available assignments.
+        Showing all available special projects.
         </div>
         @endif
     --}}
@@ -73,13 +73,13 @@
             <div>
                 <h1 class="text-xl font-semibold">
                     @if ($week && $day)
-                        Assignments for: Week {{ $week }}, {{ $day }}
+                        Projects for: Week {{ $week }}, {{ $day }}
                     @elseif ($week)
-                        Assignments for: Week {{ $week }}
+                        Projects for: Week {{ $week }}
                     @elseif ($level)
-                        All Assignments for: Level {{ $level }}
+                        All Projects for: Level {{ $level }}
                     @else
-                            All Assignments
+                            All Projects
                     @endif
                 </h1>
                 <h1 class="text-xl font-thin">
@@ -248,7 +248,7 @@
                                 href="{{ route("student.assignments.index", $course) }}?level={{ $level }}"
                                 class="text-sm px-4 py-2 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
                             >
-                                &larr; Back to all Assignments
+                                &larr; Back to all Special Projects
                             </a>
                         </div>
                     @endif
@@ -283,10 +283,10 @@
                     <div class="flex items-center justify-between mb-4">
                         <div class="max-w-xs">
                             <h2 class="text-sm font-semibold text-gray-900">
-                                Assignment Overview
+                                Special Projects Overview
                             </h2>
                             <p class="text-xs text-gray-500">
-                                Quick summary of Assignments
+                                Quick summary of Special Projects
                             </p>
                         </div>
                         <span
@@ -301,7 +301,7 @@
                         <div
                             class="flex items-center justify-between text-xs text-gray-500 mb-1"
                         >
-                            <span>Completion</span>
+                            <span>Completed Special Projects</span>
                             <span>
                                 {{ $gradedCount }} /
                                 {{ $totalAssignments }}
@@ -322,7 +322,7 @@
                         <div
                             class="flex items-center justify-between rounded-lg bg-gray-50 px-2 py-2"
                         >
-                            <span class="text-gray-600">Total Assignments</span>
+                            <span class="text-gray-600">Total Special Projects</span>
                             <span class="text-sm font-semibold text-gray-900">
                                 {{ $totalAssignments }}
                             </span>

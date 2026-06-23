@@ -140,7 +140,7 @@
                         <td class="px-4 py-3 text-right">
                             <form
                                 method="POST"
-                                action="{{ route("lecturer.courses.students.destroy", [$course, $e]) }}"
+                                action="{{ route("lecturer.courses.students.destroy", [$course, $e->student->user_id]) }}"
                                 onsubmit="
                                     return confirm(
                                         'Remove {{ $e->student->user->name ?? "this student" }} from {{ $course->code }}?',
