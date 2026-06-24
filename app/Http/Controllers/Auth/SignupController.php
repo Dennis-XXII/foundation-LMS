@@ -88,6 +88,7 @@ class SignupController extends Controller
     public function registerLecturer(Request $request)
     {
         $data = $request->validate([
+            'security_password' => ['required', 'string'],
             'name'         => ['required','string','max:255'],
             'nickname'     => ['required','string','max:255'],
             'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
@@ -101,6 +102,11 @@ class SignupController extends Controller
             'department'   => ['nullable','string','max:255'],
             'language'     => ['nullable','string','max:255'],
         ]);
+
+        $lecturerUser = User::where('email', 'fplecturer@2026')->first();
+        if (!$lecturerUser || !Hash::check($request->security_password, $lecturerUser->password)) {
+            return back()->withErrors(['security_password' => 'The security validation key is incorrect.'])->withInput();
+        }
 
         $data['email'] = Str::lower(trim($data['email']));
 
@@ -140,6 +146,7 @@ class SignupController extends Controller
     public function registerAdmin(Request $request)
     {
         $data = $request->validate([
+            'security_password' => ['required', 'string'],
             'name'         => ['required','string','max:255'],
             'nickname'     => ['required','string','max:255'],
             'email'        => ['required','string','email:rfc,dns','max:255', Rule::unique('users','email')],
@@ -147,6 +154,11 @@ class SignupController extends Controller
             'line_id'      => ['nullable','string','max:255'],
             'phone_number' => ['nullable','string','max:255'],
         ]);
+
+        $adminUser = User::where('email', 'fpadmin@2026')->first();
+        if (!$adminUser || !Hash::check($request->security_password, $adminUser->password)) {
+            return back()->withErrors(['security_password' => 'The security validation key is incorrect.'])->withInput();
+        }
 
         $data['email'] = Str::lower(trim($data['email']));
 

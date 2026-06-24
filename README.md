@@ -1,6 +1,29 @@
 # Foundation LMS
 
-A role-based Learning Management System built for a language/foundation school. Supports three distinct user roles — Admin, Lecturer, and Student — with level-aware content delivery, file management, and assignment grading workflows.
+A role-based Learning Management System built for a language/foundation school. Supports three distinct user roles — Admin, Lecturer, and Student — with level-aware content delivery, file management, and special project grading workflows.
+
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Role Architecture](#role-architecture)
+- [Student Registration: Whitelist System](#student-registration-whitelist-system)
+- [Admin & Lecturer Registration: Security Verification Keys](#admin--lecturer-registration-security-verification-keys)
+- [Data Model](#data-model)
+  - [Key Relationships](#key-relationships)
+- [Level System](#level-system)
+- [Controllers](#controllers)
+- [Authorization (Policies)](#authorization-policies)
+- [File Storage System](#file-storage-system)
+  - [File Path Structure](#file-path-structure)
+  - [Upload Rules](#upload-rules)
+  - [Download Flow](#download-flow)
+  - [File Management](#file-management)
+- [Route Structure](#route-structure)
+- [Database Migrations (Chronological)](#database-migrations-chronological)
+- [Directory Structure](#directory-structure)
 
 ---
 
@@ -84,6 +107,17 @@ System checks whitelist → if valid, create User + Student records
 
 ---
 
+## Admin & Lecturer Registration: Security Verification Keys
+
+To prevent unauthorized roles (like students) from registering as lecturers or administrators, registration forms for these roles include a security verification key check:
+
+- **Admin Registration Form**: Requires entering the seeded administrator account's password.
+- **Lecturer Registration Form**: Requires entering the seeded lecturer account's password.
+
+On form submission, the `security_password` input is validated against the respective seeded account's hashed password in the database via `Hash::check()`. Incorrect keys return clear field-level validation errors.
+
+---
+
 ## Data Model
 
 ```
@@ -94,12 +128,12 @@ EligibleStudent (whitelist)
                 ├── Enrollment ──── Course
                 │    (level, status)    │
                 │                      ├── CourseLecturer ──── Lecturer
-                │                      ├── Material
-                │                      ├── Assignment
+                │                      ├── Material (homework/slides/etc)
+                │                      ├── SpecialProject
                 │                      └── AnnouncementCourse ──── Announcement
                 │
                 └── Submission
-                        ├── belongs to Assignment
+                        ├── belongs to SpecialProject
                         └── Assessment (score + comment, by Lecturer)
 ```
 
@@ -108,12 +142,12 @@ EligibleStudent (whitelist)
 | Model | Relationships |
 |---|---|
 | `User` | hasOne Student / Lecturer / Admin; hasMany Announcements |
-| `Course` | belongsToMany Lecturers (via `course_lecturers`); belongsToMany Students (via `enrollments`); hasMany Materials, Assignments, Announcements |
+| `Course` | belongsToMany Lecturers (via `course_lecturers`); belongsToMany Students (via `enrollments`); hasMany Materials, SpecialProjects, Announcements |
 | `Student` | hasMany Enrollments, Submissions |
 | `Enrollment` | belongsTo Student, Course — pivot holds `level` and `status` |
-| `Material` | belongsTo Course — has `type`, `level`, `week`, `day`, `file_path`, `url` |
-| `Assignment` | belongsTo Course; hasMany Submissions — has `level`, `week`, `day`, `due_at`, `file_path` |
-| `Submission` | belongsTo Assignment, Student; hasOne Assessment |
+| `Material` | belongsTo Course — has `type` (homework, slides, etc.), `level`, `week`, `day`, `file_path`, `url` |
+| `SpecialProject` | belongsTo Course; hasMany Submissions — has `level`, `week`, `day`, `due_at`, `file_path` |
+| `Submission` | belongsTo SpecialProject, Student; hasOne Assessment |
 | `Assessment` | belongsTo Submission, Lecturer — holds `score` and `comment` |
 | `Announcement` | belongsToMany Courses (via `announcement_courses`) |
 | `EligibleStudent` | hasOne Student (via `student_id`) |
@@ -124,7 +158,7 @@ All core models use **soft deletes** (`deleted_at`) — nothing is hard-deleted.
 
 ## Level System
 
-Materials and Assignments have an optional `level` field (1, 2, or 3). Students have a `level` stored on the `Enrollment` pivot per course. The system filters content using Eloquent query scopes:
+Materials and Special Projects have an optional `level` field (1, 2, or 3). Students have a `level` stored on the `Enrollment` pivot per course. The system filters content using Eloquent query scopes:
 
 ```php
 // Only show content at or below the student's enrolled level
@@ -134,7 +168,7 @@ scopeVisibleForLevel($query, int $studentLevel)
 
 This lets one course serve students at different proficiency levels simultaneously, with each student only seeing appropriate content.
 
-Materials and Assignments also carry `week` (1–8) and `day` (Monday–Friday, REVIEW) fields, enabling a timetable-style browsing interface.
+Materials and Special Projects also carry `week` (1–8) and `day` (Monday–Friday, REVIEW) fields, enabling a timetable-style browsing interface.
 
 ---
 
@@ -146,7 +180,7 @@ Materials and Assignments also carry `week` (1–8) and `day` (Monday–Friday, 
 |---|---|
 | `DashboardController` | Course overview, quick tiles |
 | `MaterialController` | Browse timetable, list, view, download materials |
-| `AssignmentController` | View, download assignments |
+| `SpecialProjectController` | View, download special projects |
 | `SubmissionController` | Submit, edit, view, download own submissions |
 | `StudentController` | Own profile view |
 
@@ -157,7 +191,7 @@ Materials and Assignments also carry `week` (1–8) and `day` (Monday–Friday, 
 | `DashboardController` | Overview of own courses |
 | `CourseController` | View and edit own courses |
 | `MaterialController` | Full CRUD for materials (file + URL support) |
-| `AssignmentController` | Full CRUD for assignments, view submissions per assignment |
+| `SpecialProjectController` | Full CRUD for special projects, view submissions per special project |
 | `AssessmentController` | Grade (score + comment) student submissions |
 | `SubmissionController` | List and download student submissions |
 | `EnrollmentController` | Manage enrolled students per course |
@@ -185,7 +219,7 @@ Fine-grained authorization is handled by Laravel Policies in `app/Policies/`:
 |---|---|
 | `CoursePolicy` | Is the user enrolled in / assigned to this course? |
 | `MaterialPolicy` | Is the material published and within the student's level? |
-| `AssignmentPolicy` | Is the assignment published and within the student's level? |
+| `SpecialProjectPolicy` | Is the special project published and within the student's level? |
 | `SubmissionPolicy` | Does this submission belong to the requesting student? |
 | `AssessmentPolicy` | Is the lecturer assigned to this course? |
 | `AnnouncementPolicy` | Is the user a lecturer or admin? |
@@ -208,22 +242,22 @@ storage/
     ├── public/
     │   └── materials/        ← "materials" disk  (public visibility)
     └── secure/
-        ├── assignments/      ← "assignments" disk (private, no public URL)
+        ├── special_projects/ ← "special_projects" disk (private, no public URL)
         └── submissions/      ← "submissions" disk (private, no public URL)
 ```
 
 | Disk | Visibility | Purpose |
 |---|---|---|
-| `materials` | Public | Course PDFs, slides, worksheets |
-| `assignments` | Private | Lecturer-uploaded assignment briefs |
+| `materials` | Public | Course PDFs, slides, homework |
+| `special_projects` | Private | Lecturer-uploaded special project briefs |
 | `submissions` | Private | Student-uploaded submission files |
 
 ### File Path Structure (`app/Support/FilePathBuilder.php`)
 
 ```
-Materials:   course_{id}/{type}/YYYY/MM/{8rand}_{slug}.{ext}
-Assignments: course_{id}/assignment_{id}/{slug}.{ext}
-Submissions: {YYYY/mm/dd}/{studentId}_{timestamp}_{originalName}
+Materials:       course_{id}/{type}/YYYY/MM/{8rand}_{slug}.{ext}
+SpecialProjects: course_{id}/special_project_{id}/{slug}.{ext}
+Submissions:     {YYYY/mm/dd}/{studentId}_{timestamp}_{originalName}
 ```
 
 ### Upload Rules
@@ -231,7 +265,7 @@ Submissions: {YYYY/mm/dd}/{studentId}_{timestamp}_{originalName}
 | Type | Allowed Formats | Max Size |
 |---|---|---|
 | Material | pdf, doc, docx, ppt, pptx, zip | 20 MB |
-| Assignment | pdf, doc, docx, zip | 20 MB |
+| Special Project | pdf, doc, docx, zip | 20 MB |
 | Submission | any | 10 MB |
 
 ### Download Flow
@@ -246,7 +280,7 @@ Request → authorize() policy check
 
 Download filenames are auto-formatted:
 - **Materials:** `{type}-L{level}-{title-slug}.{ext}`
-- **Submissions:** `{assignment-slug}_{student-name}_{original-filename}`
+- **Submissions:** `{special-project-slug}_{student-name}_{original-filename}`
 
 ### File Management
 
@@ -271,13 +305,13 @@ Download filenames are auto-formatted:
 /student/profile                Own profile
 /student/courses/{course}/materials         Material timetable
 /student/courses/{course}/materials/list    Material list (week+day filtered)
-/student/materials/{material}              Material detail + related assignment
+/student/materials/{material}              Material detail + related special project
 /student/materials/{material}/download     Secure download
-/student/courses/{course}/assignments      Assignment list
-/student/assignments/{assignment}          Assignment detail
-/student/assignments/{assignment}/download Secure download
-/student/assignments/{assignment}/submissions/create    Submit
-/student/assignments/{assignment}/submissions/{sub}/edit Re-submit
+/student/courses/{course}/special-projects  Special Project list
+/student/special-projects/{special_project}          Special Project detail
+/student/special-projects/{special_project}/download Secure download
+/student/special-projects/{special_project}/submissions/create    Submit
+/student/special-projects/{special_project}/submissions/{sub}/edit Re-submit
 /student/submissions/{submission}/download  Own submission download
 
 /lecturer/dashboard
@@ -287,10 +321,10 @@ Download filenames are auto-formatted:
 /lecturer/materials/{material}             Material detail
 /lecturer/materials/{material}/download    Download material file
 /lecturer/materials/{material}/file        DELETE - clear file only
-/lecturer/courses/{course}/assignments     Assignment index (post/assess tabs)
-/lecturer/assignments/{assignment}         Assignment detail + submission list
-/lecturer/assignments/{assignment}/download Download assignment file
-/lecturer/assignments/{assignment}/submissions  All submissions for assignment
+/lecturer/courses/{course}/special-projects Special Project index (post/assess tabs)
+/lecturer/special-projects/{special_project}         Special Project detail + submission list
+/lecturer/special-projects/{special_project}/download Download special project file
+/lecturer/special-projects/{special_project}/submissions  All submissions for special project
 /lecturer/submissions/{submission}/download     Download student submission
 /lecturer/submissions/{submission}/assessments/create   Grade form
 /lecturer/submissions/{submission}/assessments/{a}/edit Edit grade
@@ -318,8 +352,8 @@ Download filenames are auto-formatted:
 | `0001_01_01_000001` | `cache` |
 | `0001_01_01_000002` | `jobs` |
 | `2025_07_05` | `students` |
-| `2025_08_13` | `admins`, `lecturers`, `courses`, `course_lecturers`, `enrollments`, `materials`, `assignments`, `submissions`, `assessments`, `announcements`, `announcement_courses` |
-| `2025_10_22` | Add `day` + `week` to `materials` and `assignments`; update `assessments` |
+| `2025_08_13` | `admins`, `lecturers`, `courses`, `course_lecturers`, `enrollments`, `materials`, `special_projects`, `submissions`, `assessments`, `announcements`, `announcement_courses` |
+| `2025_10_22` | Add `day` + `week` to `materials` and `special_projects`; update `assessments` |
 | `2026_01_12` | `eligible_students` (whitelist) |
 
 ---
@@ -349,7 +383,7 @@ foundation-LMS/
 │   │   ├── CourseLecturer.php
 │   │   ├── Enrollment.php
 │   │   ├── Material.php
-│   │   ├── Assignment.php
+│   │   ├── SpecialProject.php
 │   │   ├── Submission.php
 │   │   ├── Assessment.php
 │   │   ├── Announcement.php
@@ -357,14 +391,14 @@ foundation-LMS/
 │   ├── Policies/
 │   │   ├── CoursePolicy.php
 │   │   ├── MaterialPolicy.php
-│   │   ├── AssignmentPolicy.php
+│   │   ├── SpecialProjectPolicy.php
 │   │   ├── SubmissionPolicy.php
 │   │   ├── AssessmentPolicy.php
 │   │   └── AnnouncementPolicy.php
 │   └── Support/
 │       └── FilePathBuilder.php
 ├── config/
-│   └── filesystems.php         (materials / assignments / submissions disks)
+│   └── filesystems.php         (materials / special_projects / submissions disks)
 ├── database/
 │   ├── migrations/
 │   ├── seeders/
@@ -383,12 +417,6 @@ foundation-LMS/
     └── app/
         ├── public/materials/   (symlinked to public/storage)
         └── secure/
-            ├── assignments/
+            ├── special_projects/
             └── submissions/
 ```
-
----
-
-## Known Issues
-
-- `Lecturer\SubmissionController::download()` uses `Storage::disk('public')` instead of `Storage::disk('submissions')`. Since student submission files are stored on the `submissions` (private) disk, lecturer downloads of student submissions will return 404. The disk name should be `'submissions'`.

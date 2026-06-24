@@ -105,6 +105,26 @@
                         @enderror
                     </div>
 
+                    <!-- Security Validation Key - Full Width -->
+                    <div>
+                        <label for="security_password" class="block text-gray-800 mb-2">
+                            Security Validation Key
+                        </label>
+                        <input
+                            type="password"
+                            id="security_password"
+                            name="security_password"
+                            class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                            placeholder="Enter the seeded lecturer password"
+                            required
+                        />
+                        @error("security_password")
+                            <p class="text-red-500 text-sm mt-1">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
                     <!-- Password - Full Width -->
                     <div>
                         <label for="password" class="block text-gray-800 mb-2">

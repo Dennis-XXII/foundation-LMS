@@ -150,6 +150,29 @@
                     />
                 </div>
 
+                <!-- Security Validation Key -->
+                <div>
+                    <label
+                        for="security_password"
+                        class="block text-sm font-semibold text-gray-600 mb-1"
+                    >
+                        Security Validation Key
+                    </label>
+                    <input
+                        type="password"
+                        id="security_password"
+                        name="security_password"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm transition"
+                        placeholder="Enter the seeded admin password"
+                        required
+                    />
+                    @error("security_password")
+                        <p class="text-red-500 text-sm mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
                 <!-- Password -->
                 <div>
                     <label

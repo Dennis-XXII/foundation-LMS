@@ -89,4 +89,62 @@ class LmsSchemaTest extends TestCase
         $response->assertStatus(302); // Redirect back
         $this->assertFalse(Enrollment::where('course_id', $course->id)->where('student_id', $student->id)->exists());
     }
+
+    public function test_admin_registration_requires_correct_security_key()
+    {
+        // 1. Try registering an admin with incorrect security key
+        $response = $this->post(route('register.admin'), [
+            'security_password' => 'wrong_key',
+            'name' => 'New Admin',
+            'nickname' => 'newadmin',
+            'email' => 'newadmin@rsu.ac.th',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('security_password');
+        $this->assertFalse(User::where('email', 'newadmin@rsu.ac.th')->exists());
+
+        // 2. Try registering with correct security key
+        $response = $this->post(route('register.admin'), [
+            'security_password' => 'X98Mbldqo9]F', // Seeded admin password
+            'name' => 'New Admin',
+            'nickname' => 'newadmin',
+            'email' => 'newadmin@rsu.ac.th',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue(User::where('email', 'newadmin@rsu.ac.th')->exists());
+    }
+
+    public function test_lecturer_registration_requires_correct_security_key()
+    {
+        // 1. Try registering a lecturer with incorrect security key
+        $response = $this->post(route('register.lecturer'), [
+            'security_password' => 'wrong_key',
+            'name' => 'New Lecturer',
+            'nickname' => 'newlect',
+            'email' => 'newlect@rsu.ac.th',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('security_password');
+        $this->assertFalse(User::where('email', 'newlect@rsu.ac.th')->exists());
+
+        // 2. Try registering with correct security key
+        $response = $this->post(route('register.lecturer'), [
+            'security_password' => ';9zZjEI&1Gn3', // Seeded lecturer password
+            'name' => 'New Lecturer',
+            'nickname' => 'newlect',
+            'email' => 'newlect@rsu.ac.th',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue(User::where('email', 'newlect@rsu.ac.th')->exists());
+    }
 }
