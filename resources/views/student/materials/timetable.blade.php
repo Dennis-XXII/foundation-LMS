@@ -27,7 +27,7 @@
         &larr; Back to Dashboard
     </a>
     <section
-        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
+        class="max-w-4xl mx-auto pb-2 lg:pb-4 rounded-xl lg:shadow border border-gray-200"
     >
         @php
             $levelColors = [
@@ -41,7 +41,7 @@
 
         {{-- Header (No "Add Material" button) --}}
         <div
-            class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
+            class="flex items-center justify-between p-4 rounded-t-lg {{ $headerColor }}"
         >
             <div>
                 <h1 class="text-2xl font-semibold">
@@ -62,7 +62,7 @@
         @endif
 
         {{-- Filters --}}
-        <form
+        <!-- <form
             method="GET"
             class="hidden mt-4 lg:flex flex-wrap gap-3 items-end justify-start place-self-left"
         >
@@ -117,7 +117,7 @@
                 </a>
                 @endif
             --}}
-        </form>
+        </form> -->
 
         {{-- Week/Day Navigation Grid (Timetable) --}}
         @php
@@ -125,30 +125,26 @@
         @endphp
 
         <div
-            class="max-w-full mt-6 overflow-x-auto rounded-lg shadow-sm border border-gray-300 p-2 place-self-center"
+            class="max-w-full mt-2 lg:mt-6 rounded-lg lg:p-2 place-self-center"
         >
-            <h2 class="text-xl font-semibold mb-3 p-2 rounded">
-                Select a Date to View {{ ucfirst($type ?? "Material") }}
-                Materials
-            </h2>
-            <table class="w-full text-xs lg:text-base table-auto">
+            <table class="w-full text-md lg:text-base table-auto">
                 <tbody class="bg-white">
                     @for ($w = 1; $w <= 8; $w++)
-                        <tr class="border-b border-gray-200">
+                        <tr class="border-b border-gray-100">
                             {{-- Changed from flex-wrap items-center to a layout that handles mobile better --}}
                             <td
-                                class="px-2 py-4 lg:px-3 lg:py-3 flex flex-col sm:flex-row sm:items-center gap-y-3 gap-x-6"
+                                class="px-2 py-2 lg:px-2 lg:py-1.5 flex flex-col sm:flex-row sm:items-center gap-y-3 gap-x-6"
                             >
                                 {{-- Week Label: Full width on mobile, auto-width with border on desktop --}}
                                 <span
-                                    class="font-bold text-blue-700 sm:border-r border-gray-300 sm:pr-3 w-fit"
+                                    class="font-bold text-blue-700 sm:border-r border-gray-300 pr-2 w-fit"
                                 >
                                     Week {{ $w }}:
                                 </span>
 
                                 {{-- Days Container: Wraps nicely on mobile --}}
                                 <div
-                                    class="flex flex-wrap items-center grid grid-cols-3 lg:grid-cols-6 gap-x-2 lg:gap-x-6 gap-y-4"
+                                    class="flex flex-wrap items-center grid grid-cols-3 lg:grid-cols-6 gap-x-1 lg:gap-x-2 gap-y-2"
                                 >
                                     @foreach ($days as $dayName)
                                         <a
@@ -162,7 +158,7 @@
                                                 ])
                                             }}"
                                             @class([
-                                                "px-4 py-2 justify-center transition-colors whitespace-nowrap bg-blue-50 lg:bg-none",
+                                                "px-2 py-2 justify-items-center text-center transition-colors whitespace-nowrap bg-blue-50 lg:bg-none",
                                                 "hover:bg-blue-100 rounded-lg",
                                                 "font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg" =>
                                                     $dayName === "REVIEW",
@@ -179,13 +175,14 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-8 pt-4 border-t">
-            <a
-                href="{{ route("student.dashboard", []) }}"
-                class="px-4 py-2 rounded border text-sm hover:bg-gray-50"
-            >
-                &larr; Back to Dashbord
-            </a>
+        <div class="pt-6 px-2 lg:px-6">
+            <p class="text-xs text-gray-500">
+                <strong>NOTE:</strong> The "Timetable" page provides a structured
+                overview of the course schedule, allowing students to easily navigate
+                to specific weeks and days. Each day may contain various types of
+                materials, such as lessons, homework, and self-study resources, which
+                are organized by week.
+            </p>
         </div>
     </section>
 </x-layout>

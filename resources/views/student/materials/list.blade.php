@@ -40,7 +40,7 @@
         &larr; Back to Timetable
     </a>
     <section
-        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
+        class="max-w-4xl mx-auto rounded-xl lg:shadow lg:border border-gray-200"
     >
         @php
             $levelColors = [
@@ -54,7 +54,7 @@
 
         {{-- Header --}}
         <div
-            class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
+            class="flex items-center justify-between p-4 rounded-t-lg {{ $headerColor }}"
         >
             <div>
                 <h1 class="text-2xl font-semibold">
@@ -68,7 +68,7 @@
         </div>
 
         {{-- Materials List --}}
-        <div class="mt-2">
+        <div class="mt-2 lg:px-4 lg:mt-0 rounded-b-lg">
             <div class="mt-4 overflow-x-auto rounded-lg shadow-sm">
                 <table class="w-full text-sm lg:text-base text-center">
                     <thead class="bg-gray-900 text-white text-xs lg:text-sm">
@@ -167,7 +167,7 @@
         </div>
 
         {{-- Back link to timetable --}}
-        <div class="mt-8 pt-4 border-t">
+        <div class="pt-4">
             <a
                 href="{{
             route("student.materials.index", [

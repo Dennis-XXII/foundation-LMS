@@ -65,7 +65,7 @@
                     &larr; Week {{ $material->week ?? "—" }} -
                     {{ $material->day ?? "—" }} Materials
                 </a>
-    <section class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
+    <section class="max-w-4xl mx-auto lg:pb-6 rounded-lg lg:shadow lg:border border-gray-300">
         @php
             $levelColors = [
                 3 => "bg-[#9bd1f8]",
@@ -77,9 +77,8 @@
         @endphp
 
         {{-- Course header --}}
-    <div class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
         {{-- Header --}}
-        <div class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4">
+        <div class="flex items-center {{ $headerColor }} rounded-t-lg justify-between p-4">
             <div>
                 <h1 class="text-2xl font-semibold">{{ $material->title }}</h1>
                 <h1 class="text-lg text-gray-600 font-thin">
@@ -89,7 +88,7 @@
         </div>
 
         {{-- Details Grid --}}
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 border border-gray-300 p-4 rounded-lg">
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 p-4 rounded-b-lg">
             {{-- Column 1: Description, Files, Link --}}
             <div class="md:col-span-2 space-y-4">
                 <div>
@@ -209,7 +208,7 @@
         </div>
 
         {{-- Back Link --}}
-        <div class="mt-8 pt-4 border-t">
+        <div class="mt-4">
             <a
                     href="{{
                         route("student.materials.list", [
