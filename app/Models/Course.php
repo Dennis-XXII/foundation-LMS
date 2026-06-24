@@ -17,6 +17,7 @@ class Course extends Model
     public function materials()   { return $this->hasMany(Material::class); }
     public function specialProjects() { return $this->hasMany(SpecialProject::class); }
     public function announcements(){ return $this->belongsToMany(Announcement::class, 'announcement_courses'); }
+    public function usefulLinks() { return $this->hasMany(UsefulLink::class); }
 
     public function students()
     {

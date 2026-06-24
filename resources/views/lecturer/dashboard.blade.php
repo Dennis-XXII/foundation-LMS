@@ -72,13 +72,32 @@
 
         <div class="p-6 flex gap-6">
             <aside class="w-40 space-y-4">
-                @foreach (["Emergency Contact", "Maps", "Useful links", "Profile"] as $leftNav)
-                    <button
-                        class="w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50"
-                    >
-                        {{ $leftNav }}
-                    </button>
-                @endforeach
+                <a
+                    class="block w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50 text-center text-gray-700 font-medium"
+                    href="#"
+                    onclick="alert('Emergency Contact is coming soon!'); return false;"
+                >
+                    Emergency Contact
+                </a>
+                <a
+                    class="block w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50 text-center text-gray-700 font-medium"
+                    href="https://rsuip.org/about-us/campus/"
+                    target="_blank"
+                >
+                    Maps
+                </a>
+                <a
+                    class="block w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50 text-center text-gray-700 font-medium"
+                    href="{{ route("lecturer.courses.useful_links.index", $course) }}"
+                >
+                    Useful links
+                </a>
+                <a
+                    class="block w-full bg-gray-100 border border-gray-300 rounded p-4 text-sm hover:bg-gray-50 text-center text-gray-700 font-medium"
+                    href="{{ route("lecturer.dashboard") }}"
+                >
+                    Profile
+                </a>
             </aside>
 
             {{-- Tiles --}}

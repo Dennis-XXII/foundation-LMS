@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\{User,Student,Admin,Lecturer,Course,Enrollment,Material,SpecialProject,Announcement};
+use App\Models\{User,Student,Admin,Lecturer,Course,Enrollment,Material,SpecialProject,Announcement,UsefulLink};
 
 class LmsSchemaTest extends TestCase
 {
@@ -219,5 +219,84 @@ class LmsSchemaTest extends TestCase
         ]);
         $response->assertSessionHasErrors('login_identifier');
         $this->assertGuest();
+    }
+
+    public function test_lecturer_can_manage_useful_links()
+    {
+        $lecturerUser = User::where('role', 'lecturer')->firstOrFail();
+        $course = Course::firstOrFail();
+
+        // 1. Visit index page
+        $response = $this->actingAs($lecturerUser)
+            ->get(route('lecturer.courses.useful_links.index', $course));
+        $response->assertStatus(200);
+
+        // 2. Create link
+        $response = $this->actingAs($lecturerUser)
+            ->post(route('lecturer.courses.useful_links.store', $course), [
+                'title' => 'Laravel Docs',
+                'description' => 'Documentation link',
+                'link' => 'https://laravel.com/docs',
+            ]);
+        $response->assertRedirect(route('lecturer.courses.useful_links.index', $course));
+        $this->assertTrue(UsefulLink::where('title', 'Laravel Docs')->exists());
+
+        $link = UsefulLink::where('title', 'Laravel Docs')->firstOrFail();
+
+        // 3. Edit link
+        $response = $this->actingAs($lecturerUser)
+            ->get(route('lecturer.useful_links.edit', $link));
+        $response->assertStatus(200);
+
+        // 4. Update link
+        $response = $this->actingAs($lecturerUser)
+            ->put(route('lecturer.useful_links.update', $link), [
+                'title' => 'Updated Docs',
+                'description' => 'Updated description',
+                'link' => 'https://laravel.com/docs/11.x',
+            ]);
+        $response->assertRedirect(route('lecturer.courses.useful_links.index', $course));
+        $this->assertTrue(UsefulLink::where('title', 'Updated Docs')->exists());
+
+        // 5. Delete link
+        $response = $this->actingAs($lecturerUser)
+            ->delete(route('lecturer.useful_links.destroy', $link));
+        $response->assertRedirect(route('lecturer.courses.useful_links.index', $course));
+        $this->assertSoftDeleted('useful_links', ['id' => $link->id]);
+    }
+
+    public function test_student_can_view_useful_links()
+    {
+        $studentUser = User::where('role', 'student')->firstOrFail();
+        $student = Student::where('user_id', $studentUser->id)->firstOrFail();
+        $course = Course::firstOrFail();
+
+        // Ensure student is enrolled
+        Enrollment::updateOrCreate(
+            ['student_id' => $student->id, 'course_id' => $course->id],
+            ['level' => 1, 'status' => 'active']
+        );
+
+        // Create a test link
+        $link = UsefulLink::create([
+            'course_id' => $course->id,
+            'title' => 'Google Search',
+            'description' => 'Search engine',
+            'link' => 'https://google.com',
+        ]);
+
+        // 1. Visit index page as Student
+        $response = $this->actingAs($studentUser)
+            ->get(route('student.courses.useful_links.index', $course));
+        $response->assertStatus(200);
+        $response->assertSee('Google Search');
+
+        // 2. Student cannot manage useful links (should redirect or be unauthorized)
+        $response = $this->actingAs($studentUser)
+            ->post(route('lecturer.courses.useful_links.store', $course), [
+                'title' => 'Student Link',
+                'link' => 'https://student.com',
+            ]);
+        $response->assertStatus(403); // Forbidden
     }
 }

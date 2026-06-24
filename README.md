@@ -142,7 +142,7 @@ EligibleStudent (whitelist)
 | Model | Relationships |
 |---|---|
 | `User` | hasOne Student / Lecturer / Admin; hasMany Announcements |
-| `Course` | belongsToMany Lecturers (via `course_lecturers`); belongsToMany Students (via `enrollments`); hasMany Materials, SpecialProjects, Announcements |
+| `Course` | belongsToMany Lecturers (via `course_lecturers`); belongsToMany Students (via `enrollments`); hasMany Materials, SpecialProjects, Announcements, UsefulLinks |
 | `Student` | hasMany Enrollments, Submissions |
 | `Enrollment` | belongsTo Student, Course — pivot holds `level` and `status` |
 | `Material` | belongsTo Course — has `type` (homework, slides, etc.), `level`, `week`, `day`, `file_path`, `url` |
@@ -151,6 +151,7 @@ EligibleStudent (whitelist)
 | `Assessment` | belongsTo Submission, Lecturer — holds `score` and `comment` |
 | `Announcement` | belongsToMany Courses (via `announcement_courses`) |
 | `EligibleStudent` | hasOne Student (via `student_id`) |
+| `UsefulLink` | belongsTo Course — has `title`, `description`, `link` |
 
 All core models use **soft deletes** (`deleted_at`) — nothing is hard-deleted.
 
@@ -183,6 +184,7 @@ Materials and Special Projects also carry `week` (1–8) and `day` (Monday–Fri
 | `SpecialProjectController` | View, download special projects |
 | `SubmissionController` | Submit, edit, view, download own submissions |
 | `StudentController` | Own profile view |
+| `UsefulLinkController` | View course useful links |
 
 ### Lecturer (`app/Http/Controllers/Lecturer/`)
 
@@ -197,6 +199,7 @@ Materials and Special Projects also carry `week` (1–8) and `day` (Monday–Fri
 | `EnrollmentController` | Manage enrolled students per course |
 | `AnnouncementController` | Create and manage announcements |
 | `StudentAnalysisController` | View student progress across a course |
+| `UsefulLinkController` | Full CRUD for course useful links |
 
 ### Admin (`app/Http/Controllers/Admin/`)
 
@@ -313,6 +316,7 @@ Download filenames are auto-formatted:
 /student/special-projects/{special_project}/submissions/create    Submit
 /student/special-projects/{special_project}/submissions/{sub}/edit Re-submit
 /student/submissions/{submission}/download  Own submission download
+/student/courses/{course}/useful-links      Course useful links list
 
 /lecturer/dashboard
 /lecturer/courses/{course}/materials        Material timetable
@@ -332,6 +336,9 @@ Download filenames are auto-formatted:
 /lecturer/courses/{course}/students        Enrolled students
 /lecturer/courses/{course}/progress        Student progress analysis
 /lecturer/announcements                    Announcement CRUD
+/lecturer/courses/{course}/useful-links    Useful Links CRUD (index/create/store)
+/lecturer/useful-links/{useful_link}/edit  Edit Useful Link
+/lecturer/useful-links/{useful_link}       Update/Delete Useful Link
 
 /admin/dashboard
 /admin/courses                  Course CRUD
@@ -355,6 +362,7 @@ Download filenames are auto-formatted:
 | `2025_08_13` | `admins`, `lecturers`, `courses`, `course_lecturers`, `enrollments`, `materials`, `special_projects`, `submissions`, `assessments`, `announcements`, `announcement_courses` |
 | `2025_10_22` | Add `day` + `week` to `materials` and `special_projects`; update `assessments` |
 | `2026_01_12` | `eligible_students` (whitelist) |
+| `2026_06_24_000000` | `useful_links` |
 
 ---
 
@@ -387,7 +395,8 @@ foundation-LMS/
 │   │   ├── Submission.php
 │   │   ├── Assessment.php
 │   │   ├── Announcement.php
-│   │   └── AnnouncementCourse.php
+│   │   ├── AnnouncementCourse.php
+│   │   └── UsefulLink.php
 │   ├── Policies/
 │   │   ├── CoursePolicy.php
 │   │   ├── MaterialPolicy.php

@@ -99,8 +99,8 @@
                     </a>
                     <a
                         class="{{ $sideBtnClass }}"
-                        onClick="bg-gray-100"
-                        disabled
+                        href="{{ route("student.courses.useful_links.index", $course) }}"
+                        style="text-decoration: none"
                     >
                         Links
                     </a>

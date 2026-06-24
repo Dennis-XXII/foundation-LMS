@@ -13,6 +13,7 @@ use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissions;
 use App\Http\Controllers\Student\MaterialController as StudentMaterials;
 use App\Http\Controllers\Student\SpecialProjectController as StudentSpecialProjects;
+use App\Http\Controllers\Student\UsefulLinkController as StudentUsefulLinks;
 
 // Lecturer
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboard;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Lecturer\EnrollmentController as LecturerEnrollments;
 use App\Http\Controllers\Lecturer\CourseController as LecturerCourses;
 use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissions;
 use App\Http\Controllers\Lecturer\StudentAnalysisController as StudentAnalysisController;
+use App\Http\Controllers\Lecturer\UsefulLinkController as LecturerUsefulLinks;
 
 // Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -106,6 +108,11 @@ Route::middleware(['auth','student'])
         Route::get('/courses/{course}/special-projects', [StudentSpecialProjects::class, 'index'])
             ->middleware('can:view,course')
             ->name('special_projects.index');
+
+        // Useful Links
+        Route::get('/courses/{course}/useful-links', [StudentUsefulLinks::class, 'index'])
+            ->middleware('can:view,course')
+            ->name('courses.useful_links.index');
         Route::get('/special-projects/{special_project}', [StudentSpecialProjects::class, 'show'])
             ->middleware('can:view,special_project') // Assuming SpecialProjectPolicy exists
             ->name('special_projects.show');
@@ -162,6 +169,20 @@ Route::middleware(['auth','lecturer'])
                 'edit' => 'special_projects.edit',
                 'update' => 'special_projects.update',
                 'destroy' => 'special_projects.destroy',
+            ])
+            ->shallow();
+
+        // Useful Links CRUD
+        Route::resource('courses.useful-links', LecturerUsefulLinks::class)
+            ->parameters(['useful-links' => 'useful_link'])
+            ->names([
+                'index' => 'courses.useful_links.index',
+                'create' => 'courses.useful_links.create',
+                'store' => 'courses.useful_links.store',
+                'show' => 'useful_links.show',
+                'edit' => 'useful_links.edit',
+                'update' => 'useful_links.update',
+                'destroy' => 'useful_links.destroy',
             ])
             ->shallow();
         Route::get('/special-projects/{special_project}/download', [LecturerSpecialProjects::class, 'download'])
