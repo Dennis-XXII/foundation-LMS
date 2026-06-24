@@ -39,9 +39,13 @@ use App\Models\Student;
 Route::view('/', 'welcome')->name('welcome');
 
 Route::middleware('guest')->group(function () {
-    // Auth: login
-    Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
+    // Auth: login (Students)
+    Route::get('/login',  [LoginController::class, 'showStudentLoginForm'])->name('login');
+    Route::post('/login/student', [LoginController::class, 'loginStudent'])->name('login.student.post')->middleware('throttle:5,1');
+
+    // Auth: login (Lecturers & Admins)
+    Route::get('/login/lecturer', [LoginController::class, 'showLecturerLoginForm'])->name('login.lecturer');
+    Route::post('/login/lecturer', [LoginController::class, 'loginLecturer'])->name('login.lecturer.post')->middleware('throttle:5,1');
 
     // Auth: role‑specific registration
     Route::controller(SignupController::class)->group(function () {

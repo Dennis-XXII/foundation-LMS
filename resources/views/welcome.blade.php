@@ -46,7 +46,7 @@
                         </a>
 
                         <a
-                            href="{{ route("login") }}"
+                            href="{{ route("login.lecturer") }}"
                             class="block w-full px-6 py-3.5 {{ $lecturercolor }} text-white text-center rounded-lg shadow-md hover:bg-slate-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium text-base"
                         >
                             Lecturer

@@ -2,19 +2,19 @@
     <div
         class="flex flex-col items-center justify-center min-h-[86vh] bg-white px-4 my-8"
     >
-        <div class="w-full max-w-lg bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20">
+        <div class="w-full max-w-lg bg-slate-100 rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20">
             <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
                 >&larr; Go back</a
             >
             <h1
                 class="text-xl lg:text-2xl font-bold text-center text-[#7D3C98] mb-6"
             >
-                Login to your account
+                Lecturer & Admin Login
             </h1>
 
             <form
                 method="POST"
-                action="{{ route("login") }}"
+                action="{{ route("login.lecturer.post") }}"
                 class="space-y-6"
             >
                 @csrf
@@ -34,14 +34,14 @@
                         for="login_identifier"
                         class="block text-sm lg:text-base font-normal text-gray-800"
                     >
-                        Email or ID
+                        Email
                     </label>
                     <input
                         type="text"
                         name="login_identifier"
                         value="{{ old("login_identifier") }}"
                         class="w-full border border-gray-400 rounded-md px-4 py-2 focus:ring-2 focus:ring-[#b085c2] focus:outline-none placeholder-gray-300"
-                        placeholder="eg. 6xxxxxx"
+                        placeholder="eg. name@rsu.ac.th"
                         required
                     />
                     @error("login_identifier")
@@ -93,13 +93,19 @@
 
                         <div
                             id="signupDropdown"
-                            class="absolute z-10 mt-2 hidden w-44 origin-top-right bottom-7 rounded-md bg-white shadow-lg -right-10"
+                            class="absolute z-10 mt-2 hidden w-44 origin-top-right bottom-7 rounded-md bg-white shadow-lg -right-10 border border-gray-100"
                         >
                             <a
-                                href="/register/student"
+                                href="/register/lecturer"
+                                class="block px-4 py-2 text-sm text-purple-500 hover:text-purple-700 hover:bg-gray-50 border-b border-gray-100"
+                            >
+                                Lecturer
+                            </a>
+                            <a
+                                href="/register/admin"
                                 class="block px-4 py-2 text-sm text-purple-500 hover:text-purple-700 hover:bg-gray-50"
                             >
-                                Student
+                                Admin
                             </a>
                         </div>
                     </div>

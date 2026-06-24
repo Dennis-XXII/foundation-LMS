@@ -147,4 +147,77 @@ class LmsSchemaTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertTrue(User::where('email', 'newlect@rsu.ac.th')->exists());
     }
+
+    public function test_student_login_page_renders()
+    {
+        $response = $this->get(route('login'));
+        $response->assertStatus(200);
+        $response->assertSee('Student Login');
+    }
+
+    public function test_lecturer_login_page_renders()
+    {
+        $response = $this->get(route('login.lecturer'));
+        $response->assertStatus(200);
+        $response->assertSee('Lecturer & Admin Login', false);
+    }
+
+    public function test_login_student_only_allows_student()
+    {
+        $studentUser = User::where('role', 'student')->firstOrFail();
+        $studentProfile = Student::where('user_id', $studentUser->id)->firstOrFail();
+
+        // 1. Try student ID
+        $response = $this->post(route('login.student.post'), [
+            'login_identifier' => $studentProfile->student_id,
+            'password' => 'password',
+        ]);
+        $response->assertRedirect(route('student.dashboard'));
+        $this->assertAuthenticatedAs($studentUser);
+
+        \Illuminate\Support\Facades\Auth::logout();
+
+        // 2. Try student email
+        $response = $this->post(route('login.student.post'), [
+            'login_identifier' => $studentUser->email,
+            'password' => 'password',
+        ]);
+        $response->assertRedirect(route('student.dashboard'));
+        $this->assertAuthenticatedAs($studentUser);
+
+        \Illuminate\Support\Facades\Auth::logout();
+
+        // 3. Try lecturer credentials on student route
+        $lecturerUser = User::where('role', 'lecturer')->firstOrFail();
+        $response = $this->post(route('login.student.post'), [
+            'login_identifier' => $lecturerUser->email,
+            'password' => ';9zZjEI&1Gn3',
+        ]);
+        $response->assertSessionHasErrors('login_identifier');
+        $this->assertGuest();
+    }
+
+    public function test_login_lecturer_only_allows_staff()
+    {
+        $lecturerUser = User::where('role', 'lecturer')->firstOrFail();
+
+        // 1. Try lecturer credentials
+        $response = $this->post(route('login.lecturer.post'), [
+            'login_identifier' => $lecturerUser->email,
+            'password' => ';9zZjEI&1Gn3',
+        ]);
+        $response->assertRedirect(route('lecturer.dashboard'));
+        $this->assertAuthenticatedAs($lecturerUser);
+
+        \Illuminate\Support\Facades\Auth::logout();
+
+        // 2. Try student credentials on lecturer route
+        $studentUser = User::where('role', 'student')->firstOrFail();
+        $response = $this->post(route('login.lecturer.post'), [
+            'login_identifier' => $studentUser->email,
+            'password' => 'password',
+        ]);
+        $response->assertSessionHasErrors('login_identifier');
+        $this->assertGuest();
+    }
 }
