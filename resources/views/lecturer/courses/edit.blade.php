@@ -95,7 +95,7 @@
     <div class="mt-6 bg-white border rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold mb-3">Danger Zone</h2>
         <p class="text-sm text-gray-600 mb-4">
-            Delete all materials and assignments for this course.
+            Delete all materials and special projects for this course.
         </p>
         <form
             method="POST"

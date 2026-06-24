@@ -52,25 +52,25 @@ class EnrollmentController extends Controller
                 abort(404, 'Student not found in this course.');
             }
 
-            // Get Assignments (Filtered by Level)
-            $assignmentsQuery = $course->assignments()->orderBy('due_at', 'desc');
+            // Get Special Projects (Filtered by Level)
+            $specialProjectsQuery = $course->specialProjects()->orderBy('due_at', 'desc');
 
-            // RULE: Only show assignments for student's level. If student level is NULL, show all.
+            // RULE: Only show special projects for student's level. If student level is NULL, show all.
             if ($enrollment->level !== null) {
-                $assignmentsQuery->where('level', $enrollment->level);
+                $specialProjectsQuery->where('level', $enrollment->level);
             }
 
-            $assignments = $assignmentsQuery->get();
+            $specialProjects = $specialProjectsQuery->get();
             
             // Get Submissions
-            // We filter submissions to match only the visible assignments found above
-            $submissions = Submission::whereIn('assignment_id', $assignments->pluck('id'))
+            // We filter submissions to match only the visible special projects found above
+            $submissions = Submission::with('assessment')->whereIn('special_project_id', $specialProjects->pluck('id'))
                 ->where('student_id', $studentProfile->id) 
                 ->get()
-                ->keyBy('assignment_id');
+                ->keyBy('special_project_id');
 
             // Calculate Stats
-            $totalAssignments = $assignments->count();
+            $totalSpecialProjects = $specialProjects->count();
             $submittedCount = $submissions->count();
 
             $gradedSubmissions = $submissions->whereNotNull('grade');
@@ -80,9 +80,9 @@ class EnrollmentController extends Controller
                 'student',        
                 'studentProfile', 
                 'enrollment',    
-                'assignments', 
+                'specialProjects', 
                 'submissions', 
-                'totalAssignments', 
+                'totalSpecialProjects', 
                 'submittedCount', 
             ));
         }
@@ -122,12 +122,22 @@ class EnrollmentController extends Controller
     /**
      * Remove ONE student from the course.
      */
-    public function destroy(Course $course, Enrollment $enrollment)
+    public function destroy(Course $course, User $student)
     {
         $this->authorize('update', $course);
 
+        // Find the student profile first
+        $studentProfile = Student::where('user_id', $student->id)->first();
+        if (!$studentProfile) {
+            abort(404);
+        }
+
         // Safety: ensure this enrollment belongs to the given course
-        if ($enrollment->course_id !== $course->id) {
+        $enrollment = Enrollment::where('course_id', $course->id)
+            ->where('student_id', $studentProfile->id)
+            ->first();
+
+        if (!$enrollment) {
             abort(404);
         }
 

@@ -140,7 +140,7 @@
                             class="mt-1 w-full border border-gray-400 rounded px-3 py-2"
                             required
                         >
-                            @foreach (["lesson" => "Lesson", "worksheet" => "Worksheet", "self_study" => "Self‑study"] as $v => $label)
+                            @foreach (["lesson" => "Lesson", "homework" => "Homework", "self_study" => "Self‑study"] as $v => $label)
                                 <option
                                     value="{{ $v }}"
                                     @selected(old("type", $material->type) === $v)

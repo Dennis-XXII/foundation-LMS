@@ -15,19 +15,19 @@
             </li>
             <li>
                 <a
-                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+                    href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
                     class="hover:underline"
                 >
-                    Assignments
+                    Special Projects
                 </a>
                 <span class="mx-2">/</span>
             </li>
             <li>
                 <a
-                    href="{{ route("student.assignments.show", $assignment) }}"
+                    href="{{ route("student.special_projects.show", $specialProject) }}"
                     class="hover:underline"
                 >
-                    {{ $assignment->title }}
+                    {{ $specialProject->title }}
                 </a>
             </li>
             <li>
@@ -37,10 +37,10 @@
         </ol>
     </nav>
     <a
-        href="{{ route("student.assignments.show", $assignment) }}"
+        href="{{ route("student.special_projects.show", $specialProject) }}"
         class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
     >
-        &larr; {{ $assignment->title }}
+        &larr; {{ $specialProject->title }}
     </a>
     <section
         class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
@@ -81,23 +81,23 @@
                 1 => "bg-[#f0c6bc]",
             ];
             // Use level filter for header, default to gray
-            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+            $headerColor = $levelColors[$specialProject->level ?? null] ?? "bg-gray-100";
         @endphp
 
         <div
             class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4 mb-6"
         >
             <div>
-                <h1 class="text-2xl font-bold">{{ $assignment->title }}</h1>
+                <h1 class="text-2xl font-bold">{{ $specialProject->title }}</h1>
                 <h1 class="text-lg text-gray-600 font-thin">
-                    {{ $assignment->level ? "Level " . $assignment->level : "All Levels" }}
+                    {{ $specialProject->level ? "Level " . $specialProject->level : "All Levels" }}
                 </h1>
             </div>
         </div>
 
         <form
             method="POST"
-            action="{{ route("student.assignments.submissions.update", [$assignment, $submission]) }}"
+            action="{{ route("student.special-projects.submissions.update", [$specialProject, $submission]) }}"
             enctype="multipart/form-data"
             class="bg-white border border-gray-300 rounded-xl shadow p-6 space-y-4"
         >
@@ -139,7 +139,7 @@
                     Update
                 </button>
                 <a
-                    href="{{ route("student.assignments.show", $assignment) }}"
+                    href="{{ route("student.special_projects.show", $specialProject) }}"
                     class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
                 >
                     Back

@@ -1,8 +1,8 @@
 {{-- resources/views/lecturer/submissions/index.blade.php --}}
 <x-layout>
     @php
-        // $assignment is passed to this view by LecturerSubmissionsController@index
-        $course = $assignment->course;
+        // $specialProject is passed to this view by LecturerSubmissionsController@index
+        $course = $specialProject->course;
     @endphp
 
     <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
@@ -16,10 +16,10 @@
                 </a>
                 <span class="mx-2">/</span>
             </li>
-            {{-- Link back to the list of assignments for assessment --}}
+            {{-- Link back to the list of special projects for assessment --}}
             <li>
                 <a
-                    href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $assignment->level }}"
+                    href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $specialProject->level }}"
                     class="hover:underline"
                 >
                     Assess Student Uploads
@@ -27,7 +27,7 @@
                 <span class="mx-2">/</span>
             </li>
             <li class="text-black font-semibold">
-                {{ $assignment->title }} - Submissions
+                {{ $specialProject->title }} - Submissions
             </li>
         </ol>
     </nav>
@@ -42,28 +42,28 @@
                 1 => "bg-[#f0c6bc]",
             ];
             // Use level filter for header, default to gray
-            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+            $headerColor = $levelColors[$specialProject->level ?? null] ?? "bg-gray-100";
         @endphp
 
         <div class="mb-6 p-4 rounded-lg {{ $headerColor }}">
             <h1 class="text-2xl font-semibold text-gray-900">
-                {{ $assignment->title }}
+                {{ $specialProject->title }}
             </h1>
             <p class="text-gray-700">
-                Level {{ $assignment->level ?? "N/A" }}
-                @if ($assignment->week && $assignment->day)
-                        | Week {{ $assignment->week }}, {{ $assignment->day }}
+                Level {{ $specialProject->level ?? "N/A" }}
+                @if ($specialProject->week && $specialProject->day)
+                        | Week {{ $specialProject->week }}, {{ $specialProject->day }}
                 @endif
 
-                @if ($assignment->due_at)
-                        | Due: {{ $assignment->due_at->format("d M Y") }}
+                @if ($specialProject->due_at)
+                        | Due: {{ $specialProject->due_at->format("d M Y") }}
                 @endif
             </p>
             <a
-                href="{{ route("lecturer.assignments.show", $assignment) }}"
+                href="{{ route("lecturer.special_projects.show", $specialProject) }}"
                 class="text-xs text-blue-600 hover:underline mt-1 inline-block"
             >
-                View Assignment Details
+                View Special Project Details
             </a>
         </div>
 
@@ -74,19 +74,19 @@
             </h2>
 
             @php
-                $totalStudents = $assignment->course
+                $totalStudents = $specialProject->course
                     ->enrollments()
-                    ->where("level", $assignment->level)
+                    ->where("level", $specialProject->level)
                     ->count();
 
-                $submittedCount = $assignment
+                $submittedCount = $specialProject
                     ->submissions()
                     ->whereNotNull("submitted_at")
                     ->count();
 
                 $notSubmittedCount = max(0, $totalStudents - $submittedCount);
 
-                $gradedCount = $assignment
+                $gradedCount = $specialProject
                     ->submissions()
                     ->whereHas("assessment")
                     ->count();
@@ -101,11 +101,11 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="text-sm font-semibold text-gray-900">
-                            Level {{ $assignment->level }} – Submission Summary
+                            Level {{ $specialProject->level }} – Submission Summary
                         </h3>
                         <p class="text-xs text-gray-500">
                             Overview of how many students submitted this
-                            assignment.
+                            special project.
                         </p>
                     </div>
 
@@ -208,9 +208,9 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- Use the submissions loaded onto the $assignment object --}}
+                    {{-- Use the submissions loaded onto the $specialProject object --}}
                     @php
-                        $subs = $assignment->submissions;
+                        $subs = $specialProject->submissions;
                     @endphp
 
                     @forelse ($subs as $s)
@@ -220,8 +220,12 @@
                         @endphp
 
                         <tr
-                            onClick="window.location='{{ $done ? route("lecturer.submissions.assessments.edit", ["submission" => $s, "assessment" => $assessment]) : route("lecturer.submissions.assessments.create", ["submission" => $s]) }}'"
-                            class="hover:bg-gray-50 cursor-pointer"
+                            @if ($done)
+                                onClick="window.location='{{ $assessment ? route("lecturer.submissions.assessments.edit", ["submission" => $s, "assessment" => $assessment]) : route("lecturer.submissions.assessments.create", ["submission" => $s]) }}'"
+                                class="hover:bg-gray-50 cursor-pointer"
+                            @else
+                                class="hover:bg-gray-50"
+                            @endif
                         >
                             <td class="px-3 py-3 whitespace-nowrap">
                                 {{ $s->student->user->name ?? "—" }}
@@ -298,7 +302,7 @@
                                 class="px-6 py-6 text-gray-500 text-center"
                                 colspan="5"
                             >
-                                No submissions found for this assignment.
+                                No submissions found for this special project.
                             </td>
                         </tr>
                     @endforelse
@@ -306,9 +310,9 @@
             </table>
         </div>
         <div class="mt-6">
-            {{-- Link back to the list of assignments for assessment --}}
+            {{-- Link back to the list of special projects for assessment --}}
             <a
-                href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $assignment->level }}"
+                href="{{ route("lecturer.courses.assessments.index", $course) }}?level={{ $specialProject->level }}"
                 class="px-4 py-2 rounded border text-sm hover:bg-gray-100"
             >
                 &larr; Back to Assessment List
@@ -316,4 +320,3 @@
         </div>
     </section>
 </x-layout>
-E

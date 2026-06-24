@@ -1,5 +1,5 @@
-{{-- resources/views/student/assignments/show.blade.php --}}
-<x-layout :title="$assignment->title">
+{{-- resources/views/student/special_projects/show.blade.php --}}
+<x-layout :title="$specialProject->title">
   {{-- Breadcrumbs --}}
   <nav class="hidden lg:flex mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
     <ol class="list-reset flex">
@@ -9,23 +9,23 @@
       </li>
       <li>
         <a
-                    href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
-                    class="hover:underline"
-                >
-                    Assignments
-                </a>
+            href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
+            class="hover:underline"
+        >
+            Special Projects
+        </a>
         <span class="mx-2">/</span>
       </li>
       <li class="text-black font-semibold">
-        {{ $assignment->title }}
+        {{ $specialProject->title }}
       </li>
     </ol>
   </nav>
     <a
-            href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+            href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
             class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
         >
-            &larr; Back to Assignments
+            &larr; Back to Special Projects
         </a>
         @php
             $levelColors = [
@@ -33,8 +33,7 @@
                 2 => "bg-[#c7f7cf]",
                 1 => "bg-[#f0c6bc]",
             ];
-            // Use level filter for header, default to gray
-            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+            $headerColor = $levelColors[$specialProject->level ?? null] ?? "bg-gray-100";
         @endphp
 
   {{-- Main Content Card --}}
@@ -72,10 +71,9 @@
     {{-- Header --}}
     <div class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4">
         <div>
-        <h1 class="text-2xl font-bold">{{ $assignment->title }}</h1>
-        <h1 class="text-lg text-gray-600 font-thin">{{ $assignment->level ? "Level " . $assignment->level : "All Levels" }}</h1>
+        <h1 class="text-2xl font-bold">{{ $specialProject->title }}</h1>
+        <h1 class="text-lg text-gray-600 font-thin">{{ $specialProject->level ? "Level " . $specialProject->level : "All Levels" }}</h1>
         </div>
-        {{-- No Edit/Delete buttons for students --}}
     </div>
 
     {{-- Details Grid --}}
@@ -87,35 +85,35 @@
           <div
                         class="mt-1 p-3 min-h-[100px] text-gray-800 bg-gray-50 rounded-lg border border-gray-300"
                     >
-            {{ $assignment->instruction ?? 'No instruction provided.' }}
+            {{ $specialProject->instruction ?? 'No instruction provided.' }}
           </div>
         </div>
 
-        @if ($assignment->file_path)
+        @if ($specialProject->file_path)
           <div>
             <label class="block text-sm font-medium text-gray-500">Task File</label>
-            <a href="{{ route('student.assignments.download', $assignment) }}" class="mt-1 text-blue-600 hover:underline font-medium">
+            <a href="{{ route('student.special_projects.download', $specialProject) }}" class="mt-1 text-blue-600 hover:underline font-medium">
               Download Attached File
             </a>
           </div>
         @endif
       </div>
 
-      {{-- Column 2 (Sidebar): Assignment Meta --}}
+      {{-- Column 2 (Sidebar): Special Project Meta --}}
       <div>
         <label class="block text-sm font-medium text-gray-500">Details</label>
       <div class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100 mt-1">
         <div class="pb-2 border-b border-gray-200">
           <label class="block text-xs font-medium text-gray-700">Level</label>
-          <p class="mt-1 text-gray-900">{{ $assignment->level ?? '—' }}</p>
+          <p class="mt-1 text-gray-900">{{ $specialProject->level ?? '—' }}</p>
         </div>
         <div class="pb-2 border-b border-gray-200">
           <label class="block text-xs font-medium text-gray-700">Week / Day</label>
-          <p class="mt-1 text-gray-900">Week {{ $assignment->week ?? '—' }} &mdash; {{ $assignment->day ?? '—' }}</p>
+          <p class="mt-1 text-gray-900">Week {{ $specialProject->week ?? '—' }} &mdash; {{ $specialProject->day ?? '—' }}</p>
         </div>
         <div>
           <label class="block text-xs font-medium text-gray-700">Due Date</label>
-          <p class="mt-1 text-red-600">{{ optional($assignment->due_at)->format('M d, Y, H:i') ?? '—' }}</p>
+          <p class="mt-1 text-red-600">{{ optional($specialProject->due_at)->format('M d, Y, H:i') ?? '—' }}</p>
         </div>
       </div>
       </div>
@@ -127,10 +125,7 @@
             {{-- Status Display --}}
             <div>
                 <label class="block ml-1 text-xl font-medium text-gray-700 mb-2">Submission Status : <span @class([
-    // Static classes (always applied)
     ' items-center px-2 py-1.5 rounded-full text-sm font-medium',
-    
-    // Dynamic classes (applied based on condition)
     'bg-green-100 text-green-800'   => $status === 'Graded',
     'bg-blue-100 text-blue-800'     => $status === 'Submitted',
     'bg-red-100 text-red-600'       => $status === 'Closed',
@@ -147,10 +142,7 @@
                 <div class="text-xs ml-1 mt-2">
                     @if ($submission->file_path)
                          <p class="block text-sm mb-2 font-medium text-gray-700">My Work : <a href="{{ route('student.submissions.download', $submission) }}" class="text-blue-600 hover:underline"> [{{ basename($submission->file_path) }}]</a>  </p>
-                         
                     @endif
-                    {{-- @if ($submission->url) <p>URL: <a href="{{ $submission->url }}" target="_blank" class="text-blue-600 hover:underline">{{ $submission->url }}</a></p> @endif --}}
-                    {{-- @if ($submission->notes) <p>Notes: {{ $submission->notes }}</p> @endif --}}
                 </div>
         @endif
             </div>
@@ -158,17 +150,17 @@
              {{-- Action Button --}}
             <div>
                 @if($canSubmit)
-                    <a href="{{ route('student.assignments.submissions.create', $assignment) }}"
+                    <a href="{{ route('student.special-projects.submissions.create', $specialProject) }}"
                        class="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
                        Submit Now
                     </a>
                 @elseif($canEdit)
-                    <a href="{{ route('student.assignments.submissions.edit', [$assignment, $submission]) }}"
+                    <a href="{{ route('student.special-projects.submissions.edit', [$specialProject, $submission]) }}"
                        class="px-4 py-2 bg-yellow-500 text-white rounded text-sm font-medium hover:bg-yellow-600">
                        Edit Submission
                     </a>
                 @elseif($canViewFeedback)
-                    <a href="{{ route('student.assignments.submissions.show', [$assignment, $submission]) }}"
+                    <a href="{{ route('student.special-projects.submissions.show', [$specialProject, $submission]) }}"
                        class="px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">
                        View Feedback
                     </a>
@@ -177,7 +169,6 @@
                        Past Due
                     </span>
                 @else
-                     {{-- Fallback if needed --}}
                      <span class="text-sm text-gray-500">No action available</span>
                 @endif
             </div>
@@ -185,10 +176,10 @@
 
     <div class="mt-8 pt-4 border-t">
         <a
-            href="{{ route("student.assignments.index", $assignment->course) }}?level={{ $assignment->level }}"
+            href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
             class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
         >
-            &larr; Back to Assignments
+            &larr; Back to Special Projects
         </a>
     </div>
   </section>

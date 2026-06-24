@@ -38,7 +38,7 @@ class MaterialSeeder extends Seeder
         Material::create([
             'course_id'    => $course->id,
             'is_published' => false,
-            'type'         => 'worksheet',
+            'type'         => 'homework',
             'level'        => 2,
             'title'        => 'Practice Set 2',
             'descriptions' => 'Exercises for intermediate learners.',

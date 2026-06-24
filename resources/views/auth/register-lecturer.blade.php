@@ -3,7 +3,10 @@
         class="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-10"
     >
         <!-- Main Content Container -->
-        <div class="w-full max-w-3xl">
+        <div class="w-full max-w-3xl bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20">
+            <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
+                >&larr; Go back</a
+            >
             <!-- Title -->
             <h1 class="text-2xl font-bold text-center text-gray-900 mb-8">
                 Create Lecturer Account
@@ -11,7 +14,7 @@
 
             <!-- Form Card with Purple Border -->
             <div
-                class="w-full bg-gray-50 border border-[#7D3C98] rounded-xl p-6 md:p-8"
+                class="w-full bg-gray-50 rounded-xl p-2 sm:p-6"
             >
                 <form
                     method="POST"
@@ -96,6 +99,26 @@
                             required
                         />
                         @error("email")
+                            <p class="text-red-500 text-sm mt-1">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    <!-- Security Validation Key - Full Width -->
+                    <div>
+                        <label for="security_password" class="block text-gray-800 mb-2">
+                            Security Validation Key
+                        </label>
+                        <input
+                            type="password"
+                            id="security_password"
+                            name="security_password"
+                            class="w-full border border-[#9B59B6] rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                            placeholder="Enter the seeded lecturer password"
+                            required
+                        />
+                        @error("security_password")
                             <p class="text-red-500 text-sm mt-1">
                                 {{ $message }}
                             </p>

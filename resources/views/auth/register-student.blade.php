@@ -1,9 +1,12 @@
 <x-guest-layout>
     <div
-        class="flex flex-col items-center justify-center max-h-screen bg-white px-4 py-10"
+        class="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-10"
     >
         <!-- Main Content Container -->
-        <div class="w-full max-w-3xl">
+        <div class="w-full max-w-3xl bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20">
+            <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
+                >&larr; Go back</a
+            >
             <!-- Title -->
             <h1 class="text-2xl font-bold text-center text-gray-900 mb-8">
                 Create Student Account
@@ -11,12 +14,12 @@
 
             <!-- Form Card with Purple Border -->
             <div
-                class="w-full bg-gray-50 border border-[#7D3C98] rounded-xl p-6 md:p-8"
+                class="w-full bg-gray-50 rounded-xl p-2 sm:p-6"
             >
                 <form
                     method="POST"
                     action="{{ route("register.student") }}"
-                    class="space-y-6"
+                    class="space-y-2"
                 >
                     @csrf
 
@@ -368,6 +371,11 @@
                     >
                         Log in
                     </a>
+                </p>
+            </div>
+            <div class="mt-6 text-center">
+                <p class="text-gray-500 text-xs">
+                    Your lecturer have to whitelist and enroll you in a course for you to be able to register an account. If it's shows an error message, please contact the <b>admin</b> or <b>Ajarn Timothy Boundy</b>.
                 </p>
             </div>
         </div>

@@ -12,7 +12,7 @@ class Material extends Model
     use HasFactory, SoftDeletes;
 
     public const TYPE_LESSON     = 'lesson';
-    public const TYPE_WORKSHEET  = 'worksheet';
+    public const TYPE_HOMEWORK   = 'homework';
     public const TYPE_SELF_STUDY = 'self-study';
 
     protected $fillable = [

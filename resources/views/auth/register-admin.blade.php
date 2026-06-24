@@ -2,14 +2,17 @@
     <div class="flex justify-center items-center min-h-screen">
         <div
             id="signup_main_Div"
-            class="w-full max-w-lg bg-white shadow-xl rounded-lg p-8"
+            class="w-full max-w-3xl bg-white rounded-2xl shadow-sm p-4 sm:p-10 border border-[#7D3C98]/20"
         >
-            <img
+            <a href="{{ route("welcome") }}" class="block text-xs mb-6 text-[#7D3C98]"
+                >&larr; Go back</a
+            >
+            <!-- <img
                 id="logo"
                 class="mx-auto w-24 mb-6"
                 src="/images/logo_new.png"
                 alt="Logo"
-            />
+            />  -->
 
             <form
                 method="POST"
@@ -145,6 +148,29 @@
                         placeholder="Enter your Admin ID"
                         required
                     />
+                </div>
+
+                <!-- Security Validation Key -->
+                <div>
+                    <label
+                        for="security_password"
+                        class="block text-sm font-semibold text-gray-600 mb-1"
+                    >
+                        Security Validation Key
+                    </label>
+                    <input
+                        type="password"
+                        id="security_password"
+                        name="security_password"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm transition"
+                        placeholder="Enter the seeded admin password"
+                        required
+                    />
+                    @error("security_password")
+                        <p class="text-red-500 text-sm mt-1">
+                            {{ $message }}
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Password -->

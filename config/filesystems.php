@@ -56,10 +56,10 @@ return [
             'visibility' => 'public',
         ],
 
-        // Only lecturers/admins should see raw assignment files until published
-        'assignments' => [
-            'driver' => env('ASSIGNMENTS_DRIVER', 'local'),
-            'root'   => storage_path('app/secure/assignments'),
+        // Only lecturers/admins should see raw special project files until published
+        'special_projects' => [
+            'driver' => env('SPECIAL_PROJECTS_DRIVER', 'local'),
+            'root'   => storage_path('app/secure/special_projects'),
             'visibility' => 'private', // no public URL
         ],
 

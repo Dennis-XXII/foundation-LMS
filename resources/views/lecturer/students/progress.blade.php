@@ -42,14 +42,14 @@
     {{-- Analysis Table --}}
     <div class="bg-white border rounded overflow-x-auto shadow-md">
         <div class="bg-gray-50 px-6 py-3 font-semibold text-gray-700 border-b">
-            Assignment Completion Status ({{ $enrollments->count() }} Students)
+            Special Project Completion Status ({{ $enrollments->count() }} Students)
         </div>
         <table class="w-full text-sm">
             <thead class="bg-gray-100">
                 <tr>
                     <th class="px-4 py-3 text-left">Student Profile & Level</th>
                     <th class="px-4 py-3 text-left">Completion Percentage</th>
-                    <th class="px-4 py-3 text-left">Assignments (Visible)</th>
+                    <th class="px-4 py-3 text-left">Special Projects (Visible)</th>
                     <th class="px-4 py-3 text-left">Submissions Status</th>
                 </tr>
             </thead>
@@ -57,7 +57,7 @@
                 @forelse ($enrollments as $e)
                     @php
                         // Safely extract stats
-                        $stats = $e->assignment_stats ?? [];
+                        $stats = $e->special_project_stats ?? [];
                         $pct = $stats["completion_percentage"] ?? 0;
 
                         // Determine colors (fixed to ensure Tailwind compiles them)
@@ -97,7 +97,7 @@
                             </div>
                         </td>
                         <td class="px-4 py-3 align-top text-xs">
-                            Assignments Visible for Level
+                            Special Projects Visible for Level
                             {{ $e->level ?? "—" }}:
                             <strong class="text-gray-700">
                                 {{ $stats["visible_count"] ?? 0 }}

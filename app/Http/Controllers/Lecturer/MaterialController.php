@@ -34,7 +34,7 @@ class MaterialController extends Controller
             $type  = $this->normalizeType($request->query('type'));
             $level = $request->integer('level');
 
-            $validTypes = ['lesson','worksheet','self_study'];
+            $validTypes = ['lesson','homework','self_study'];
             if ($type && !in_array($type, $validTypes, true))   $type = null;
             if ($level && !in_array($level, [1,2,3], true))     $level = null;
 
@@ -55,7 +55,7 @@ class MaterialController extends Controller
         $day   = $request->query('day'); 
 
         // Validation checks
-        $validTypes = ['lesson','worksheet','self_study'];
+        $validTypes = ['lesson','homework','self_study'];
         if ($type && !in_array($type, $validTypes, true))   $type = null;
         if ($level && !in_array($level, [1,2,3], true))     $level = null;
         if ($week && !in_array($week, range(1, 8), true))   $week = null;
@@ -102,7 +102,7 @@ class MaterialController extends Controller
         $week  = $request->integer('week');
         $day   = $request->query('day'); 
 
-        $validTypes = ['lesson','worksheet','self_study'];
+        $validTypes = ['lesson','homework','self_study'];
         if ($type && !in_array($type, $validTypes, true))   $type = null;
         if ($level && !in_array($level, [1,2,3], true))     $level = null;
         if ($week && !in_array($week, range(1, 8), true))   $week = null;
@@ -155,13 +155,13 @@ class MaterialController extends Controller
         $data = $request->validate([
             'title'        => ['required','string','max:255'],
             'descriptions' => ['nullable','string','max:2000'],
-            'type'         => ['required','in:lesson,worksheet,self_study'],
+            'type'         => ['required','in:lesson,homework,self_study'],
             'level'        => ['nullable','integer','min:1','max:3'],
             'day'          => ['nullable','in:Monday,Tuesday,Wednesday,Thursday,Friday,Review'],
             'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
-            'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
+            'file'         => ['nullable','file','extensions:pdf,doc,docx,ppt,pptx,zip','max:20480'], // 20MB
             'uploaded_at'  => ['nullable','date'],
         ]);
 
@@ -218,13 +218,13 @@ class MaterialController extends Controller
         $data = $request->validate([
             'title'        => ['required','string','max:255'],
             'descriptions' => ['nullable','string','max:2000'],
-            'type'         => ['required','in:lesson,worksheet,self_study'],
+            'type'         => ['required','in:lesson,homework,self_study'],
             'level'        => ['nullable','integer','min:1','max:3'],
             'day'          => ['nullable','in:Monday,Tuesday,Wednesday,Thursday,Friday,Review'],
             'week'        => ['nullable','integer','min:1','max:8'],
             'is_published' => ['sometimes','boolean'],
             'url'          => ['nullable','url','max:2048'],
-            'file'         => ['nullable','file','mimes:pdf,doc,docx,ppt,pptx,zip','max:20480'],
+            'file'         => ['nullable','file','extensions:pdf,doc,docx,ppt,pptx,zip','max:20480'],
             'uploaded_at'  => ['nullable','date'],
             'remove_file'  => ['sometimes','in:1'], // optional checkbox
         ]);

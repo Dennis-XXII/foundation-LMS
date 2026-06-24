@@ -1,4 +1,4 @@
-{{-- resources/views/lecturer/assignments/edit.blade.php --}}
+{{-- resources/views/lecturer/special_projects/edit.blade.php --}}
 <x-layout>
     {{-- Breadcrumbs --}}
     <nav class="mb-2 text-sm text-gray-600 p-3" aria-label="Breadcrumb">
@@ -13,12 +13,11 @@
                 <span class="mx-2">/</span>
             </li>
             <li class="text-black">
-                {{-- Link back to the show page --}}
                 <a
-                    href="{{ route("lecturer.assignments.show", $assignment) }}"
+                    href="{{ route("lecturer.special_projects.show", $specialProject) }}"
                     class="hover:underline"
                 >
-                    {{ $assignment->title }}
+                    {{ $specialProject->title }}
                 </a>
                 <span class="mx-2">/</span>
             </li>
@@ -28,10 +27,10 @@
 
     {{-- Course header --}}
     <div class="max-w-4xl mx-auto p-6">
-        <h1 class="text-2xl font-semibold">Edit Assignment</h1>
+        <h1 class="text-2xl font-semibold">Edit Special Project</h1>
         <p class="text-sm text-gray-600 mt-1">
-            Course: {{ $assignment->course->code }} —
-            {{ $assignment->course->name }}
+            Course: {{ $specialProject->course->code }} —
+            {{ $specialProject->course->name }}
         </p>
 
         {{-- Flash messages --}}
@@ -56,7 +55,7 @@
         <form
             class="mt-6 space-y-4"
             method="POST"
-            action="{{ route("lecturer.assignments.update", $assignment) }}"
+            action="{{ route("lecturer.special_projects.update", $specialProject) }}"
             enctype="multipart/form-data"
         >
             @csrf
@@ -68,7 +67,7 @@
                     name="title"
                     type="text"
                     class="mt-1 w-full border rounded px-3 py-2"
-                    value="{{ old("title", $assignment->title) }}"
+                    value="{{ old("title", $specialProject->title) }}"
                     required
                 />
             </div>
@@ -80,7 +79,7 @@
                     rows="5"
                     class="mt-1 w-full border rounded px-3 py-2"
                 >
-{{ old("instruction", $assignment->instruction) }}</textarea
+{{ old("instruction", $specialProject->instruction) }}</textarea
                 >
             </div>
 
@@ -93,10 +92,9 @@
                         min="1"
                         max="3"
                         class="mt-1 w-full border rounded px-3 py-2"
-                        value="{{ old("level", $assignment->level) }}"
+                        value="{{ old("level", $specialProject->level) }}"
                         required
                     />
-                    {{-- Added required based on store validation --}}
                 </div>
 
                 {{-- Week --}}
@@ -110,7 +108,7 @@
                         @foreach (range(1, 8) as $w)
                             <option
                                 value="{{ $w }}"
-                                @selected(old("week", $assignment->week) == $w)
+                                @selected(old("week", $specialProject->week) == $w)
                             >
                                 Week {{ $w }}
                             </option>
@@ -129,7 +127,7 @@
                         @foreach (["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"] as $dayName)
                             <option
                                 value="{{ $dayName }}"
-                                @selected(old("day", $assignment->day) == $dayName)
+                                @selected(old("day", $specialProject->day) == $dayName)
                             >
                                 {{ $dayName }}
                             </option>
@@ -139,12 +137,11 @@
 
                 <div>
                     <label class="block text-sm font-medium">Due at</label>
-                    {{-- Fixed type to date --}}
                     <input
                         name="due_at"
                         type="date"
                         class="mt-1 w-full border rounded px-3 py-2"
-                        value="{{ old("due_at", optional($assignment->due_at)->format("Y-m-d")) }}"
+                        value="{{ old("due_at", optional($specialProject->due_at)->format("Y-m-d")) }}"
                     />
                 </div>
                 <div class="flex items-end gap-2">
@@ -156,7 +153,7 @@
                         name="is_published"
                         type="checkbox"
                         value="1"
-                        @checked(old("is_published", $assignment->is_published))
+                        @checked(old("is_published", $specialProject->is_published))
                     />
                     <label for="is_published" class="text-sm">Published</label>
                 </div>
@@ -166,12 +163,11 @@
             <div class="border rounded p-4 space-y-3">
                 <div class="text-sm font-medium">Attachment / URL</div>
 
-                @if ($assignment->file_path)
+                @if ($specialProject->file_path)
                     <div class="flex items-center gap-3">
-                        {{-- Link to new download route --}}
                         <a
                             class="text-blue-600 underline"
-                            href="{{ route("lecturer.assignments.download", $assignment) }}"
+                            href="{{ route("lecturer.special_projects.download", $specialProject) }}"
                         >
                             Download current file
                         </a>
@@ -197,7 +193,6 @@
                     <p class="text-xs text-gray-500 mt-1">
                         Allowed: pdf, doc, docx, zip. Max 20MB.
                     </p>
-                    {{-- Updated allowed types --}}
                 </div>
 
                 <div>
@@ -208,10 +203,9 @@
                         name="url"
                         type="url"
                         class="mt-1 w-full border rounded px-3 py-2"
-                        value="{{ old("url", $assignment->url) }}"
+                        value="{{ old("url", $specialProject->url) }}"
                         placeholder="https://..."
                     />
-                    {{-- Assuming URL exists or will be added --}}
                     <p class="text-xs text-gray-500 mt-1">
                         Choose either a URL or a file, not both.
                     </p>
@@ -225,16 +219,13 @@
                 >
                     Save changes
                 </button>
-                {{-- Link back to the show page --}}
                 <a
-                    href="{{ route("lecturer.assignments.show", $assignment) }}"
+                    href="{{ route("lecturer.special_projects.show", $specialProject) }}"
                     class="px-4 py-2 rounded border"
                 >
                     Back
                 </a>
             </div>
         </form>
-
-        {{-- Submissions table removed from edit, now on show page --}}
     </div>
 </x-layout>

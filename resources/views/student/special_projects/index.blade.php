@@ -1,7 +1,6 @@
-{{-- resources/views/student/assignments/index.blade.php --}}
-<x-layout title="Assignments">
+{{-- resources/views/student/special_projects/index.blade.php --}}
+<x-layout title="Special Projects">
     @php
-        // These variables ($level, $week, $day) are now passed from the controller
         $levelLabel = $level ? "LEVEL " . $level : null;
         $week = (int) request("week");
         $day = request("day");
@@ -22,7 +21,7 @@
                 </a>
                 <span class="mx-2">/</span>
             </li>
-            <li class="text-black font-semibold">Assignments</li>
+            <li class="text-black font-semibold">Special Projects</li>
         </ol>
     </nav>
 
@@ -33,26 +32,6 @@
         &larr; Back to Dashboard
     </a>
 
-    {{--
-        Level Guidance/Info
-        
-        @if ($student_level && $level)
-        <div
-        class="rounded border bg-blue-50 text-blue-800 px-4 py-3 mb-4 text-sm"
-        >
-        You are enrolled at Level {{ $student_level }}. You can see
-        assignments for Level {{ $student_level }} and below.
-        </div>
-        @else
-        <div
-        class="rounded border bg-yellow-50 text-yellow-800 px-4 py-3 mb-4 text-sm"
-        >
-        You don't seem to be enrolled in this course with a specific level.
-        Showing all available assignments.
-        </div>
-        @endif
-    --}}
-
     {{-- Header --}}
     @php
         $levelColors = [
@@ -60,7 +39,6 @@
             2 => "bg-[#c7f7cf]",
             1 => "bg-[#f0c6bc]",
         ];
-        // Use the student's *enrolled* level for header color, default gray
         $headerColor = $levelColors[$level ?? null] ?? "bg-gray-100";
     @endphp
 
@@ -73,13 +51,13 @@
             <div>
                 <h1 class="text-xl font-semibold">
                     @if ($week && $day)
-                        Assignments for: Week {{ $week }}, {{ $day }}
+                        Projects for: Week {{ $week }}, {{ $day }}
                     @elseif ($week)
-                        Assignments for: Week {{ $week }}
+                        Projects for: Week {{ $week }}
                     @elseif ($level)
-                        All Assignments for: Level {{ $level }}
+                        All Projects for: Level {{ $level }}
                     @else
-                            All Assignments
+                        All Projects
                     @endif
                 </h1>
                 <h1 class="text-xl font-thin">
@@ -88,106 +66,17 @@
             </div>
         </div>
 
-        {{-- Filters --}}
-        <form method="GET" class="mt-4 flex flex-wrap gap-3 items-end hidden">
-            {{-- Level Filter --}}
-            <div>
-                <label class="block text-sm text-gray-600">Level</label>
-                <select
-                    name="level"
-                    class="block border rounded py-2.5 px-2 text-xs w-full text-center"
-                >
-                    {{-- Show levels up to the student's enrolled level --}}
-                    <option value="">All My Levels</option>
-                    @if ($student_level !== null)
-                        {{-- Check if student_level is not null --}}
-                        @foreach (range(1, $student_level) as $lv)
-                            <option
-                                value="{{ $lv }}"
-                                @selected($level == $lv)
-                            >
-                                Level {{ $lv }}
-                            </option>
-                        @endforeach
-                    @else
-                        {{-- If no student level, show all levels as fallback --}}
-                        @foreach ([1, 2, 3] as $lv)
-                            <option
-                                value="{{ $lv }}"
-                                @selected($level == $lv)
-                            >
-                                Level {{ $lv }}
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            {{-- Apply Level button --}}
-            <button class="px-3 py-2 rounded bg-red-600 text-white">
-                Apply Level
-            </button>
-        </form>
-
         {{-- Week/Day Navigation Grid --}}
         @php
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
         <div class="grid grid-row gap-4 mt-2">
-            <aside class="w-72 mt-2 hidden">
-                <table
-                    class="w-full text-xs border border-gray-200 mr-2 shadow-sm"
-                >
-                    <tbody class="bg-white">
-                        @for ($w = 1; $w <= 8; $w++)
-                            <tr class="border-b border-gray-200">
-                                <td
-                                    class="flex flex-col-2 px-2 py-2 font-semibold"
-                                >
-                                    <div
-                                        class="flex min-w-16 items-right border-r border-gray-200 mr-2"
-                                    >
-                                        <a
-                                            class="font-bold text-blue-700 whitespace-nowrap px-2 py-1 rounded"
-                                        >
-                                            Week {{ $w }}:
-                                        </a>
-                                    </div>
-                                    <div
-                                        class="gap-x-1 gap-y-2 flex flex-wrap justify-start"
-                                    >
-                                        @foreach ($days as $dayName)
-                                            {{-- This link preserves the $level filter --}}
-                                            <a
-                                                href="{{ request()->fullUrlWithQuery(["week" => $w, "day" => $dayName, "level" => $level]) }}"
-                                                @class([
-                                                    "font-semibold",
-                                                    "bg-gray-100 px-1 py-1 rounded",
-                                                    "bg-gray-900 text-white" => $week == $w && $day == $dayName,
-                                                    "hover:bg-gray-900 hover:text-white" => ! ($week == $w && $day == $dayName),
-                                                    "hover:underline" => ! ($week == $w && $day == $dayName),
-                                                    "text-purple-600" => $dayName === "REVIEW",
-                                                    "text-black" => $dayName !== "REVIEW",
-                                                ])
-                                            >
-                                                {{ $dayName }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </td>
-                            </tr>
-                        @endfor
-                    </tbody>
-                </table>
-            </aside>
-            {{-- Week and Day filter --}}
             <form
                 method="GET"
                 action="{{ url()->current() }}"
                 class="grid grid-cols-2 gap-4 max-w-xs"
             >
-                {{-- Preserve Level if exists --}}
                 <input type="hidden" name="level" value="{{ $level }}" />
 
                 <div class="block">
@@ -237,18 +126,16 @@
                 </div>
             </form>
 
-            {{-- Assignments table (now filtered) --}}
+            {{-- Special Projects table (now filtered) --}}
             <main class="rounded-lg flex-1">
-                {{-- Title --}}
                 <div class="flex items-center justify-between mb-4">
                     @if ($week && $day or $week)
                         <div class="flex gap-2">
-                            {{-- Link 1: View filtered list --}}
                             <a
-                                href="{{ route("student.assignments.index", $course) }}?level={{ $level }}"
+                                href="{{ route("student.special_projects.index", $course) }}?level={{ $level }}"
                                 class="text-sm px-4 py-2 rounded bg-white border border-gray-300 text-sm font-medium hover:bg-gray-100 transition shadow-sm"
                             >
-                                &larr; Back to all Assignments
+                                &larr; Back to all Special Projects
                             </a>
                         </div>
                     @endif
@@ -257,36 +144,36 @@
                     class="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-4"
                 >
                     @php
-                        $totalAssignments = $assignments->total();
-                        $submittedCount = $assignments
+                        $totalSpecialProjects = $specialProjects->total();
+                        $submittedCount = $specialProjects
                             ->filter(function ($a) {
                                 return $a->submissions->isNotEmpty();
                             })
                             ->count();
 
-                        $gradedCount = $assignments
+                        $gradedCount = $specialProjects
                             ->filter(function ($a) {
                                 return $a->submissions->first() && $a->submissions->first()->assessment;
                             })
                             ->count();
 
-                        $overdueCount = $assignments
+                        $overdueCount = $specialProjects
                             ->filter(function ($a) {
                                 return ! $a->submissions->isNotEmpty() && $a->due_at && $a->due_at->isPast();
                             })
                             ->count();
 
-                        $completionRate = $totalAssignments > 0 ? round(($gradedCount / $totalAssignments) * 100) : 0;
+                        $completionRate = $totalSpecialProjects > 0 ? round(($gradedCount / $totalSpecialProjects) * 100) : 0;
                     @endphp
 
                     {{-- Overview Header --}}
                     <div class="flex items-center justify-between mb-4">
                         <div class="max-w-xs">
                             <h2 class="text-sm font-semibold text-gray-900">
-                                Assignment Overview
+                                Special Projects Overview
                             </h2>
                             <p class="text-xs text-gray-500">
-                                Quick summary of Assignments
+                                Quick summary of Special Projects
                             </p>
                         </div>
                         <span
@@ -301,10 +188,10 @@
                         <div
                             class="flex items-center justify-between text-xs text-gray-500 mb-1"
                         >
-                            <span>Completion</span>
+                            <span>Completed Special Projects</span>
                             <span>
                                 {{ $gradedCount }} /
-                                {{ $totalAssignments }}
+                                {{ $totalSpecialProjects }}
                             </span>
                         </div>
                         <div class="h-2 rounded-full bg-gray-100">
@@ -322,9 +209,9 @@
                         <div
                             class="flex items-center justify-between rounded-lg bg-gray-50 px-2 py-2"
                         >
-                            <span class="text-gray-600">Total Assignments</span>
+                            <span class="text-gray-600">Total Special Projects</span>
                             <span class="text-sm font-semibold text-gray-900">
-                                {{ $totalAssignments }}
+                                {{ $totalSpecialProjects }}
                             </span>
                         </div>
 
@@ -348,14 +235,12 @@
                     </div>
                 </div>
 
-                {{-- Assignments Table --}}
+                {{-- Special Projects Table --}}
                 <div class="mt-4 overflow-hidden rounded-lg shadow-md">
                     <table class="lg:min-w-full text-sm bg-white shadow-sm">
                         <thead class="bg-gray-900 text-left">
                             <tr class="text-xs text-white">
                                 <th class="px-4 py-3 text-left">Title</th>
-
-                                {{-- Changed from Lecturer's 'Published' status --}}
                                 <th class="px-4 py-3 text-left">Week & Day</th>
                                 <th class="px-4 py-3 text-left">Due Date</th>
                                 <th class="px-4 py-3 text-left">Status</th>
@@ -363,24 +248,19 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y">
-                            @forelse ($assignments as $a)
+                            @forelse ($specialProjects as $a)
                                 @php
-                                    // Get the student's submission for this assignment (already eager loaded)
                                     $submission = $a->submissions->first();
-                                    // Use the eager loaded 'has_assessment' attribute
                                     $hasAssessment = $a->has_assessment;
 
-                                    // Determine student-centric status
-                                    $status = "Open"; // Default
+                                    $status = "Open";
                                     if ($submission) {
                                         $status = $hasAssessment ? "Graded" : "Submitted";
                                     } elseif ($a->due_at && $a->due_at->isPast()) {
                                         $status = "Closed";
                                     }
 
-                                    // Determine if student can submit/edit
                                     $canSubmit = ! $submission && (! $a->due_at || $a->due_at->isFuture());
-                                    // Can edit if submitted, not graded, and not past due (or no due date)
                                     $canEdit = $submission && ! $hasAssessment && (! $a->due_at || $a->due_at->isFuture());
                                 @endphp
 
@@ -388,13 +268,12 @@
                                     class="hover:bg-gray-50 border-b border-gray-200 text-xs"
                                     onclick="
                                         window.location =
-                                            '{{ route("student.assignments.show", $a) }}'
+                                            '{{ route("student.special_projects.show", $a) }}'
                                     "
                                 >
                                     <td class="px-4 py-3 text-left">
-                                        {{-- Wrap the title in a link --}}
                                         <a
-                                            href="{{ route("student.assignments.show", $a) }}"
+                                            href="{{ route("student.special_projects.show", $a) }}"
                                             class="font-medium text-blue-600 hover:underline"
                                         >
                                             {{ $a->title }}
@@ -417,8 +296,7 @@
                                             <span class="text-gray-400">—</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-left">
-                                        {{-- Student Status Span --}}
+                                    <td class="px-4 py-3 text-left" onClick="event.stopPropagation();">
                                         <span
                                             @class([
                                                 "px-2 py-1 rounded",
@@ -445,57 +323,6 @@
                                         >
                                             <path d="M9 18l6-6-6-6" />
                                         </svg>
-                                        {{--
-                                            <div class="flex flex-col items-start gap-1">
-                                            
-                                            @if ($canSubmit)
-                                            <a
-                                            href="{{ route("student.assignments.submissions.create", $a) }}"
-                                            class="text-blue-600 hover:underline text-xs whitespace-nowrap"
-                                            >
-                                            Submit Now
-                                            </a>
-                                            @elseif ($canEdit)
-                                            <a
-                                            href="{{ route("student.assignments.submissions.edit", [$a, $submission]) }}"
-                                            class="text-blue-600 hover:underline text-xs whitespace-nowrap"
-                                            >
-                                            Edit Submission
-                                            </a>
-                                            @elseif ($status === "Graded")
-                                            <a
-                                            href="{{ route("student.assignments.submissions.show", [$a, $submission]) }}"
-                                            class="text-green-600 hover:underline text-xs whitespace-nowrap"
-                                            >
-                                            View Feedback
-                                            </a>
-                                            @elseif ($status === "Submitted")
-                                            <span
-                                            class="text-gray-500 text-xs whitespace-nowrap"
-                                            >
-                                            Awaiting Grade
-                                            </span>
-                                            @elseif ($status === "Closed")
-                                            <span
-                                            class="text-red-500 text-xs whitespace-nowrap"
-                                            >
-                                            Past Due
-                                            </span>
-                                            @else
-                                            <span class="text-gray-400 text-xs">
-                                            —
-                                            </span>
-                                            @endif
-                                            @if ($a->file_path)
-                                            <a
-                                            href="{{ route("student.assignments.download", $a) }}"
-                                            class="text-gray-500 hover:underline text-xs whitespace-nowrap mt-1"
-                                            >
-                                            (Download Task File)
-                                            </a>
-                                            @endif
-                                            </div>
-                                        --}}
                                     </td>
                                 </tr>
                             @empty
@@ -504,8 +331,7 @@
                                         class="px-6 py-6 text-gray-500 text-center"
                                         colspan="7"
                                     >
-                                        No upload links found matching your
-                                        filters and level.
+                                        No special projects found matching your filters and level.
                                     </td>
                                 </tr>
                             @endforelse
@@ -515,9 +341,8 @@
             </main>
 
             {{-- Paginator --}}
-            @if ($assignments->hasPages())
-                {{-- Check directly on paginator instance --}}
-                <div class="mt-4 px-6 py-3">{{ $assignments->links() }}</div>
+            @if ($specialProjects->hasPages())
+                <div class="mt-4 px-6 py-3">{{ $specialProjects->links() }}</div>
             @endif
         </div>
     </section>

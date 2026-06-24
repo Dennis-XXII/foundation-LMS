@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Lecturer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Assignment;
+use App\Models\SpecialProject;
 use App\Models\Material;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
@@ -21,12 +21,12 @@ class DashboardController extends Controller
 
         // show latest submissions for this course
         $recentSubmissions = Submission::query()
-            ->whereHas('assignment', fn($q) => $q->where('course_id', $course->id))
-            ->with(['assignment', 'student.user'])
+            ->whereHas('specialProject', fn($q) => $q->where('course_id', $course->id))
+            ->with(['specialProject', 'student.user'])
             ->latest()->take(10)->get();
 
-        // assignments due soon
-        $dueSoon = Assignment::query()
+        // special projects due soon
+        $dueSoon = SpecialProject::query()
             ->where('course_id', $course->id)
             ->whereNotNull('due_at')
             ->where('due_at', '>=', now())

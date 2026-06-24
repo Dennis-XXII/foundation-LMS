@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materials', function (Blueprint $table) {
+        Schema::create('useful_links', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
-            $table->boolean('is_published')->default(false)->index();
-            $table->enum('type', ['lesson','homework','self_study']);
-            $table->unsignedTinyInteger('level')->nullable();
             $table->string('title');
-            $table->text('descriptions')->nullable();
-            $table->string('file_path')->nullable();
-            $table->string('url')->nullable();
-            $table->timestamp('uploaded_at')->nullable();
+            $table->text('description')->nullable();
+            $table->text('link');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materials');
+        Schema::dropIfExists('useful_links');
     }
 };

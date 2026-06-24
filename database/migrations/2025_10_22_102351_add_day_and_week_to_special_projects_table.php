@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('assignments', function (Blueprint $table) {
+        Schema::table('special_projects', function (Blueprint $table) {
             // Adding 'day' and 'week' columns, placing them after 'level' for organization.
             $table->enum('day', [
                 'Monday',
@@ -31,7 +31,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('assignments', function (Blueprint $table) {
+        Schema::table('special_projects', function (Blueprint $table) {
             // This will safely remove the columns if you need to roll back
             $table->dropColumn(['day', 'week']);
         });

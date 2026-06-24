@@ -2,8 +2,8 @@
 <x-layout>
     @php
         // $submission and potentially $assessment (may be null or non-existent model if creating)
-        $assignment = $submission->assignment->load("course");
-        $course = $assignment->course;
+        $specialProject = $submission->specialProject->load("course");
+        $course = $specialProject->course;
         $student = $submission->student->user;
 
         // More explicit check: Does the assessment model exist in the database?
@@ -36,10 +36,10 @@
             </li>
             <li>
                 <a
-                    href="{{ route("lecturer.assignments.submissions.index", $assignment) }}"
+                    href="{{ route("lecturer.special_projects.submissions.index", $specialProject) }}"
                     class="hover:underline"
                 >
-                    {{ $assignment->title }} - Submissions
+                    {{ $specialProject->title }} - Submissions
                 </a>
                 <span class="mx-2">/</span>
             </li>
@@ -59,7 +59,7 @@
                 1 => "bg-[#f0c6bc]",
             ];
             // Use level filter for header, default to gray
-            $headerColor = $levelColors[$assignment->level ?? null] ?? "bg-gray-100";
+            $headerColor = $levelColors[$specialProject->level ?? null] ?? "bg-gray-100";
         @endphp
 
         <div class="mb-6 p-4 rounded-lg bg-gray-100 border border-gray-200">
@@ -67,8 +67,8 @@
                 Grading Submission
             </h1>
             <p class="text-gray-700">
-                Assignment: {{ $assignment->title }} (Level
-                {{ $assignment->level ?? "N/A" }})
+                Special Project: {{ $specialProject->title }} (Level
+                {{ $specialProject->level ?? "N/A" }})
             </p>
             <p class="text-gray-700">
                 Student: {{ $student->name }} ({{ $student->email }})
@@ -230,9 +230,9 @@
                 >
                     {{ $isUpdating ? "Update Grade" : "Save Grade" }}
                 </button>
-                {{-- Link back to the list of submissions for this assignment --}}
+                {{-- Link back to the list of submissions for this special project --}}
                 <a
-                    href="{{ route("lecturer.assignments.submissions.index", $assignment) }}"
+                    href="{{ route("lecturer.special_projects.submissions.index", $specialProject) }}"
                     class="px-4 py-2 border rounded text-sm"
                 >
                     Cancel
