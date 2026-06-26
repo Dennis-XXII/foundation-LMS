@@ -32,11 +32,16 @@ class StudentAnalysisController extends Controller
             // Join for sorting by name (Fixing orderByRelation issue)
             ->join('students', 'enrollments.student_id', '=', 'students.id')
             ->join('users', 'students.user_id', '=', 'users.id')
+            ->whereNull('students.deleted_at')
+            ->whereNull('users.deleted_at')
             ->orderBy('users.name') 
             ->select('enrollments.*')
             ->get()
             // 2. Calculate completion metrics for each student
             ->map(function ($enrollment) use ($course) {
+                if (!$enrollment->student) {
+                    return null;
+                }
                 
                 // Get ALL published special projects relevant to this student's level
                 $visibleSpecialProjects = SpecialProject::where('course_id', $course->id)
@@ -76,7 +81,9 @@ class StudentAnalysisController extends Controller
                 ];
 
                 return $enrollment;
-            });
+            })
+            ->filter()
+            ->values();
 
         return view('lecturer.students.progress', compact('course', 'enrollments'));
     }
