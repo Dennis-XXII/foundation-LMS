@@ -37,7 +37,7 @@
         @endphp
 
   {{-- Main Content Card --}}
-  <section class="max-w-4xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300">
+  <section class="max-w-4xl mx-auto rounded-lg lg:shadow lg:border border-gray-300">
 
   {{-- Flashes / Errors --}}
     @if (session("success"))
@@ -69,7 +69,7 @@
     @endif
 
     {{-- Header --}}
-    <div class="flex items-center {{ $headerColor }} rounded-lg justify-between p-4">
+    <div class="flex items-center {{ $headerColor }} rounded-t-lg justify-between p-4">
         <div>
         <h1 class="text-2xl font-bold">{{ $specialProject->title }}</h1>
         <h1 class="text-lg text-gray-600 font-thin">{{ $specialProject->level ? "Level " . $specialProject->level : "All Levels" }}</h1>
@@ -77,7 +77,8 @@
     </div>
 
     {{-- Details Grid --}}
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 border border-gray-300 p-4 rounded-lg">
+    <div class="p-2 lg:p-4">
+    <div class=" grid grid-cols-1 md:grid-cols-3 gap-6 rounded-b-lg">
             {{-- Column 1 --}}
       <div class="md:col-span-2 space-y-4">
         <div>
@@ -121,7 +122,7 @@
 
     {{-- Submission Status & Action Area --}}
 
-        <div class="mt-8 p-4 rounded-lg bg-gray-50 border border-gray-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="mt-2 p-4 rounded-lg bg-gray-50 border border-gray-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
             {{-- Status Display --}}
             <div>
                 <label class="block ml-1 text-xl font-medium text-gray-700 mb-2">Submission Status : <span @class([
@@ -173,14 +174,5 @@
                 @endif
             </div>
         </div>
-
-    <div class="mt-8 pt-4 border-t">
-        <a
-            href="{{ route("student.special_projects.index", $specialProject->course) }}?level={{ $specialProject->level }}"
-            class="lg:hidden text-sm text-blue-600 hover:underline px-4 py-2 rounded border mb-4 inline-block"
-        >
-            &larr; Back to Special Projects
-        </a>
-    </div>
   </section>
 </x-layout>

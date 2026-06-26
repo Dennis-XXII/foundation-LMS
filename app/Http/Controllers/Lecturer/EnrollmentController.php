@@ -27,9 +27,13 @@ class EnrollmentController extends Controller
                 // FIX: Replaced orderByRelation with explicit joins for compatibility
                 ->join('students', 'enrollments.student_id', '=', 'students.id')
                 ->join('users', 'students.user_id', '=', 'users.id')
+                ->whereNull('students.deleted_at')
+                ->whereNull('users.deleted_at')
                 ->orderBy('users.name') 
                 ->select('enrollments.*') // Select only columns from enrollments to avoid ambiguity
-                ->get();
+                ->get()
+                ->filter(fn($enrollment) => $enrollment->student !== null)
+                ->values();
 
             return view('lecturer.students.index', compact('course', 'enrollments'));
         }

@@ -43,10 +43,10 @@
     @endphp
 
     <section
-        class="max-w-6xl mx-auto lg:p-6 rounded-lg lg:shadow lg:border border-gray-300"
+        class="max-w-4xl mx-auto rounded-lg lg:shadow lg:border border-gray-300"
     >
         <div
-            class="flex items-center justify-between p-4 rounded-lg {{ $headerColor }}"
+            class="flex items-center justify-between p-4 rounded-t-lg {{ $headerColor }}"
         >
             <div>
                 <h1 class="text-xl font-semibold">
@@ -71,7 +71,7 @@
             $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "REVIEW"];
         @endphp
 
-        <div class="grid grid-row gap-4 mt-2">
+        <div class="grid grid-row gap-4 mt-2 p-2 lg:p-4">
             <form
                 method="GET"
                 action="{{ url()->current() }}"
@@ -128,7 +128,7 @@
 
             {{-- Special Projects table (now filtered) --}}
             <main class="rounded-lg flex-1">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center justify-between">
                     @if ($week && $day or $week)
                         <div class="flex gap-2">
                             <a

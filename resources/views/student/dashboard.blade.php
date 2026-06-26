@@ -1,5 +1,17 @@
 {{-- resources/views/student/dashboard.blade.php --}}
 <x-layout title="Student Dashboard">
+    <nav class="mb-2 text-sm text-gray-600 p-3 lg:flex hidden" aria-label="Breadcrumb">
+        <ol class="list-reset flex">
+            <li>
+                <a
+                    href="{{ route("student.dashboard") }}"
+                    class="text-gray-700 font-bold"
+                >
+                    Dashboard
+                </a>
+            </li>
+        </ol>
+    </nav>
     @php
         $levels = [3, 2, 1];
 
@@ -31,7 +43,7 @@
 
     <div class="mx-auto items-center">
         <div
-            class="mx-auto w-full lg:max-w-4xl overflow-hidden bg-white rounded-md lg:shadow-sm border border-gray-100"
+            class="mx-auto w-full lg:max-w-4xl overflow-hidden bg-white rounded-xl lg:shadow-sm border border-gray-100"
         >
             {{-- Header Section --}}
             <div
@@ -114,7 +126,7 @@
                 </aside>
 
                 {{-- Tiles Grid Grouped by Level --}}
-                <div class="flex-1 space-y-8">
+                <div class="flex-1 space-y-2 lg:space-y-8">
                     @php
                         $groupedTiles = collect($tiles)->groupBy("level");
                     @endphp
@@ -131,7 +143,7 @@
 
                                 {{-- Horizontal Scroll Container --}}
                                 <div
-                                    class="flex overflow-x-auto no-scrollbar gap-4 pb-4 scroll-behavior-smooth border-b border-gray-200"
+                                    class="grid grid-cols-2 justify-items-center lg:flex gap-4 pb-4 scroll-behavior-smooth border-b border-gray-200"
                                 >
                                     @foreach ($levelTiles as $t)
                                         @php
